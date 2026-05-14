@@ -75,17 +75,43 @@ seat-snaps/
 ### `packages/db` — Database Layer
 
 - **ORM**: Drizzle ORM with `postgres` driver (postgres-js)
-- **Schema file**: `src/schema.ts` — define all tables here
-- **Config**: `drizzle.config.ts` — reads `DATABASE_URL` from env
-- **Migration output**: `drizzle/` directory (git-ignored)
+- **Schema directory**: `src/schema/` — one file per table group, re-exported from `src/schema/index.ts`
+- **Config**: `drizzle.config.ts` — reads `DATABASE_URL` from env; schema glob `./src/schema/*.ts`
+- **Migration output**: `drizzle/` directory (committed; apply with `npm run db:migrate`)
 - **Factory**: `createDb(databaseUrl)` — call once at app startup in `apps/api`
+- **Seed**: `src/seed.ts` — run with `npm run db:seed` from `packages/db`; requires `DATABASE_URL`
+- **Note**: Drizzle-kit scripts use `tsx` to resolve ESM `.js` imports — do not revert to bare `drizzle-kit` binary
+
+#### Database Schema Overview
+
+| Table | Purpose |
+|---|---|
+| `users` | Organizers and admin accounts (email, hashed password, avatar) |
+| `events` | Top-level event records (title, date, type enum, JSONB settings) |
+| `event_memberships` | Links users to events with roles (owner/organizer); composite unique on (userId, eventId) |
+| `organizer_invites` | Email-based invite tokens for adding organizers; unique non-guessable token |
+| `attendees` | Per-event guest records (QR token, group label, conversation starters as text[]) |
+| `tables` | Seating tables within an event (label, capacity, XY position for floor-plan) |
+| `seats` | Individual seats within a table; `attendeeId` FK tracks assignment |
+| `attendee_sessions` | Device sessions for attendees (JWT-style token + fingerprint + expiry) |
+| `photos` | Photo uploads per attendee (S3 key, thumbnail key, approval status enum) |
+| `broadcasts` | Organizer messages targeting all / a table / a custom list |
+| `event_themes` | One-to-one event branding (colors, logo, background, custom CSS) |
+
+**Key relationships:**
+- `events` is the root; all child tables cascade-delete on event removal
+- `seats.attendeeId` → `attendees.id` (set null on attendee delete) — source of truth for seat assignment
+- `attendees.tableId` / `attendees.seatId` are denormalized UUIDs (no FK) to avoid circular FK chains
+- `event_themes` has a unique constraint on `eventId` (one theme per event)
+
+**Indexes:** All child tables index `eventId`; `event_memberships` has composite unique index on `(userId, eventId)`; `attendees.qrToken` and `organizer_invites.token` are unique.
 
 ## Architecture Principles
 
 ### Clean Architecture
 - **Domain logic** lives in NestJS services, not controllers
 - **Controllers** handle HTTP only — delegate to services
-- **Repositories** (future) encapsulate DB access — services depend on interfaces, not Drizzle directly
+- **Repositories** encapsulate DB access — services depend on interfaces, not Drizzle directly
 
 ### SOLID
 - **Single Responsibility**: each module, service, and component has one job
@@ -97,6 +123,32 @@ seat-snaps/
 - `apps/api` — business logic, validation, orchestration
 - `packages/db` — data access only; no business logic
 - `packages/shared` — pure types and schemas; no side effects
+
+## Domain Layer — Repository Interfaces
+
+Defined in `apps/api/src/domain/repositories/`. Each interface has a matching injection token symbol.
+
+| Interface | Token | Key methods |
+|---|---|---|
+| `IUserRepository` | `USER_REPOSITORY` | findById, findByEmail, create, update, delete |
+| `IEventRepository` | `EVENT_REPOSITORY` | findById, findAll, findByMemberId, create, update, delete |
+| `IAttendeeRepository` | `ATTENDEE_REPOSITORY` | findById, findByQrToken, findByEventId, create, update, delete |
+| `ITableRepository` | `TABLE_REPOSITORY` | findById, findByEventId, create, update, delete |
+| `ISeatRepository` | `SEAT_REPOSITORY` | findById, findByTableId, findByEventId, assignAttendee, unassignAttendee, create, update, delete |
+| `IPhotoRepository` | `PHOTO_REPOSITORY` | findById, findByEventId (with status filter), findByAttendeeId, create, updateStatus, delete |
+| `IBroadcastRepository` | `BROADCAST_REPOSITORY` | findById, findByEventId, create, delete |
+
+All interfaces use the inferred Drizzle types from `@seat-snaps/db` (`User`, `Event`, `Attendee`, etc.) as entity types.
+
+## Infrastructure Layer — Drizzle Implementations
+
+Concrete implementations in `apps/api/src/infrastructure/repositories/`. Each class implements the corresponding domain interface using the `Database` type from `@seat-snaps/db`.
+
+- `DrizzleUserRepository`, `DrizzleEventRepository`, `DrizzleAttendeeRepository`
+- `DrizzleTableRepository`, `DrizzleSeatRepository`, `DrizzlePhotoRepository`
+- `DrizzleBroadcastRepository`
+
+**Usage pattern:** inject `Database` via constructor; register as NestJS providers using the `*_REPOSITORY` symbol tokens as the injection key and the Drizzle class as the implementation.
 
 ## Development Commands
 
