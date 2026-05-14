@@ -121,11 +121,11 @@ Copy `.env.example` to `.env` and fill in:
 |---|---|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `AUTH_SECRET` | Secret for signing JWTs / session tokens (min 32 chars) |
-| `S3_BUCKET_NAME` | S3 bucket for image uploads |
-| `S3_REGION` | AWS region |
-| `S3_ACCESS_KEY_ID` | AWS access key |
-| `S3_SECRET_ACCESS_KEY` | AWS secret key |
-| `S3_ENDPOINT` | Override for S3-compatible services (MinIO, Cloudflare R2) |
+| `STORAGE_BUCKET_NAME` | Bucket name for image uploads |
+| `STORAGE_REGION` | Storage region (e.g. `us-east-1`) |
+| `STORAGE_ACCESS_KEY_ID` | Access key ID for your storage provider |
+| `STORAGE_SECRET_ACCESS_KEY` | Secret access key for your storage provider |
+| `STORAGE_ENDPOINT` | S3-compatible endpoint URL (Railway Buckets, AWS S3, Cloudflare R2, MinIO, etc.) |
 | `NEXT_PUBLIC_API_URL` | API base URL consumed by the Next.js frontend |
 | `API_PORT` | Port for the NestJS API (default: 3001) |
 
