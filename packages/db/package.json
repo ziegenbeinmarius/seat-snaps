@@ -8,10 +8,11 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio",
+    "db:generate": "tsx ../../node_modules/drizzle-kit/bin.cjs generate",
+    "db:migrate": "tsx ../../node_modules/drizzle-kit/bin.cjs migrate",
+    "db:push": "tsx ../../node_modules/drizzle-kit/bin.cjs push",
+    "db:studio": "tsx ../../node_modules/drizzle-kit/bin.cjs studio",
+    "db:seed": "tsx src/seed.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@types/node": "^20.17.0",
     "drizzle-kit": "^0.30.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   }
 }

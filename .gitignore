@@ -16,9 +16,8 @@ apps/web/out/
 apps/api/dist/
 packages/*/dist/
 
-# Drizzle
-drizzle/
-packages/db/drizzle/
+# Drizzle — migration files are committed; only exclude local drizzle studio cache
+.drizzle/
 
 # Turbo
 .turbo/
