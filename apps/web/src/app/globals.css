@@ -76,6 +76,12 @@
   --event-nav-bg: rgba(255, 248, 238, 0.92);
   --event-heading-font: var(--font-cormorant, Georgia, serif);
   --event-body-font: var(--font-inter, system-ui, sans-serif);
+  /* Card interior text — dark on white glass */
+  --event-card-text: hsl(24 12% 16%);
+  --event-card-sub: hsl(24 10% 38%);
+  --event-card-muted: hsl(24 8% 55%);
+  --event-card-chip-bg: rgba(160, 120, 80, 0.1);
+  --event-card-divider: rgba(0, 0, 0, 0.07);
 }
 
 /* Wedding */
@@ -90,6 +96,7 @@
   --event-nav-bg: rgba(255, 248, 250, 0.93);
   --event-heading-font: var(--font-cormorant, Georgia, serif);
   --event-body-font: var(--font-lato, system-ui, sans-serif);
+  --event-card-chip-bg: rgba(181, 107, 126, 0.1);
 }
 
 /* Birthday */
@@ -104,6 +111,7 @@
   --event-nav-bg: rgba(255, 250, 248, 0.93);
   --event-heading-font: var(--font-nunito, system-ui, sans-serif);
   --event-body-font: var(--font-nunito, system-ui, sans-serif);
+  --event-card-chip-bg: rgba(232, 98, 58, 0.1);
 }
 
 /* Corporate */
@@ -118,6 +126,7 @@
   --event-nav-bg: rgba(248, 250, 255, 0.94);
   --event-heading-font: var(--font-inter, system-ui, sans-serif);
   --event-body-font: var(--font-inter, system-ui, sans-serif);
+  --event-card-chip-bg: rgba(37, 88, 196, 0.1);
 }
 
 /* ─── Glass card utility class ─────────────────────────────────────────────── */
@@ -137,6 +146,17 @@
 
 .event-body {
   font-family: var(--event-body-font, inherit);
+}
+
+/* ─── Attendee card text helpers (dark on white glass) ───────────────────── */
+.event-card-title {
+  color: var(--event-card-text, hsl(24 12% 16%));
+}
+.event-card-desc {
+  color: var(--event-card-sub, hsl(24 10% 38%));
+}
+.event-card-muted-text {
+  color: var(--event-card-muted, hsl(24 8% 55%));
 }
 
 /* ─── Dashboard glass card ──────────────────────────────────────────────────── */

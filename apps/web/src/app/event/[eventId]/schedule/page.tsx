@@ -34,14 +34,15 @@ export default async function SchedulePage({ params }: Props) {
 
   return (
     <div className="min-h-screen px-4 pb-6 pt-8">
+      {/* Page heading sits directly on gradient */}
       <h1 className="event-heading mb-6 px-2 text-2xl font-semibold text-white drop-shadow-sm">
         Schedule
       </h1>
 
       {items.length === 0 && (
         <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
-          <Clock className="mb-3 h-10 w-10 text-white/30" />
-          <p className="event-body text-white/50">No schedule yet</p>
+          <Clock className="mb-3 h-10 w-10 event-card-muted-text" />
+          <p className="event-body event-card-muted-text">No schedule yet</p>
         </div>
       )}
 
@@ -52,7 +53,7 @@ export default async function SchedulePage({ params }: Props) {
 
           return (
             <div key={item.id} className="flex gap-3">
-              {/* Timeline */}
+              {/* Timeline dots sit between cards on the gradient */}
               <div className="flex flex-col items-center pt-4">
                 <div
                   className={`h-3 w-3 shrink-0 rounded-full border-2 ${
@@ -68,28 +69,33 @@ export default async function SchedulePage({ params }: Props) {
                 )}
               </div>
 
-              {/* Card */}
+              {/* Card — text inside glass needs dark color */}
               <div
-                className={`mb-1 flex-1 rounded-2xl p-4 ${
-                  active ? "glass-card" : past ? "bg-white/8 opacity-60" : "glass-card"
-                }`}
-                style={active ? { background: "rgba(255,255,255,0.22)" } : {}}
+                className={`mb-1 flex-1 rounded-2xl p-4 ${past ? "opacity-60" : "glass-card"}`}
+                style={
+                  past
+                    ? { background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)" }
+                    : active
+                      ? { background: "var(--event-card-chip-bg)" }
+                      : {}
+                }
               >
                 {active && (
-                  <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/25 px-2.5 py-0.5 text-xs font-semibold text-white">
+                  <span
+                    className="mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+                    style={{ background: "var(--event-primary)" }}
+                  >
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
                     Happening now
                   </span>
                 )}
-                <div className={`event-heading font-semibold ${past ? "text-white/40" : "text-white"}`}>
-                  {item.title}
-                </div>
-                <div className="event-body mt-0.5 text-xs text-white/55">
+                <div className="event-heading font-semibold event-card-title">{item.title}</div>
+                <div className="event-body mt-0.5 text-xs event-card-muted-text">
                   {formatTime(item.startTime)}
                   {item.endTime && ` – ${formatTime(item.endTime)}`}
                 </div>
                 {item.description && (
-                  <p className="event-body mt-1.5 text-sm leading-relaxed text-white/70">
+                  <p className="event-body mt-1.5 text-sm leading-relaxed event-card-desc">
                     {item.description}
                   </p>
                 )}

@@ -72,7 +72,7 @@ export default async function AttendeeHomePage({ params }: Props) {
 
   return (
     <div className="min-h-screen px-4 pb-6 pt-10">
-      {/* Hero header — sits on top of the gradient background */}
+      {/* Hero header — sits directly on the gradient, white text is correct here */}
       <div className="mb-6 px-2 text-white">
         <div className="mb-2">
           <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium backdrop-blur-sm">
@@ -103,20 +103,31 @@ export default async function AttendeeHomePage({ params }: Props) {
         {/* Schedule highlight */}
         {(currentItem || nextItem) && (
           <div className="glass-card rounded-2xl p-4">
-            <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest text-white/60">
+            <h2
+              className="event-body mb-3 text-xs font-semibold uppercase tracking-widest event-card-muted-text"
+            >
               Schedule
             </h2>
             {currentItem && (
-              <div className="mb-2 flex items-start gap-3 rounded-xl bg-white/20 p-3">
-                <div className="mt-1 h-2 w-2 shrink-0 animate-pulse rounded-full bg-white" />
+              <div
+                className="mb-2 flex items-start gap-3 rounded-xl p-3"
+                style={{ background: "var(--event-card-chip-bg)" }}
+              >
+                <div
+                  className="mt-1 h-2 w-2 shrink-0 animate-pulse rounded-full"
+                  style={{ background: "var(--event-primary)" }}
+                />
                 <div>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-white/70">
+                  <div
+                    className="text-xs font-semibold uppercase tracking-wide"
+                    style={{ color: "var(--event-primary)" }}
+                  >
                     Happening now
                   </div>
-                  <div className="event-heading mt-0.5 font-semibold text-white">
+                  <div className="event-heading mt-0.5 font-semibold event-card-title">
                     {currentItem.title}
                   </div>
-                  <div className="event-body text-xs text-white/60">
+                  <div className="event-body text-xs event-card-muted-text">
                     {formatTime(currentItem.startTime)}
                     {currentItem.endTime && ` – ${formatTime(currentItem.endTime)}`}
                   </div>
@@ -124,12 +135,18 @@ export default async function AttendeeHomePage({ params }: Props) {
               </div>
             )}
             {nextItem && (
-              <div className="flex items-start gap-3 rounded-xl bg-white/10 p-3">
-                <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-white/40" />
+              <div
+                className="flex items-start gap-3 rounded-xl p-3"
+                style={{ background: "rgba(0,0,0,0.03)" }}
+              >
+                <div
+                  className="mt-1 h-2 w-2 shrink-0 rounded-full"
+                  style={{ background: "var(--event-card-muted)" }}
+                />
                 <div>
-                  <div className="text-xs font-medium text-white/50">Up next</div>
-                  <div className="event-heading font-medium text-white/90">{nextItem.title}</div>
-                  <div className="event-body text-xs text-white/50">
+                  <div className="text-xs font-medium event-card-muted-text">Up next</div>
+                  <div className="event-heading font-medium event-card-title">{nextItem.title}</div>
+                  <div className="event-body text-xs event-card-muted-text">
                     {formatTime(nextItem.startTime)}
                   </div>
                 </div>
@@ -141,28 +158,39 @@ export default async function AttendeeHomePage({ params }: Props) {
         {/* My Seat */}
         {myTable && (
           <div className="glass-card rounded-2xl p-4">
-            <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest text-white/60">
+            <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest event-card-muted-text">
               My Seat
             </h2>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/20">
-                <MapPin className="h-6 w-6 text-white" />
+              <div
+                className="flex h-14 w-14 items-center justify-center rounded-xl"
+                style={{ background: "var(--event-card-chip-bg)" }}
+              >
+                <MapPin className="h-6 w-6" style={{ color: "var(--event-primary)" }} />
               </div>
               <div>
-                <div className="event-heading text-xl font-semibold text-white">{myTable.name}</div>
+                <div className="event-heading text-xl font-semibold event-card-title">
+                  {myTable.name}
+                </div>
                 {mySeat?.label && (
-                  <div className="event-body text-sm text-white/70">Seat {mySeat.label}</div>
+                  <div className="event-body text-sm event-card-desc">Seat {mySeat.label}</div>
                 )}
               </div>
             </div>
             {nearbyAttendees && nearbyAttendees.length > 0 && (
-              <div className="mt-3 border-t border-white/15 pt-3">
-                <div className="event-body mb-1.5 text-xs text-white/50">Also at your table</div>
+              <div
+                className="mt-3 border-t pt-3"
+                style={{ borderColor: "var(--event-card-divider)" }}
+              >
+                <div className="event-body mb-1.5 text-xs event-card-muted-text">
+                  Also at your table
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {nearbyAttendees.map((s) => (
                     <span
                       key={s.id}
-                      className="event-body rounded-full bg-white/20 px-2.5 py-0.5 text-xs text-white/80"
+                      className="event-body rounded-full px-2.5 py-0.5 text-xs event-card-desc"
+                      style={{ background: "var(--event-card-chip-bg)" }}
                     >
                       {s.attendeeId}
                     </span>
@@ -176,10 +204,10 @@ export default async function AttendeeHomePage({ params }: Props) {
         {/* Event description */}
         {event?.description && (
           <div className="glass-card rounded-2xl p-4">
-            <h2 className="event-body mb-2 text-xs font-semibold uppercase tracking-widest text-white/60">
+            <h2 className="event-body mb-2 text-xs font-semibold uppercase tracking-widest event-card-muted-text">
               About
             </h2>
-            <p className="event-body text-sm leading-relaxed text-white/85">{event.description}</p>
+            <p className="event-body text-sm leading-relaxed event-card-desc">{event.description}</p>
           </div>
         )}
       </div>
