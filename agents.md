@@ -188,6 +188,94 @@ Copy `.env.example` to `.env` and fill in:
 - Railway detects Dockerfiles automatically; configure `DATABASE_URL` and other env vars in Railway project settings
 - Health check endpoint: `GET /api/health` (returns 200 when service is up)
 
+## Authentication & Authorization (Sprint 3)
+
+### Auth.js v5 (Next.js)
+
+- **Package**: `next-auth@5.0.0-beta.x`
+- **Config**: `apps/web/src/auth.ts` — exports `{ handlers, auth, signIn, signOut }`
+- **Route handler**: `apps/web/src/app/api/auth/[...nextauth]/route.ts`
+- **Middleware**: `apps/web/middleware.ts` — protects `/dashboard`, redirects authenticated users away from `/login` and `/register`
+- **Session strategy**: JWT (signed with `AUTH_SECRET` using HS256 — standard JWS, not encrypted JWE, so NestJS can verify directly)
+- **Token flow**: Credentials provider calls NestJS `POST /api/auth/validate` → NestJS checks bcrypt hash → returns `SessionUser` → Auth.js creates JWT session
+- **Session shape**: `{ user: { id, email, name, image, role } }` — `role` is from active event membership context (null by default)
+- **Pages**: `/login`, `/register` (unauthenticated); `/dashboard` (authenticated)
+- **Server actions**: `apps/web/src/actions/auth.ts` — `loginAction`, `registerAction`, `logoutAction`
+- **API helper**: `apps/web/src/lib/api.ts` — `apiRequest()` and `getSessionToken()` for authenticated server-to-API calls (reads raw JWT from `authjs.session-token` cookie)
+
+### NestJS Auth
+
+- **Module**: `apps/api/src/auth/auth.module.ts` — registers `JwtModule`, `AuthService`, and global guards
+- **Service**: `apps/api/src/auth/auth.service.ts` implements `IAuthService`:
+  - `register(data)` — bcrypt-hashes password, creates user, returns `SessionUser`
+  - `validateCredentials(email, password)` — bcrypt-compares, returns `SessionUser | null`
+- **Controller**: `apps/api/src/auth/auth.controller.ts` — public endpoints:
+  - `POST /api/auth/register` — creates a new user account
+  - `POST /api/auth/validate` — validates credentials (called by Auth.js credentials provider)
+- **Guards** (registered globally via `APP_GUARD`):
+  - `JwtAuthGuard` — verifies `Authorization: Bearer <jwt>` on every request (skip with `@Public()`)
+  - `RolesGuard` — enforces `@Roles(...)` metadata after JWT validation
+- **Decorators**:
+  - `@Public()` — marks a controller/handler as unauthenticated (skips JwtAuthGuard)
+  - `@CurrentUser()` — param decorator that extracts the verified user from `request.user`
+  - `@Roles(...roles)` — metadata decorator for role-based access control
+- **Interface**: `apps/api/src/auth/domain/IAuthService.ts` (token: `AUTH_SERVICE`)
+- **JWT secret**: `process.env.AUTH_SECRET` — must match the `AUTH_SECRET` in `apps/web`
+
+### Database Module
+
+- **Module**: `apps/api/src/database/database.module.ts` — global, provides `USER_REPOSITORY` (and future repositories) via the Drizzle `Database` instance
+- **Pattern**: Inject `DATABASE_URL` at startup; each repository is a NestJS provider using its `*_REPOSITORY` symbol token
+
+### Shared Auth Types (`packages/shared`)
+
+- `MembershipRoleSchema` / `MembershipRole` — `"owner" | "organizer"` enum
+- `SessionUserSchema` / `SessionUser` — `{ id, email, name, role? }` shape used in session and API responses
+- `RegisterSchema` / `RegisterInput` — validated input for registration
+- `LoginSchema` / `LoginInput` — validated input for login (used in Auth.js credentials provider)
+
+### Environment Variables (Auth-related)
+
+| Variable | Description |
+|---|---|
+| `AUTH_SECRET` | HS256 signing secret shared by Auth.js (web) and NestJS JWT guard (api); min 32 chars |
+| `AUTH_URL` | Base URL of the Next.js app (e.g. `http://localhost:3000`); required in production |
+| `INTERNAL_API_URL` | NestJS base URL used by server-side Next.js code (default: `http://localhost:3001`) |
+
+### Usage Patterns
+
+**Protect a NestJS route** (JWT required by default):
+```typescript
+@Get("me")
+getMe(@CurrentUser() user: SessionUser) { ... }
+```
+
+**Allow unauthenticated access**:
+```typescript
+@Public()
+@Get("public-data")
+getPublic() { ... }
+```
+
+**Require a specific role**:
+```typescript
+@Roles("owner")
+@Delete(":id")
+deleteEvent(...) { ... }
+```
+
+**Make an authenticated server-side API call from Next.js**:
+```typescript
+import { apiRequest } from "@/lib/api";
+const data = await apiRequest<MyType>("/events");
+```
+
+**Read session in a Server Component**:
+```typescript
+import { auth } from "@/auth";
+const session = await auth();
+```
+
 ## Adding a New Feature Module
 
 1. Create `apps/api/src/<feature>/<feature>.module.ts`, `.controller.ts`, `.service.ts`
