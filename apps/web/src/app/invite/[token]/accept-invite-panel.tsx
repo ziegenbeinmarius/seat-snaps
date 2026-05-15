@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useInviteByToken, useAcceptInvite } from "@/lib/api/invites";
+import { acceptInviteAction } from "@/actions/invites";
+import { useInviteByToken } from "@/lib/api/invites";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -9,7 +11,8 @@ import { Badge } from "@/components/ui/badge";
 export function AcceptInvitePanel({ token }: { token: string }) {
   const router = useRouter();
   const { data: invite, isLoading, error } = useInviteByToken(token);
-  const accept = useAcceptInvite();
+  const [isPending, startTransition] = useTransition();
+  const [acceptError, setAcceptError] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -36,8 +39,18 @@ export function AcceptInvitePanel({ token }: { token: string }) {
   }
 
   async function handleAccept() {
-    await accept.mutateAsync(token);
-    router.push("/dashboard");
+    setAcceptError(null);
+    startTransition(async () => {
+      try {
+        await acceptInviteAction(token);
+        router.push("/dashboard");
+      } catch (err) {
+        const message = err instanceof Error
+          ? err.message
+          : "Could not accept invite. Please sign in and try again.";
+        setAcceptError(message);
+      }
+    });
   }
 
   return (
@@ -75,10 +88,11 @@ export function AcceptInvitePanel({ token }: { token: string }) {
             year: "numeric",
           })}
         </p>
+        {acceptError && <p className="text-sm text-destructive">{acceptError}</p>}
       </CardContent>
       <CardFooter className="gap-2">
-        <Button onClick={handleAccept} disabled={accept.isPending}>
-          {accept.isPending ? "Accepting…" : "Accept Invite"}
+        <Button onClick={handleAccept} disabled={isPending}>
+          {isPending ? "Accepting…" : "Accept Invite"}
         </Button>
         <Button variant="outline" onClick={() => router.push("/login")}>
           Sign in first

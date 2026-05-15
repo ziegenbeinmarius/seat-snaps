@@ -2,7 +2,13 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
+  let session: Awaited<ReturnType<typeof auth>> | null = null;
+  try {
+    session = await auth();
+  } catch {
+    redirect("/login");
+  }
+
   if (!session) redirect("/login");
 
   return (
