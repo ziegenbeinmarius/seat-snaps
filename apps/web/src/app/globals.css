@@ -78,3 +78,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Event theme CSS custom properties — set by the attendee layout via inline style */
+:root {
+  --event-primary: #3b82f6;
+  --event-secondary: #eff6ff;
+}
+
+.event-primary-bg { background-color: var(--event-primary); }
+.event-secondary-bg { background-color: var(--event-secondary); }
+.event-primary-text { color: var(--event-primary); }

@@ -27,8 +27,6 @@ export class EventsController {
 
   @Post()
   createEvent(@Body() dto: CreateEventDto, @CurrentUser() user: SessionUser) {
-    console.log("yoo");
-    
     return this.eventsService.create(
       {
         title: dto.title,
@@ -38,7 +36,7 @@ export class EventsController {
         location: dto.location,
         type: dto.type,
       },
-      user.id,
+      user.id
     );
   }
 

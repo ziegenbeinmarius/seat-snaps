@@ -14,12 +14,11 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...init?.headers },
     credentials: "include",
   });
-  console.log(res);
-  
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error((err as { message?: string }).message ?? "Request failed");
   }
+
   if (res.status === 204) return undefined as T;
   return res.json() as Promise<T>;
 }

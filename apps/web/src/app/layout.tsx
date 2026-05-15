@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Toaster } from "sonner";
 import { ReactQueryProvider } from "@/lib/query-client";
 import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Toaster richColors position="top-center" />
         <ServiceWorkerRegister />
       </body>
     </html>

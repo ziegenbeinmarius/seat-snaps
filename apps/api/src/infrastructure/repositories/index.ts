@@ -9,3 +9,4 @@ export * from "./DrizzlePhotoRepository";
 export * from "./DrizzleBroadcastRepository";
 export * from "./DrizzleAttendeeSessionRepository";
 export * from "./DrizzleScheduleItemRepository";
+export * from "./DrizzleEventThemeRepository";

@@ -74,7 +74,10 @@ export default async function AttendeeHomePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero header */}
-      <div className="bg-gradient-to-b from-blue-600 to-blue-700 px-6 pb-8 pt-10 text-white">
+      <div
+        className="px-6 pb-8 pt-10 text-white"
+        style={{ background: "linear-gradient(to bottom, var(--event-primary), color-mix(in srgb, var(--event-primary) 80%, black))" }}
+      >
         <div className="mb-1 flex items-center gap-2">
           <span className="rounded-full bg-white/20 px-3 py-0.5 text-xs font-medium">
             {EVENT_TYPE_LABEL[event?.type ?? "other"] ?? "Event"}

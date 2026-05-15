@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 loadEnvConfig(resolve(__dirname, "../.."));
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   transpilePackages: ["@seat-snaps/shared"],
   typedRoutes: true,
   webpack: (config) => {

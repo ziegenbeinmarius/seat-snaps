@@ -31,9 +31,11 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nestjs:nodejs /app/apps/api/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/api/package.json ./
+COPY --from=builder /app/packages/db ./packages/db
 
 USER nestjs
 
 EXPOSE 3001
 
-CMD ["node", "dist/main"]
+# Run pending migrations then start the server
+CMD ["sh", "-c", "node node_modules/.bin/drizzle-kit migrate --config=packages/db/drizzle.config.ts 2>/dev/null; node dist/main"]
