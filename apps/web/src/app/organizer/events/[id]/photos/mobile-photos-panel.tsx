@@ -1,8 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
+import Image from "next/image";
 import { Check, X, Star, Loader2 } from "lucide-react";
 import { usePhotoModeration } from "@/lib/api/use-photo-moderation";
+import { PhotoLightbox } from "@/components/photos/photo-lightbox";
+import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
 import type { PhotoResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -18,13 +21,16 @@ export function MobilePhotosPanel({ eventId }: Props) {
     isLoading,
     approve,
     reject,
+    remove,
     toggleHighlightPhoto,
     updateStatus,
+    deletePhoto,
     toggleHighlight,
   } = usePhotoModeration(eventId);
 
   const [filter, setFilter] = useState<MobileFilter>("pending");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
 
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -51,6 +57,13 @@ export function MobilePhotosPanel({ eventId }: Props) {
     if (lightbox?.id === photo.id) setLightbox(null);
   };
 
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    remove(deleteTarget.id);
+    setDeleteTarget(null);
+    if (lightbox?.id === deleteTarget.id) setLightbox(null);
+  };
+
   const onTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
     touchStartY.current = e.touches[0].clientY;
@@ -59,7 +72,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
   const onTouchEnd = (e: React.TouchEvent, photo: PhotoResponse) => {
     const dx = e.changedTouches[0].clientX - touchStartX.current;
     const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
-    if (dy > 40) return; // vertical scroll, ignore
+    if (dy > 40) return;
     if (dx > 70) handleApprove(photo);
     else if (dx < -70) handleReject(photo);
   };
@@ -139,15 +152,17 @@ export function MobilePhotosPanel({ eventId }: Props) {
               onTouchEnd={(e) => onTouchEnd(e, photo)}
               onClick={() => setLightbox(photo)}
             >
-              <div className="aspect-square">
-                <img
+              <div className="relative aspect-square">
+                <Image
                   src={photo.thumbnailUrl ?? photo.url}
                   alt={`Photo by ${photo.attendeeName}`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
-              {/* Status indicator */}
-              <div className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1.5"
+              <div
+                className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1.5"
                 style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
               >
                 <span className="truncate text-xs text-white/80">{photo.attendeeName}</span>
@@ -162,7 +177,6 @@ export function MobilePhotosPanel({ eventId }: Props) {
                 )}
               </div>
 
-              {/* Quick action overlay for pending */}
               {photo.status === "pending" && (
                 <div className="absolute inset-0 flex items-center justify-between px-3 opacity-0 transition-opacity active:opacity-100">
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/80">
@@ -178,74 +192,26 @@ export function MobilePhotosPanel({ eventId }: Props) {
         </div>
       )}
 
-      {/* Lightbox */}
       {lightbox && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-black/95"
-          onClick={() => setLightbox(null)}
-        >
-          <div className="flex items-center justify-between p-4">
-            <span className="text-sm text-white">{lightbox.attendeeName}</span>
-            <button
-              className="rounded-full bg-white/10 p-2 text-white"
-              onClick={() => setLightbox(null)}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="flex flex-1 items-center justify-center px-4">
-            <img
-              src={lightbox.url}
-              alt={`Photo by ${lightbox.attendeeName}`}
-              className="max-h-full max-w-full rounded-xl object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-
-          {/* Action bar */}
-          <div
-            className="flex gap-3 p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {lightbox.status !== "approved" && (
-              <button
-                onClick={() => handleApprove(lightbox)}
-                disabled={updateStatus.isPending}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: "hsl(130 45% 42%)" }}
-              >
-                <Check className="h-5 w-5" />
-                Approve
-              </button>
-            )}
-            {lightbox.status !== "rejected" && (
-              <button
-                onClick={() => handleReject(lightbox)}
-                disabled={updateStatus.isPending}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: "hsl(0 65% 52%)" }}
-              >
-                <X className="h-5 w-5" />
-                Reject
-              </button>
-            )}
-            {lightbox.status === "approved" && (
-              <button
-                onClick={() => toggleHighlightPhoto(lightbox)}
-                disabled={toggleHighlight.isPending}
-                className="flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold disabled:opacity-50"
-                style={{
-                  background: lightbox.isHighlight ? "rgba(234,179,8,0.15)" : "rgba(255,255,255,0.1)",
-                  color: lightbox.isHighlight ? "hsl(45 90% 45%)" : "white",
-                }}
-              >
-                <Star className={`h-5 w-5 ${lightbox.isHighlight ? "fill-yellow-400" : ""}`} />
-              </button>
-            )}
-          </div>
-        </div>
+        <PhotoLightbox
+          photo={lightbox}
+          variant="mobile"
+          isPending={updateStatus.isPending}
+          isHighlightPending={toggleHighlight.isPending}
+          onClose={() => setLightbox(null)}
+          onApprove={() => handleApprove(lightbox)}
+          onReject={() => handleReject(lightbox)}
+          onToggleHighlight={() => toggleHighlightPhoto(lightbox)}
+        />
       )}
+
+      <DeletePhotoDialog
+        open={!!deleteTarget}
+        attendeeName={deleteTarget?.attendeeName}
+        isPending={deletePhoto.isPending}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

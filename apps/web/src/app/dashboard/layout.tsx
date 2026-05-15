@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { requireAuth } from "@/lib/require-auth";
+import { APP_BACKGROUND } from "@/lib/event-helpers";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireAuth();
@@ -8,9 +9,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <div
       className="min-h-screen"
-      style={{
-        background: "linear-gradient(160deg, #f5ede0 0%, #f0e6d4 40%, #ede0cc 100%)",
-      }}
+      style={{ background: APP_BACKGROUND }}
     >
       {/* Glass header */}
       <header

@@ -27,3 +27,5 @@ export function getTypeGradient(type: string, variant: "card" | "banner" = "card
 export function getTypeLabel(type: string): string {
   return EVENT_TYPE_LABEL[type] ?? "Event";
 }
+
+export const APP_BACKGROUND = "linear-gradient(160deg, #f5ede0 0%, #f0e6d4 40%, #ede0cc 100%)";
