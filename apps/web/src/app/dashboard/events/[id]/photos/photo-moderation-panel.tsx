@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Trash2, ZoomIn } from "lucide-react";
+import { Check, X, Trash2, ZoomIn, User } from "lucide-react";
 import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto } from "@/lib/api/photos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import type { PhotoResponse, PhotoStatus } from "@seat-snaps/shared";
 
 type Filter = "all" | PhotoStatus;
@@ -31,6 +38,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
   const [filter, setFilter] = useState<Filter>("all");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
   const [bulkSelected, setBulkSelected] = useState<Set<string>>(new Set());
+  const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
 
   const filtered = photos.filter((p) => filter === "all" || p.status === filter);
 
@@ -60,6 +68,13 @@ export function PhotoModerationPanel({ eventId }: Props) {
     setBulkSelected(new Set());
   };
 
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
+    deletePhoto.mutate(deleteTarget.id);
+    setDeleteTarget(null);
+    if (lightbox?.id === deleteTarget.id) setLightbox(null);
+  };
+
   const counts = {
     all: photos.length,
     pending: photos.filter((p) => p.status === "pending").length,
@@ -78,7 +93,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
   return (
     <div className="space-y-4">
       {/* Filter tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {filterTabs.map(({ key, label }) => (
           <button
             key={key}
@@ -128,9 +143,9 @@ export function PhotoModerationPanel({ eventId }: Props) {
 
       {/* Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-square rounded-lg bg-muted animate-pulse" />
+            <div key={i} className="aspect-square animate-pulse rounded-lg bg-muted" />
           ))}
         </div>
       ) : filtered.length === 0 ? (
@@ -138,26 +153,26 @@ export function PhotoModerationPanel({ eventId }: Props) {
           No photos in this filter.
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {filtered.map((photo) => {
             const selected = bulkSelected.has(photo.id);
             const badge = STATUS_BADGE[photo.status];
             return (
               <div
                 key={photo.id}
-                className={`group relative rounded-lg overflow-hidden border-2 transition-all ${
+                className={`group relative overflow-hidden rounded-lg border-2 transition-all ${
                   selected ? "border-primary" : "border-transparent"
                 }`}
               >
-                {/* Image area — clicking opens lightbox */}
+                {/* Image area */}
                 <div className="relative aspect-square">
                   <img
                     src={photo.thumbnailUrl ?? photo.url}
-                    alt="Photo"
+                    alt={`Photo by ${photo.attendeeName}`}
                     className="h-full w-full object-cover"
                   />
 
-                  {/* Hover overlay — pointer-events-none so it never intercepts clicks */}
+                  {/* Decorative hover overlay — never intercepts clicks */}
                   <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/30" />
 
                   {/* Checkbox — top-left */}
@@ -183,7 +198,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
                     </Badge>
                   </div>
 
-                  {/* Quick approve / reject — appear on hover, center of image */}
+                  {/* Hover quick actions — centred on image */}
                   <div className="absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
                     {photo.status !== "approved" && (
                       <button
@@ -217,17 +232,16 @@ export function PhotoModerationPanel({ eventId }: Props) {
                   </div>
                 </div>
 
-                {/* Action bar — below image, never overlapped by hover overlay */}
+                {/* Action bar — below image, outside image area so no overlap */}
                 <div className="flex items-center justify-between gap-1 bg-white px-2 py-1.5">
-                  <span className="text-xs text-muted-foreground">{badge.label}</span>
+                  <span className="flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                    <User className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{photo.attendeeName}</span>
+                  </span>
                   <button
                     title="Delete permanently"
-                    onClick={() => {
-                      if (confirm("Delete this photo permanently?")) {
-                        deletePhoto.mutate(photo.id);
-                      }
-                    }}
-                    className="rounded p-1 text-red-500 transition-colors hover:bg-red-50"
+                    onClick={() => setDeleteTarget(photo)}
+                    className="shrink-0 rounded p-1 text-red-500 transition-colors hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -245,9 +259,15 @@ export function PhotoModerationPanel({ eventId }: Props) {
           onClick={() => setLightbox(null)}
         >
           <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
-            <Badge variant={STATUS_BADGE[lightbox.status].variant}>
-              {STATUS_BADGE[lightbox.status].label}
-            </Badge>
+            <div className="flex items-center gap-2">
+              <Badge variant={STATUS_BADGE[lightbox.status].variant}>
+                {STATUS_BADGE[lightbox.status].label}
+              </Badge>
+              <span className="flex items-center gap-1 text-sm text-white/70">
+                <User className="h-3.5 w-3.5" />
+                {lightbox.attendeeName}
+              </span>
+            </div>
             <button
               className="rounded-full bg-white/10 p-2 text-white"
               onClick={() => setLightbox(null)}
@@ -258,7 +278,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
 
           <img
             src={lightbox.url}
-            alt="Photo"
+            alt={`Photo by ${lightbox.attendeeName}`}
             className="max-h-[80vh] max-w-[90vw] rounded-lg object-contain"
             onClick={(e) => e.stopPropagation()}
           />
@@ -279,6 +299,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
               <Button
                 size="sm"
                 variant="outline"
+                className="text-white border-white/30 hover:bg-white/10"
                 onClick={async () => {
                   await updateStatus.mutateAsync({ photoId: lightbox.id, status: "rejected" });
                   setLightbox(null);
@@ -291,10 +312,8 @@ export function PhotoModerationPanel({ eventId }: Props) {
               size="sm"
               variant="destructive"
               onClick={() => {
-                if (confirm("Delete this photo permanently?")) {
-                  deletePhoto.mutate(lightbox.id);
-                  setLightbox(null);
-                }
+                setDeleteTarget(lightbox);
+                setLightbox(null);
               }}
             >
               <Trash2 className="mr-1.5 h-4 w-4" /> Delete
@@ -302,6 +321,32 @@ export function PhotoModerationPanel({ eventId }: Props) {
           </div>
         </div>
       )}
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete photo?</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            This will permanently remove the photo uploaded by{" "}
+            <span className="font-medium text-foreground">{deleteTarget?.attendeeName}</span> and
+            cannot be undone.
+          </p>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setDeleteTarget(null)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              disabled={deletePhoto.isPending}
+            >
+              {deletePhoto.isPending ? "Deleting…" : "Delete permanently"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

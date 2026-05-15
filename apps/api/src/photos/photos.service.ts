@@ -111,7 +111,8 @@ export class PhotosService implements IPhotoService {
       ? await this.updateThumbnailKey(photoId, thumbnailKey, updated)
       : updated;
 
-    return this.attachUrls(withThumb);
+    const attendee = await this.attendeeRepository.findById(attendeeId);
+    return this.attachUrls(withThumb, attendee?.name ?? "Unknown");
   }
 
   async listPhotos(
@@ -125,7 +126,14 @@ export class PhotosService implements IPhotoService {
     } else {
       photos = await this.photoRepository.findByEventId(eventId, { status: "approved" });
     }
-    return Promise.all(photos.map((p) => this.attachUrls(p)));
+
+    // Build attendee name map in one query
+    const attendees = await this.attendeeRepository.findByEventId(eventId);
+    const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
+
+    return Promise.all(
+      photos.map((p) => this.attachUrls(p, nameMap.get(p.attendeeId) ?? "Unknown")),
+    );
   }
 
   async updateStatus(
@@ -137,8 +145,9 @@ export class PhotosService implements IPhotoService {
     await this.requireOrganizer(eventId, userId);
     const photo = await this.photoRepository.findById(photoId);
     if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
+    const attendee = await this.attendeeRepository.findById(photo.attendeeId);
     const updated = await this.photoRepository.updateStatus(photoId, status);
-    return this.attachUrls(updated);
+    return this.attachUrls(updated, attendee?.name ?? "Unknown");
   }
 
   async deletePhoto(eventId: string, photoId: string, userId: string): Promise<void> {
@@ -160,12 +169,12 @@ export class PhotosService implements IPhotoService {
     if (!membership) throw new ForbiddenException("Access denied");
   }
 
-  private async attachUrls(photo: Photo): Promise<PhotoWithUrl> {
+  private async attachUrls(photo: Photo, attendeeName: string): Promise<PhotoWithUrl> {
     const url = await this.s3.getSignedDownloadUrl(photo.s3Key);
     const thumbnailUrl = photo.thumbnailKey
       ? await this.s3.getSignedDownloadUrl(photo.thumbnailKey)
       : undefined;
-    return { ...photo, url, thumbnailUrl };
+    return { ...photo, url, thumbnailUrl, attendeeName };
   }
 
   private async updateThumbnailKey(

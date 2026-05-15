@@ -10,6 +10,7 @@ export interface UploadUrlResult {
 export interface PhotoWithUrl extends Photo {
   url: string;
   thumbnailUrl?: string;
+  attendeeName: string;
 }
 
 export interface IPhotoService {

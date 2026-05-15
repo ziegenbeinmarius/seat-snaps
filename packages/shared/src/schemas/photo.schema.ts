@@ -7,6 +7,7 @@ export const PhotoResponseSchema = z.object({
   id: z.string().uuid(),
   eventId: z.string().uuid(),
   attendeeId: z.string().uuid(),
+  attendeeName: z.string(),
   s3Key: z.string(),
   thumbnailKey: z.string().nullable(),
   caption: z.string().nullable(),
