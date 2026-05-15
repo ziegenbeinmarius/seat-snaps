@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import imageCompression from "browser-image-compression";
 import { Camera, Upload, X, ZoomIn } from "lucide-react";
 import {
