@@ -6,6 +6,10 @@ import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
+import type { ITableRepository } from "../domain/repositories/ITableRepository";
+import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
+import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
+import { SEAT_REPOSITORY } from "../domain/repositories/ISeatRepository";
 import type { IQrService } from "./domain/IQrService";
 import type { AttendeeQrResult } from "./domain/IQrService";
 
@@ -18,6 +22,10 @@ export class QrService implements IQrService {
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: IEventMembershipRepository,
+    @Inject(TABLE_REPOSITORY)
+    private readonly tableRepository: ITableRepository,
+    @Inject(SEAT_REPOSITORY)
+    private readonly seatRepository: ISeatRepository,
   ) {}
 
   async generateForAttendee(
@@ -39,14 +47,28 @@ export class QrService implements IQrService {
   async generateBulkZip(eventId: string, userId: string): Promise<Buffer> {
     await this.requireMember(eventId, userId);
 
-    const attendees = await this.attendeeRepository.findByEventId(eventId);
+    const [attendees, tables, seats] = await Promise.all([
+      this.attendeeRepository.findByEventId(eventId),
+      this.tableRepository.findByEventId(eventId),
+      this.seatRepository.findByEventId(eventId),
+    ]);
+
+    const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
+    const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
+
     const appUrl = process.env.APP_URL ?? "http://localhost:3005";
 
     const items = await Promise.all(
       attendees.map(async (a) => {
         const url = `${appUrl}/join/${a.qrToken}`;
         const dataUrl = await QRCode.toDataURL(url, { width: 300, margin: 2 });
-        return { id: a.id, name: a.name, qrDataUrl: dataUrl };
+        return {
+          id: a.id,
+          name: a.name,
+          qrDataUrl: dataUrl,
+          tableName: a.tableId ? (tableMap.get(a.tableId) ?? null) : null,
+          seatLabel: a.seatId ? (seatMap.get(a.seatId) ?? null) : null,
+        };
       }),
     );
 
@@ -65,15 +87,19 @@ export class QrService implements IQrService {
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
 
-  private buildPrintHtml(items: { id: string; name: string; qrDataUrl: string }[]): string {
+  private buildPrintHtml(
+    items: { id: string; name: string; qrDataUrl: string; tableName: string | null; seatLabel: string | null }[],
+  ): string {
     const cards = items
-      .map(
-        (item) => `
+      .map((item) => {
+        const seatingLine = [item.tableName, item.seatLabel].filter(Boolean).join(" · ");
+        return `
       <div class="card">
         <img src="${item.qrDataUrl}" alt="QR for ${item.name}" />
         <p class="name">${item.name}</p>
-      </div>`,
-      )
+        ${seatingLine ? `<p class="seat">${seatingLine}</p>` : ""}
+      </div>`;
+      })
       .join("");
 
     return `<!DOCTYPE html>
@@ -90,6 +116,7 @@ export class QrService implements IQrService {
   .card { text-align: center; border: 1px solid #ddd; border-radius: 8px; padding: 16px; width: 200px; }
   .card img { width: 160px; height: 160px; display: block; margin: 0 auto; }
   .card .name { margin: 10px 0 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card .seat { margin: 4px 0 0; font-size: 11px; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   @media print {
     @page { size: A4; margin: 15mm; }
     body { padding: 0; }
