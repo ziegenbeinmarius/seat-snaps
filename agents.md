@@ -630,3 +630,100 @@ Both registered in `DatabaseModule`.
 - `useCurrentAttendee` — GET /attendee-sessions/me
 - `useEventAttendeesPublic` — GET /events/:eventId/attendees
 - `useScheduleItems` — GET /events/:eventId/schedule
+
+## Photo Upload & Moderation (Sprint 7)
+
+### Storage (S3)
+
+- **Compatible with**: Railway S3-compatible storage, AWS S3, Cloudflare R2, MinIO
+- **Config env vars**: `STORAGE_ENDPOINT`, `STORAGE_BUCKET_NAME`, `STORAGE_REGION`, `STORAGE_ACCESS_KEY_ID`, `STORAGE_SECRET_ACCESS_KEY`
+- **Bucket key structure**: `events/{eventId}/photos/{uuid}.{ext}` for originals; `events/{eventId}/photos/{uuid}_thumb.jpg` for thumbnails
+- **S3Service**: `apps/api/src/infrastructure/s3/S3Service.ts` implements `IS3Service` (token: `S3_SERVICE`)
+  - `getSignedUploadUrl(key, contentType, expiresIn=300)` — presigned PUT URL for direct client→S3 upload (5 min default)
+  - `getSignedDownloadUrl(key, expiresIn=3600)` — presigned GET URL (1 hr default, prevents hotlinking)
+  - `deleteObject(key)` — delete S3 object
+  - `putObject(key, body, contentType)` — server-side upload (used for thumbnails)
+
+### Photo Module (`apps/api/src/photos/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/events/:id/photos/upload-url` | Attendee session | Request signed PUT URL; validates attendee session and photo limit |
+| `POST` | `/api/events/:id/photos/confirm` | Attendee session | Confirm S3 upload complete; triggers thumbnail generation |
+| `GET` | `/api/events/:id/photos` | JWT (organizer) | List all photos with signed URLs (all statuses) |
+| `GET` | `/api/events/:id/photos/gallery` | Attendee session | List approved photos with signed URLs |
+| `PATCH` | `/api/events/:id/photos/:photoId` | JWT (organizer) | Update status (approve/reject) |
+| `DELETE` | `/api/events/:id/photos/:photoId` | JWT (organizer) | Delete photo + S3 objects |
+
+**Upload flow:**
+1. Attendee POSTs `{ contentType }` to `/upload-url` → API checks limit, creates pending photo row, returns `{ uploadUrl, key, photoId }`
+2. Client uploads compressed file directly to S3 via the signed PUT URL
+3. Client POSTs `{ photoId }` to `/confirm` → API generates thumbnail with sharp (400×400 max, JPEG 80%), marks photo `approved`
+
+**Photo limit enforcement**: checked against `attendees.photoLimit` (default 10); counts photos with status `pending` or `approved` only.
+
+**PhotoService contract (`IPhotoService`, token `PHOTO_SERVICE`):**
+- `requestUploadUrl(eventId, contentType, attendeeId)` → `{ uploadUrl, key, photoId }`
+- `confirmUpload(eventId, photoId, attendeeId)` → `PhotoWithUrl` (includes `url`, `thumbnailUrl`)
+- `listPhotos(eventId, requesterId, requesterType)` → `PhotoWithUrl[]` (attendee sees approved only)
+- `updateStatus(eventId, photoId, status, userId)` → `PhotoWithUrl`
+- `deletePhoto(eventId, photoId, userId)` → void (deletes S3 objects + DB row)
+
+### Thumbnail Pipeline
+
+- Library: `sharp` (server-side, `apps/api`)
+- On `confirmUpload`: downloads original via signed URL, resizes to ≤400×400 with `fit: inside`, re-encodes as JPEG quality 80
+- Thumbnail key: original key with `_thumb.jpg` suffix replacing the extension
+- Thumbnail failures are non-fatal — photo is still confirmed, `thumbnailKey` remains null
+
+### Repository Update
+
+`IPhotoRepository` and `DrizzlePhotoRepository` now include:
+- `updateThumbnailKey(id, thumbnailKey)` — sets thumbnail key after generation
+
+`DatabaseModule` now registers `PHOTO_REPOSITORY` provider.
+
+### Shared Zod Schemas (`packages/shared/src/schemas/photo.schema.ts`)
+
+- `PhotoStatusSchema` / `PhotoStatus` — `"pending" | "approved" | "rejected" | "deleted"`
+- `PhotoResponseSchema` / `PhotoResponse` — photo with signed `url` and optional `thumbnailUrl`
+- `RequestUploadUrlSchema` / `RequestUploadUrlInput` — `{ contentType }`
+- `UploadUrlResponseSchema` / `UploadUrlResponse` — `{ uploadUrl, key, photoId }`
+- `UpdatePhotoStatusSchema` / `UpdatePhotoStatusInput` — `{ status: "approved" | "rejected" }`
+
+### Frontend — Attendee Photo Gallery (`/event/[eventId]/photos`)
+
+- **Server page**: `apps/web/src/app/event/[eventId]/photos/page.tsx`
+- **Client component**: `photo-gallery.tsx`
+  - Uses `browser-image-compression` before upload (max 5MB, max 2048px)
+  - File input with `capture="environment"` for mobile camera
+  - Progress indicator through compress → request URL → upload → confirm stages
+  - Grid gallery with lightbox on tap
+  - Counter `X/{limit} photos uploaded` with progress bar
+- **Nav**: Photos tab added to `AttendeeNav` (Camera icon)
+
+### Frontend — Organizer Photo Moderation (`/dashboard/events/[id]/photos`)
+
+- **Server page**: `apps/web/src/app/dashboard/events/[id]/photos/page.tsx`
+- **Client component**: `photo-moderation-panel.tsx`
+  - Filter tabs: All / Pending / Approved / Rejected (with counts)
+  - Per-photo approve/reject/delete actions inline
+  - Bulk select + bulk approve/reject
+  - Lightbox with approve/reject buttons
+  - Status badge per photo
+- **Dashboard nav**: Photos link added to event detail page (`/dashboard/events/[id]`)
+
+### API Client Hooks (`apps/web/src/lib/api/photos.ts`)
+
+- `useAttendeePhotos(eventId)` — GET /photos/gallery (attendee session)
+- `useRequestUploadUrl(eventId)` — POST /photos/upload-url (attendee session)
+- `useConfirmUpload(eventId)` — POST /photos/confirm (attendee session)
+- `useOrganizerPhotos(eventId)` — GET /photos (JWT)
+- `useUpdatePhotoStatus(eventId)` — PATCH /photos/:id (JWT)
+- `useDeletePhoto(eventId)` — DELETE /photos/:id (JWT)
+
+### Dependencies Added
+
+- `apps/api`: `@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`, `sharp`
+- `apps/web`: `browser-image-compression`
