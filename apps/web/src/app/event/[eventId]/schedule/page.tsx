@@ -46,7 +46,7 @@ export default async function SchedulePage({ params }: Props) {
         </div>
       )}
 
-      <div className="space-y-1">
+      <div className="space-y-3">
         {items.map((item, index) => {
           const active = isActive(item);
           const past = isPast(item);
@@ -54,9 +54,9 @@ export default async function SchedulePage({ params }: Props) {
           return (
             <div key={item.id} className="flex gap-3">
               {/* Timeline dots sit between cards on the gradient */}
-              <div className="flex flex-col items-center pt-4">
+              <div className="flex flex-col items-center pt-5">
                 <div
-                  className={`h-3 w-3 shrink-0 rounded-full border-2 ${
+                  className={`h-4 w-4 shrink-0 rounded-full border-2 ${
                     active
                       ? "border-white bg-white"
                       : past
@@ -71,7 +71,7 @@ export default async function SchedulePage({ params }: Props) {
 
               {/* Card — text inside glass needs dark color */}
               <div
-                className={`mb-1 flex-1 rounded-2xl p-4 ${past ? "opacity-60" : "glass-card"}`}
+                className={`mb-1 flex-1 rounded-2xl p-6 ${past ? "opacity-60" : "glass-card"}`}
                 style={
                   past
                     ? { background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)" }
@@ -89,13 +89,13 @@ export default async function SchedulePage({ params }: Props) {
                     Happening now
                   </span>
                 )}
-                <div className="event-heading font-semibold event-card-title">{item.title}</div>
-                <div className="event-body mt-0.5 text-xs event-card-muted-text">
+                <div className="event-heading text-lg font-semibold event-card-title">{item.title}</div>
+                <div className="event-body mt-0.5 text-sm event-card-muted-text">
                   {formatTime(item.startTime)}
                   {item.endTime && ` – ${formatTime(item.endTime)}`}
                 </div>
                 {item.description && (
-                  <p className="event-body mt-1.5 text-sm leading-relaxed event-card-desc">
+                  <p className="event-body mt-1.5 text-base leading-relaxed event-card-desc">
                     {item.description}
                   </p>
                 )}

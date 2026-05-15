@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useScheduleItems, useCreateScheduleItem, useUpdateScheduleItem, useDeleteScheduleItem } from "@/lib/api/schedule";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import type { ScheduleItemResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -42,6 +44,7 @@ export function SchedulePanel({ eventId }: Props) {
   const [editingItem, setEditingItem] = useState<ScheduleItemResponse | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const sorted = [...items].sort((a, b) => {
     const diff = new Date(a.startTime).getTime() - new Date(b.startTime).getTime();
@@ -103,7 +106,6 @@ export function SchedulePanel({ eventId }: Props) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this schedule item?")) return;
     await deleteMutation.mutateAsync(id);
   }
 
@@ -142,16 +144,23 @@ export function SchedulePanel({ eventId }: Props) {
                   )}
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => openEdit(item)}>
-                    Edit
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() => openEdit(item)}
+                    aria-label="Edit"
+                  >
+                    <Pencil className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    className="text-destructive"
-                    onClick={() => handleDelete(item.id)}
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    onClick={() => setConfirmDelete(item.id)}
+                    aria-label="Delete"
                   >
-                    Del
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>
@@ -159,6 +168,15 @@ export function SchedulePanel({ eventId }: Props) {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}
+        title="Delete schedule item?"
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => { if (confirmDelete) handleDelete(confirmDelete); }}
+      />
 
       <Dialog
         open={showAddDialog || !!editingItem}
