@@ -1,17 +1,8 @@
-import { IsString, IsOptional, IsUUID } from "class-validator";
+import { IsString, IsOptional } from "class-validator";
 
 export class CreateAttendeeSessionDto {
-  @IsOptional()
   @IsString()
-  qrToken?: string;
-
-  @IsOptional()
-  @IsUUID()
-  attendeeId?: string;
-
-  @IsOptional()
-  @IsUUID()
-  eventId?: string;
+  qrToken: string;
 
   @IsOptional()
   @IsString()

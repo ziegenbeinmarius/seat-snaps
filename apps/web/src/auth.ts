@@ -118,10 +118,13 @@ const nextAuth: NextAuthResult = NextAuth({
       if (now - lastChecked > 5 * 60) {
         const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
         try {
-          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/exists`);
+          const bearer = jwt.sign({ id: token.id }, authSecret!, { algorithm: "HS256", expiresIn: 30 });
+          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/exists`, {
+            headers: { Authorization: `Bearer ${bearer}` },
+          });
           if (res.ok) {
             const body = (await res.json()) as { exists: boolean };
-            if (!body.exists) return null; // clears the session cookie
+            if (!body.exists) return null;
           }
         } catch {
           // Network error — keep session valid rather than logging everyone out

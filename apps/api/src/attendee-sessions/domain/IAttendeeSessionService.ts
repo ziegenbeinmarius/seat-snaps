@@ -10,11 +10,6 @@ export interface IAttendeeSessionService {
     qrToken: string,
     deviceFingerprint?: string,
   ): Promise<AttendeeSessionWithAttendee>;
-  createFromManualSelection(
-    attendeeId: string,
-    eventId: string,
-    deviceFingerprint?: string,
-  ): Promise<AttendeeSessionWithAttendee>;
   getByToken(token: string): Promise<AttendeeSessionWithAttendee>;
 }
 
