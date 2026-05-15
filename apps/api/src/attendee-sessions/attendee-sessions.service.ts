@@ -39,6 +39,11 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
       expiresAt,
     });
 
+    // Auto check-in on first QR scan; preserve the original timestamp on subsequent scans
+    if (!attendee.checkedInAt) {
+      await this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
+    }
+
     return { session, attendee };
   }
 
