@@ -57,6 +57,8 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
               key={photo?.id}
               src={photo?.url}
               alt={`Highlight by ${photo?.attendeeName}`}
+              fill
+              sizes="(max-width: 768px) 60vw, 80vw"
               className="h-full w-full object-contain transition-opacity duration-500"
             />
             <button

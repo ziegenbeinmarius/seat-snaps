@@ -1,6 +1,5 @@
 const CACHE_NAME = "seat-snaps-v1";
 const STATIC_ASSETS = [
-  "/",
   "/manifest.json",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
@@ -25,8 +24,12 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
 
-  // Network-first for API and auth requests
-  if (url.pathname.startsWith("/api") || url.pathname.startsWith("/auth")) {
+  // Network-first for API, auth, and navigation requests
+  if (
+    url.pathname.startsWith("/api") ||
+    url.pathname.startsWith("/auth") ||
+    event.request.mode === "navigate"
+  ) {
     event.respondWith(fetch(event.request));
     return;
   }

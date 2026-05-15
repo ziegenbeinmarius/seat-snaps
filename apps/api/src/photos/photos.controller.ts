@@ -35,7 +35,7 @@ export class PhotosController {
     @Body() dto: RequestUploadUrlDto,
     @CurrentAttendee() attendee: Attendee,
   ) {
-    return this.photosService.requestUploadUrl(eventId, dto.contentType, attendee.id);
+    return this.photosService.requestUploadUrl(eventId, dto.contentType, attendee.id, dto.contentLength);
   }
 
   @Public()

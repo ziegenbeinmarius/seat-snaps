@@ -5,6 +5,7 @@ import { config as loadEnv } from "dotenv";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import fastifyCookie from "@fastify/cookie";
+import helmet from "@fastify/helmet";
 import { AppModule } from "./app.module";
 
 const envCandidates = [
@@ -26,10 +27,11 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: true, bodyLimit: 10 * 1024 * 1024 }),
   );
 
   await app.register(fastifyCookie as never);
+  await app.register(helmet as never);
 
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"],

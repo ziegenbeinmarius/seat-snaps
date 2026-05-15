@@ -29,7 +29,7 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
       error,
     });
     throw new Error(
-      `Could not reach API for ${method} ${path}. Check NEXT_PUBLIC_API_URL (${API_BASE}) and API availability.`,
+      `Could not reach API for ${method} ${path}. Please try again later.`,
     );
   });
 
