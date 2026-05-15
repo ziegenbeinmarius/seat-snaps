@@ -13,11 +13,18 @@ import { TablesService } from "./tables.service";
 import { CreateTableDto } from "./dto/create-table.dto";
 import { UpdateTableDto } from "./dto/update-table.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
 
 @Controller("events/:eventId/tables")
 export class TablesController {
   constructor(private readonly tablesService: TablesService) {}
+
+  @Public()
+  @Get("public")
+  listPublic(@Param("eventId") eventId: string) {
+    return this.tablesService.listPublic(eventId);
+  }
 
   @Get()
   list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {

@@ -7,3 +7,5 @@ export * from "./DrizzleTableRepository";
 export * from "./DrizzleSeatRepository";
 export * from "./DrizzlePhotoRepository";
 export * from "./DrizzleBroadcastRepository";
+export * from "./DrizzleAttendeeSessionRepository";
+export * from "./DrizzleScheduleItemRepository";

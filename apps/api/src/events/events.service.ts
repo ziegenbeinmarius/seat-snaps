@@ -25,6 +25,12 @@ export class EventsService implements IEventService {
     return this.eventRepository.findByMemberId(userId);
   }
 
+  async getPublicInfo(id: string): Promise<Event> {
+    const event = await this.eventRepository.findById(id);
+    if (!event) throw new NotFoundException("Event not found");
+    return event;
+  }
+
   async getById(id: string, userId: string): Promise<Event> {
     const event = await this.eventRepository.findById(id);
     if (!event) throw new NotFoundException("Event not found");

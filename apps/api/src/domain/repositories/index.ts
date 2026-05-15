@@ -7,3 +7,5 @@ export * from "./ITableRepository";
 export * from "./ISeatRepository";
 export * from "./IPhotoRepository";
 export * from "./IBroadcastRepository";
+export * from "./IAttendeeSessionRepository";
+export * from "./IScheduleItemRepository";

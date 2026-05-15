@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ReactQueryProvider } from "@/lib/query-client";
+import { ServiceWorkerRegister } from "@/components/sw-register";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,6 +31,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ServiceWorkerRegister />
       </body>
     </html>
   );
