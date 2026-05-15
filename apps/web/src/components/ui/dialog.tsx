@@ -10,12 +10,24 @@ interface DialogProps {
 }
 
 function Dialog({ open, onOpenChange, children }: DialogProps) {
+  // Track when the dialog opened so we can ignore the ghost click
+  // that fires when the tap that opened the dialog propagates to the backdrop.
+  const openedAt = React.useRef<number>(0);
+  React.useLayoutEffect(() => {
+    if (open) openedAt.current = Date.now();
+  }, [open]);
+
   if (!open) return null;
+
+  const handleBackdropClick = () => {
+    if (Date.now() - openedAt.current > 250) onOpenChange(false);
+  };
+
   return (
     <div className="fixed inset-0 z-50">
       <div
         className="fixed inset-0 bg-black/50"
-        onClick={() => onOpenChange(false)}
+        onClick={handleBackdropClick}
         aria-hidden="true"
       />
       {children}
