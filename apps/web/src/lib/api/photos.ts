@@ -92,3 +92,25 @@ export function useDeletePhoto(eventId: string) {
     },
   });
 }
+
+export function useHighlightPhotos(eventId: string) {
+  return useQuery<PhotoResponse[]>({
+    queryKey: ["events", eventId, "photos", "highlights"],
+    queryFn: () => fetchApi(`/events/${eventId}/photos/highlights`),
+    enabled: !!eventId,
+  });
+}
+
+export function useToggleHighlight(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<PhotoResponse, Error, { photoId: string; isHighlight: boolean }>({
+    mutationFn: ({ photoId, isHighlight }) =>
+      fetchApi(`/events/${eventId}/photos/${photoId}/highlight`, {
+        method: "PATCH",
+        body: JSON.stringify({ isHighlight }),
+      }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "photos"] });
+    },
+  });
+}

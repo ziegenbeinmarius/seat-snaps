@@ -12,6 +12,8 @@ export const PhotoResponseSchema = z.object({
   thumbnailKey: z.string().nullable(),
   caption: z.string().nullable(),
   status: PhotoStatusSchema,
+  isHighlight: z.boolean(),
+  highlightOrder: z.number().nullable(),
   url: z.string(),
   thumbnailUrl: z.string().optional(),
   createdAt: z.string(),
@@ -34,3 +36,8 @@ export const UpdatePhotoStatusSchema = z.object({
   status: z.enum(["approved", "rejected"]),
 });
 export type UpdatePhotoStatusInput = z.infer<typeof UpdatePhotoStatusSchema>;
+
+export const ToggleHighlightSchema = z.object({
+  isHighlight: z.boolean(),
+});
+export type ToggleHighlightInput = z.infer<typeof ToggleHighlightSchema>;

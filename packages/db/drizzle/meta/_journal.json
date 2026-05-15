@@ -15,6 +15,13 @@
       "when": 1778842701400,
       "tag": "0001_schedule_items",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1747328000000,
+      "tag": "0002_photo_highlights",
+      "breakpoints": true
     }
   ]
 }

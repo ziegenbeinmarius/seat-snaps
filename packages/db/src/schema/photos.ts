@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, pgEnum, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, pgEnum, index, boolean, integer } from "drizzle-orm/pg-core";
 import { events } from "./events.js";
 import { attendees } from "./attendees.js";
 
@@ -23,6 +23,8 @@ export const photos = pgTable(
     thumbnailKey: text("thumbnail_key"),
     caption: text("caption"),
     status: photoStatusEnum("status").notNull().default("pending"),
+    isHighlight: boolean("is_highlight").notNull().default(false),
+    highlightOrder: integer("highlight_order"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
