@@ -16,6 +16,7 @@ import { RequestUploadUrlDto } from "./dto/request-upload-url.dto";
 import { ConfirmUploadDto } from "./dto/confirm-upload.dto";
 import { UpdatePhotoStatusDto } from "./dto/update-photo-status.dto";
 import { AttendeeSessionGuard } from "../attendee-sessions/guards/attendee-session.guard";
+import { CsrfGuard } from "../attendee-sessions/guards/csrf.guard";
 import { CurrentAttendee } from "../attendee-sessions/decorators/current-attendee.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
@@ -27,7 +28,7 @@ export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
 
   @Public()
-  @UseGuards(AttendeeSessionGuard)
+  @UseGuards(CsrfGuard, AttendeeSessionGuard)
   @Post("upload-url")
   requestUploadUrl(
     @Param("eventId") eventId: string,
@@ -38,7 +39,7 @@ export class PhotosController {
   }
 
   @Public()
-  @UseGuards(AttendeeSessionGuard)
+  @UseGuards(CsrfGuard, AttendeeSessionGuard)
   @Post("confirm")
   confirmUpload(
     @Param("eventId") eventId: string,
@@ -74,6 +75,7 @@ export class PhotosController {
   }
 
   @Public()
+  @UseGuards(AttendeeSessionGuard)
   @Get("highlights")
   listHighlights(@Param("eventId") eventId: string) {
     return this.photosService.listHighlights(eventId);
