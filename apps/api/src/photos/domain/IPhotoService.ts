@@ -18,6 +18,7 @@ export interface IPhotoService {
     eventId: string,
     contentType: string,
     attendeeId: string,
+    contentLength?: number,
   ): Promise<UploadUrlResult>;
   confirmUpload(eventId: string, photoId: string, attendeeId: string): Promise<PhotoWithUrl>;
   listPhotos(eventId: string, requesterId: string, requesterType: "attendee" | "organizer"): Promise<PhotoWithUrl[]>;
