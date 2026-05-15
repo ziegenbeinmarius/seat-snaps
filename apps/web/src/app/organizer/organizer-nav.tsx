@@ -3,7 +3,7 @@
 import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, QrCode, Camera, LogOut } from "lucide-react";
+import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
@@ -13,34 +13,47 @@ export function OrganizerNav() {
   const eventMatch = pathname.match(/^\/organizer\/events\/([^/]+)/);
   const eventId = eventMatch?.[1];
 
-  const links: { href: Route; icon: React.ElementType; label: string; active: boolean; dim?: boolean }[] = [
-    {
-      href: "/organizer" as Route,
-      icon: CalendarDays,
-      label: "Events",
-      active: !eventId || pathname === "/organizer",
-    },
-    {
-      href: (eventId ? `/organizer/events/${eventId}/checkin` : "/organizer") as Route,
-      icon: QrCode,
-      label: "Check-In",
-      active: !!eventId && pathname.includes("/checkin"),
-      dim: !eventId,
-    },
-    {
-      href: (eventId ? `/organizer/events/${eventId}/photos` : "/organizer") as Route,
-      icon: Camera,
-      label: "Photos",
-      active: !!eventId && pathname.includes("/photos"),
-      dim: !eventId,
-    },
-    {
-      href: "/logout" as Route,
-      icon: LogOut,
-      label: "Sign Out",
-      active: false,
-    },
-  ];
+  const links: { href: Route; icon: React.ElementType; label: string; active: boolean }[] = eventId
+    ? [
+        {
+          href: `/organizer/events/${eventId}/attendees` as Route,
+          icon: Users,
+          label: "Attendees",
+          active: pathname.includes("/attendees"),
+        },
+        {
+          href: `/organizer/events/${eventId}/schedule` as Route,
+          icon: Calendar,
+          label: "Schedule",
+          active: pathname.includes("/schedule"),
+        },
+        {
+          href: `/organizer/events/${eventId}/photos` as Route,
+          icon: Camera,
+          label: "Photos",
+          active: pathname.includes("/photos"),
+        },
+        {
+          href: `/organizer/events/${eventId}/checkin` as Route,
+          icon: QrCode,
+          label: "Check-in",
+          active: pathname.includes("/checkin"),
+        },
+      ]
+    : [
+        {
+          href: "/organizer" as Route,
+          icon: CalendarDays,
+          label: "Events",
+          active: true,
+        },
+        {
+          href: "/logout" as Route,
+          icon: LogOut,
+          label: "Sign Out",
+          active: false,
+        },
+      ];
 
   return (
     <nav
@@ -52,17 +65,13 @@ export function OrganizerNav() {
       }}
     >
       <div className="flex">
-        {links.map(({ href, icon: Icon, label, active, dim }) => (
+        {links.map(({ href, icon: Icon, label, active }) => (
           <Link
             key={label}
             href={href}
             className={cn(
               "flex flex-1 flex-col items-center gap-1 py-3 text-xs font-medium transition-colors",
-              active
-                ? "text-[hsl(28_65%_44%)]"
-                : dim
-                  ? "text-[rgba(120,95,70,0.3)]"
-                  : "text-[hsl(28_8%_55%)]",
+              active ? "text-[hsl(28_65%_44%)]" : "text-[hsl(28_8%_55%)]",
             )}
           >
             <Icon className="h-5 w-5" />

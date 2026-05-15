@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogOut } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
@@ -64,6 +64,14 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
               {event.location ? ` · ${event.location}` : ""}
             </p>
           </div>
+          <Link
+            href="/logout"
+            className="flex h-8 w-8 items-center justify-center rounded-full opacity-70 hover:opacity-100"
+            style={{ background: "rgba(255,255,255,0.2)" }}
+            title="Sign Out"
+          >
+            <LogOut className="h-4 w-4" />
+          </Link>
         </div>
         <div
           className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full opacity-15"

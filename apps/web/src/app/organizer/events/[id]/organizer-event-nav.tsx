@@ -15,9 +15,10 @@ export function OrganizerEventNav({ eventId }: Props) {
 
   const links: { href: Route; label: string }[] = [
     { href: base as Route, label: "Overview" },
-    { href: `${base}/checkin` as Route, label: "Check-In" },
-    { href: `${base}/photos` as Route, label: "Photos" },
+    { href: `${base}/attendees` as Route, label: "Attendees" },
     { href: `${base}/schedule` as Route, label: "Schedule" },
+    { href: `${base}/photos` as Route, label: "Photos" },
+    { href: `${base}/checkin` as Route, label: "Check-In" },
   ];
 
   return (
