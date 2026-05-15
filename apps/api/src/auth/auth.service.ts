@@ -35,4 +35,9 @@ export class AuthService implements IAuthService {
 
     return { id: user.id, email: user.email, name: user.name, role: null };
   }
+
+  async userExists(userId: string): Promise<boolean> {
+    const user = await this.userRepository.findById(userId);
+    return Boolean(user);
+  }
 }
