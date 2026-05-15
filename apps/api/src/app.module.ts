@@ -11,6 +11,8 @@ import { AttendeesModule } from "./attendees/attendees.module";
 import { TablesModule } from "./tables/tables.module";
 import { SeatsModule } from "./seats/seats.module";
 import { QrModule } from "./qr/qr.module";
+import { AttendeeSessionsModule } from "./attendee-sessions/attendee-sessions.module";
+import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { QrModule } from "./qr/qr.module";
     TablesModule,
     SeatsModule,
     QrModule,
+    AttendeeSessionsModule,
+    ScheduleItemsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -30,6 +30,13 @@ export class TablesService implements ITableService {
     return Promise.all(tables.map((t) => this.withSeats(t)));
   }
 
+  async listPublic(eventId: string): Promise<TableWithSeats[]> {
+    const event = await this.eventRepository.findById(eventId);
+    if (!event) throw new NotFoundException("Event not found");
+    const tables = await this.tableRepository.findByEventId(eventId);
+    return Promise.all(tables.map((t) => this.withSeats(t)));
+  }
+
   async getById(tableId: string, eventId: string, userId: string): Promise<TableWithSeats> {
     await this.requireMember(eventId, userId);
     const table = await this.tableRepository.findById(tableId);

@@ -9,4 +9,5 @@ export * from "./attendee-sessions.js";
 export * from "./photos.js";
 export * from "./broadcasts.js";
 export * from "./event-themes.js";
+export * from "./schedule-items.js";
 export * from "./relations.js";

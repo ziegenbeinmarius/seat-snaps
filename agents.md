@@ -520,3 +520,113 @@ The seating panel renders each table as a card with its seats listed. Each seat 
 - `src/auth.ts`: fixed `NextAuthResult` export type portability issue (next-auth v5 quirk)
 - `middleware.ts`: typed `auth` callback parameter to avoid implicit `any`
 - `src/app/dashboard/events/[id]/team/team-panel.tsx`: fixed zod v3/v4 form resolver type mismatch
+
+## Attendee PWA & QR Entry (Sprint 6)
+
+### PWA Configuration (`apps/web`)
+
+- **Manifest**: `public/manifest.json` — name, short_name, display: standalone, icons, theme_color (#3b82f6)
+- **Service worker**: `public/sw.js` — cache-first for static assets, network-first for /api and /auth; registered in `src/components/sw-register.tsx` (client component mounted in root layout)
+- **Metadata**: `apps/web/src/app/layout.tsx` exports `metadata.manifest` and `viewport.themeColor`; `appleWebApp.capable: true` enables iOS Add to Home Screen
+
+### Attendee Session Module (`apps/api/src/attendee-sessions/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/attendee-sessions` | Public | Create session from qrToken or attendeeId+eventId; sets HTTP-only `attendee-session` cookie |
+| `GET` | `/api/attendee-sessions/me` | Attendee session cookie or Bearer | Get current attendee from session token |
+
+**Session flow:**
+1. Attendee scans QR → browser opens `/join/{qrToken}`
+2. Server POSTs to `/api/attendee-sessions` with `{ qrToken }` → validates token, creates session row, returns `{ token, attendeeId, eventId, name }`
+3. Server sets `attendee-session` HTTP-only cookie (90-day TTL)
+4. Server redirects to `/event/{eventId}`
+5. All attendee pages call `getCurrentAttendee()` (server) or `useCurrentAttendee()` (client) to read session
+
+**Manual join flow** (`/join/event/[eventId]`):
+- Fetches public event info (`GET /api/events/:id/info`) and public attendee list (`GET /api/events/:eventId/attendees/public`)
+- Attendee selects their name → POSTs `{ attendeeId, eventId }` to create session
+
+**Service contract (`IAttendeeSessionService`):**
+- `createFromQrToken(qrToken, deviceFingerprint?)` — looks up attendee by `qrToken`; throws 404 if invalid
+- `createFromManualSelection(attendeeId, eventId, deviceFingerprint?)` — validates attendee belongs to event
+- `getByToken(token)` — validates token not expired; throws 401 if invalid/expired
+
+**AttendeeSessionGuard:**
+- Reads `attendee-session` cookie or `Authorization: Bearer <token>` header
+- Sets `request.attendee` and `request.attendeeSession` on the Fastify request object
+- Used with `@UseGuards(AttendeeSessionGuard)` on routes requiring attendee auth
+
+**Decorator:** `@CurrentAttendee()` param decorator reads `request.attendee`
+
+**Cookie setup:** `@fastify/cookie` registered in `apps/api/src/main.ts` via `app.register(fastifyCookie)`
+
+### Schedule Items Module (`apps/api/src/schedule-items/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/schedule` | Public | List schedule items (sorted by position, then startTime) |
+| `GET` | `/api/events/:eventId/schedule/:id` | Public | Get single schedule item |
+| `POST` | `/api/events/:eventId/schedule` | JWT + member | Create schedule item |
+| `PATCH` | `/api/events/:eventId/schedule/:id` | JWT + member | Update schedule item |
+| `DELETE` | `/api/events/:eventId/schedule/:id` | JWT + member | Delete schedule item |
+
+**Database:** `schedule_items` table added to `packages/db/src/schema/schedule-items.ts`; migration in `packages/db/drizzle/0001_schedule_items.sql`
+
+**Service contract (`IScheduleItemService`):** `listForEvent`, `getById`, `create`, `update`, `delete`
+
+### Public Endpoints Added to Existing Modules
+
+| Endpoint | Module | Purpose |
+|---|---|---|
+| `GET /api/events/:id/info` | Events | Public event info (title, date, location, type) for attendee join flow |
+| `GET /api/events/:eventId/attendees/public` | Attendees | Public attendee list (id, name, groupLabel, tableId) for join search and attendee directory |
+| `GET /api/events/:eventId/tables/public` | Tables | Public tables+seats for attendee seating view |
+
+### New Repository Interfaces & Implementations
+
+| Interface | Token | Location |
+|---|---|---|
+| `IAttendeeSessionRepository` | `ATTENDEE_SESSION_REPOSITORY` | `apps/api/src/domain/repositories/IAttendeeSessionRepository.ts` |
+| `IScheduleItemRepository` | `SCHEDULE_ITEM_REPOSITORY` | `apps/api/src/domain/repositories/IScheduleItemRepository.ts` |
+
+Drizzle implementations: `DrizzleAttendeeSessionRepository`, `DrizzleScheduleItemRepository` in `apps/api/src/infrastructure/repositories/`.
+Both registered in `DatabaseModule`.
+
+### Shared Zod Schemas (`packages/shared/src/schemas/schedule-item.schema.ts`)
+
+- `CreateScheduleItemSchema` / `CreateScheduleItemInput`
+- `UpdateScheduleItemSchema` / `UpdateScheduleItemInput`
+- `ScheduleItemResponseSchema` / `ScheduleItemResponse`
+- `CreateAttendeeSessionSchema` / `CreateAttendeeSessionInput`
+- `AttendeeSessionResponseSchema` / `AttendeeSessionResponse`
+
+### QR Entry Flow Pages (`apps/web/src/app/join/`)
+
+| Route | Description |
+|---|---|
+| `/join/[qrToken]` | Server page: calls `POST /api/attendee-sessions`, sets cookie, redirects to `/event/{eventId}` |
+| `/join/event/[eventId]` | Server page + `JoinEventClient`: shows event title + attendee search, creates session on selection |
+
+### Attendee Pages (`apps/web/src/app/event/[eventId]/`)
+
+**Layout** (`layout.tsx`): Server component; reads `attendee-session` cookie via `getCurrentAttendee()`; redirects to `/join/event/{eventId}` if no session. Renders `AttendeeNav` bottom nav.
+
+**Bottom nav** (`attendee-nav.tsx`): Client component; links to Home, Schedule, Guests, Seating.
+
+| Route | Component | Description |
+|---|---|---|
+| `/event/[eventId]` | Server | Home screen: event header (title, date, location, type badge), current/next schedule item, My Seat card, quick-action grid |
+| `/event/[eventId]/schedule` | Server | Timeline of schedule items; active item highlighted in blue |
+| `/event/[eventId]/attendees` | Server + `AttendeesClient` | Searchable attendee directory with name, group, conversation starters |
+| `/event/[eventId]/seating` | Server | Read-only seating plan; current attendee's seat highlighted in blue |
+
+**Session utility:** `apps/web/src/lib/attendee-session.ts` — `getAttendeeSessionToken()` reads cookie; `getCurrentAttendee()` calls `GET /api/attendee-sessions/me` with Bearer token.
+
+**API client hooks** (`apps/web/src/lib/api/attendee-session.ts`):
+- `useCreateAttendeeSession` — POST /attendee-sessions
+- `useCurrentAttendee` — GET /attendee-sessions/me
+- `useEventAttendeesPublic` — GET /events/:eventId/attendees
+- `useScheduleItems` — GET /events/:eventId/schedule

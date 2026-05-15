@@ -16,11 +16,18 @@ import { AttendeesService } from "./attendees.service";
 import { CreateAttendeeDto } from "./dto/create-attendee.dto";
 import { UpdateAttendeeDto } from "./dto/update-attendee.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
 
 @Controller("events/:eventId/attendees")
 export class AttendeesController {
   constructor(private readonly attendeesService: AttendeesService) {}
+
+  @Public()
+  @Get("public")
+  listPublic(@Param("eventId") eventId: string) {
+    return this.attendeesService.listPublic(eventId);
+  }
 
   @Get()
   list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {

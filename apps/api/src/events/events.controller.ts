@@ -13,6 +13,7 @@ import { EventsService } from "./events.service";
 import { CreateEventDto } from "./dto/create-event.dto";
 import { UpdateEventDto } from "./dto/update-event.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
 
 @Controller("events")
@@ -37,6 +38,12 @@ export class EventsController {
       },
       user.id,
     );
+  }
+
+  @Public()
+  @Get(":id/info")
+  getEventPublic(@Param("id") id: string) {
+    return this.eventsService.getPublicInfo(id);
   }
 
   @Get(":id")

@@ -8,6 +8,8 @@ import {
   DrizzleAttendeeRepository,
   DrizzleTableRepository,
   DrizzleSeatRepository,
+  DrizzleAttendeeSessionRepository,
+  DrizzleScheduleItemRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
@@ -17,6 +19,8 @@ import {
   ATTENDEE_REPOSITORY,
   TABLE_REPOSITORY,
   SEAT_REPOSITORY,
+  ATTENDEE_SESSION_REPOSITORY,
+  SCHEDULE_ITEM_REPOSITORY,
 } from "../domain/repositories";
 
 const DB_PROVIDER = Symbol("DATABASE");
@@ -67,6 +71,17 @@ const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleSeatRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: ATTENDEE_SESSION_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) =>
+        new DrizzleAttendeeSessionRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: SCHEDULE_ITEM_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleScheduleItemRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
   exports: [
     USER_REPOSITORY,
@@ -76,6 +91,8 @@ const DB_PROVIDER = Symbol("DATABASE");
     ATTENDEE_REPOSITORY,
     TABLE_REPOSITORY,
     SEAT_REPOSITORY,
+    ATTENDEE_SESSION_REPOSITORY,
+    SCHEDULE_ITEM_REPOSITORY,
   ],
 })
 export class DatabaseModule {}

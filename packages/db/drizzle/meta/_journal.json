@@ -8,6 +8,13 @@
       "when": 1778792297426,
       "tag": "0000_medical_elektra",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1778842701400,
+      "tag": "0001_schedule_items",
+      "breakpoints": true
     }
   ]
 }
