@@ -1,5 +1,7 @@
 export * from "./IUserRepository";
 export * from "./IEventRepository";
+export * from "./IEventMembershipRepository";
+export * from "./IOrganizerInviteRepository";
 export * from "./IAttendeeRepository";
 export * from "./ITableRepository";
 export * from "./ISeatRepository";

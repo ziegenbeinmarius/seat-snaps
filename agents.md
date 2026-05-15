@@ -283,3 +283,111 @@ const session = await auth();
 3. Add any new Zod schemas to `packages/shared/src/schemas/`
 4. Add database tables to `packages/db/src/schema.ts`
 5. Run `npm run db:generate` to create the migration
+
+## Event & Organiser Management (Sprint 4)
+
+### Event Module (`apps/api/src/events/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events` | JWT | List events where the caller is a member |
+| `POST` | `/api/events` | JWT | Create event; creator auto-assigned as `owner` via `event_memberships` |
+| `GET` | `/api/events/:id` | JWT + member | Get event detail |
+| `PATCH` | `/api/events/:id` | JWT + owner | Update event fields |
+| `DELETE` | `/api/events/:id` | JWT + owner | Delete event (cascades all children) |
+
+**Service contract (`IEventService`):**
+- `listForUser(userId)` → `Event[]` — queries via `findByMemberId`
+- `getById(id, userId)` — throws `403` if not a member
+- `create(data, userId)` — inserts event + owner membership in one logical operation
+- `update(id, data, userId)` — throws `403` if caller is not `owner`
+- `delete(id, userId)` — throws `403` if caller is not `owner`
+
+**Business rules:**
+- Event list is always scoped to the requesting user's memberships
+- Ownership is checked by querying `event_memberships` (not from the JWT role)
+- `DELETE /api/events/:id` triggers cascade delete on all child tables (attendees, seats, tables, invites, etc.)
+
+### EventMembership Module (`apps/api/src/event-memberships/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/members` | JWT + member | List all members with user details |
+| `DELETE` | `/api/events/:eventId/members/:userId` | JWT + owner | Remove a member |
+
+**Service contract (`IEventMembershipService`):**
+- `listMembers(eventId, requesterId)` → `MemberWithUser[]` — joins `event_memberships` + `users`
+- `removeMember(eventId, targetUserId, requesterId)` — throws `403` if requester is not `owner`; throws `400` if owner tries to remove themselves
+
+### OrganizerInvite Module (`apps/api/src/organizer-invites/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/invites` | JWT + member | List invites for an event |
+| `POST` | `/api/events/:eventId/invites` | JWT + owner | Create invite link |
+| `GET` | `/api/invites/:token` | Public | Validate token and return invite + event details |
+| `POST` | `/api/invites/:token/accept` | JWT | Accept invite, create membership, mark invite accepted |
+
+**Invite flow:**
+1. Owner POSTs to `/api/events/:eventId/invites` with `{ email, role: "organizer", expiresInDays }` (default 7 days)
+2. API generates a 32-byte hex token (`crypto.randomBytes(32).toString("hex")`) and stores invite
+3. Frontend builds share URL: `https://<app>/invite/<token>`
+4. Recipient opens URL, frontend calls `GET /api/invites/:token` to fetch invite + event details
+5. Recipient (must be logged in) POSTs to `/api/invites/:token/accept`
+6. API checks expiry, creates `event_membership` (role from invite), marks invite `accepted`
+
+**Expiry check:** Both `getByToken` and `acceptInvite` check `new Date() > invite.expiresAt`. If expired and status is still `pending`, the row is updated to `expired` before the error is thrown.
+
+**Service contract (`IOrganizerInviteService`):**
+- `listForEvent(eventId, requesterId)` — member-only
+- `createInvite(eventId, email, role, expiresInDays, requesterId)` — owner-only
+- `getByToken(token)` → `InviteWithEvent` — public; throws `400` on expired/accepted
+- `acceptInvite(token, userId)` — throws `409` if user already a member
+
+### New Repository Interfaces
+
+| Interface | Token | Key methods |
+|---|---|---|
+| `IEventMembershipRepository` | `EVENT_MEMBERSHIP_REPOSITORY` | findByEventId, findByEventIdWithUsers, findByUserAndEvent, create, remove |
+| `IOrganizerInviteRepository` | `ORGANIZER_INVITE_REPOSITORY` | findByEventId, findByToken, create, markAccepted, markExpired |
+
+### Shared Zod Schemas (`packages/shared/src/schemas/event.schema.ts`)
+
+- `CreateEventSchema` / `CreateEventInput` — POST /events body
+- `UpdateEventSchema` / `UpdateEventInput` — PATCH /events/:id body (all fields optional)
+- `EventResponseSchema` / `EventResponse` — API response shape
+- `EventMemberSchema` / `EventMember` — membership with nested user
+- `CreateInviteSchema` / `CreateInviteInput` — POST invites body
+- `InviteResponseSchema` / `InviteResponse` — invite API response
+- `InviteDetailSchema` / `InviteDetail` — invite + nested event (from `GET /invites/:token`)
+
+### Frontend Dashboard (Sprint 4)
+
+**Pages:**
+| Route | Component | Type | Description |
+|---|---|---|---|
+| `/dashboard` | `DashboardPage` | Server | Grid of user's events; links to detail |
+| `/dashboard/events/new` | `NewEventPage` + `NewEventForm` | Server + Client | Create event form (React Hook Form + Zod) |
+| `/dashboard/events/[id]` | `EventDetailPage` | Server | Event overview with sidebar nav |
+| `/dashboard/events/[id]/team` | `TeamPage` + `TeamPanel` | Server + Client | Member table + invite management |
+| `/invite/[token]` | `InvitePage` + `AcceptInvitePanel` | Server + Client | Public invite acceptance page |
+
+**API client (`apps/web/src/lib/api/`):**
+- `events.ts` — React Query hooks: `useEvents`, `useEvent`, `useCreateEvent`, `useUpdateEvent`, `useDeleteEvent`, `useEventMembers`, `useRemoveMember`
+- `invites.ts` — React Query hooks: `useEventInvites`, `useCreateInvite`, `useInviteByToken`, `useAcceptInvite`
+- All hooks use `NEXT_PUBLIC_API_URL` (client-side) with `credentials: "include"`
+- Server components use `apiRequest()` from `apps/web/src/lib/api.ts` (reads JWT cookie)
+
+**React Query setup:** `ReactQueryProvider` in `apps/web/src/lib/query-client.tsx` is mounted in `apps/web/src/app/layout.tsx`.
+
+**shadcn/ui components added (`apps/web/src/components/ui/`):**
+- `button.tsx` — Button with variants (default, destructive, outline, secondary, ghost, link) and sizes
+- `card.tsx` — Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
+- `input.tsx` — Input (text, email, date, number)
+- `select.tsx` — Native select styled as shadcn Select
+- `badge.tsx` — Badge with variants (default, secondary, destructive, outline)
+- `table.tsx` — Table, TableHeader, TableBody, TableRow, TableHead, TableCell
+- `dialog.tsx` — Lightweight Dialog with overlay (Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter)
