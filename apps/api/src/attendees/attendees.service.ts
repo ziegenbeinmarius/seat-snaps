@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException, ForbiddenException, BadRequestException } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { parse } from "csv-parse/sync";
 import type { Attendee } from "@seat-snaps/db";
@@ -62,11 +62,17 @@ export class AttendeesService implements IAttendeeService {
   async bulkImport(eventId: string, csv: string, userId: string): Promise<Attendee[]> {
     await this.requireMember(eventId, userId);
 
+    const MAX_IMPORT_ROWS = 5000;
+
     const rows = parse(csv, { columns: true, skip_empty_lines: true, trim: true }) as {
       name?: string;
       email?: string;
       group?: string;
     }[];
+
+    if (rows.length > MAX_IMPORT_ROWS) {
+      throw new BadRequestException(`CSV import limited to ${MAX_IMPORT_ROWS} rows, got ${rows.length}`);
+    }
 
     const created: Attendee[] = [];
     for (const row of rows) {

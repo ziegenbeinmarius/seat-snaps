@@ -22,7 +22,7 @@ for (const envPath of envCandidates) {
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({ logger: true }),
+    new FastifyAdapter({ logger: true, bodyLimit: 10 * 1024 * 1024 }),
   );
 
   await app.register(fastifyCookie as never);
