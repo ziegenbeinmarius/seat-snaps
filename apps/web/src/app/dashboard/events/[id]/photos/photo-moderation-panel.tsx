@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Check, X, Trash2, ZoomIn, User, Star } from "lucide-react";
-import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto, useToggleHighlight } from "@/lib/api/photos";
+import { usePhotoModeration, type PhotoFilter } from "@/lib/api/use-photo-moderation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,8 +14,6 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import type { PhotoResponse, PhotoStatus } from "@seat-snaps/shared";
-
-type Filter = "all" | PhotoStatus | "highlight";
 
 interface Props {
   eventId: string;
@@ -32,21 +30,24 @@ const STATUS_BADGE: Record<
 };
 
 export function PhotoModerationPanel({ eventId }: Props) {
-  const { data: photos = [], isLoading } = useOrganizerPhotos(eventId);
-  const updateStatus = useUpdatePhotoStatus(eventId);
-  const deletePhoto = useDeletePhoto(eventId);
-  const toggleHighlight = useToggleHighlight(eventId);
+  const {
+    filtered,
+    counts,
+    filter,
+    setFilter,
+    isLoading,
+    approveAsync,
+    rejectAsync,
+    remove,
+    toggleHighlightPhoto,
+    updateStatus,
+    deletePhoto,
+    toggleHighlight,
+  } = usePhotoModeration(eventId);
 
-  const [filter, setFilter] = useState<Filter>("all");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
   const [bulkSelected, setBulkSelected] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
-
-  const filtered = photos.filter((p) => {
-    if (filter === "all") return true;
-    if (filter === "highlight") return p.isHighlight;
-    return p.status === filter;
-  });
 
   const toggleSelect = (id: string) => {
     setBulkSelected((prev) => {
@@ -80,21 +81,12 @@ export function PhotoModerationPanel({ eventId }: Props) {
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
-    deletePhoto.mutate(deleteTarget.id);
+    remove(deleteTarget.id);
     setDeleteTarget(null);
     if (lightbox?.id === deleteTarget.id) setLightbox(null);
   };
 
-  const counts = {
-    all: photos.length,
-    pending: photos.filter((p) => p.status === "pending").length,
-    approved: photos.filter((p) => p.status === "approved").length,
-    rejected: photos.filter((p) => p.status === "rejected").length,
-    deleted: photos.filter((p) => p.status === "deleted").length,
-    highlight: photos.filter((p) => p.isHighlight).length,
-  };
-
-  const filterTabs: { key: Filter; label: string }[] = [
+  const filterTabs: { key: PhotoFilter; label: string }[] = [
     { key: "all", label: `All (${counts.all})` },
     { key: "pending", label: `Pending (${counts.pending})` },
     { key: "approved", label: `Approved (${counts.approved})` },
@@ -326,7 +318,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
               <Button
                 size="sm"
                 onClick={async () => {
-                  await updateStatus.mutateAsync({ photoId: lightbox.id, status: "approved" });
+                  await approveAsync(lightbox);
                   setLightbox(null);
                 }}
               >
@@ -339,7 +331,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
                 variant="outline"
                 className="text-white border-white/30 hover:bg-white/10"
                 onClick={async () => {
-                  await updateStatus.mutateAsync({ photoId: lightbox.id, status: "rejected" });
+                  await rejectAsync(lightbox);
                   setLightbox(null);
                 }}
               >

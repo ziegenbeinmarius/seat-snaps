@@ -2,21 +2,28 @@
 
 import { useRef, useState } from "react";
 import { Check, X, Star, Loader2 } from "lucide-react";
-import { useOrganizerPhotos, useUpdatePhotoStatus, useToggleHighlight } from "@/lib/api/photos";
-import type { PhotoResponse, PhotoStatus } from "@seat-snaps/shared";
+import { usePhotoModeration } from "@/lib/api/use-photo-moderation";
+import type { PhotoResponse } from "@seat-snaps/shared";
 
 interface Props {
   eventId: string;
 }
 
-type Filter = "pending" | "all" | "approved";
+type MobileFilter = "pending" | "all" | "approved";
 
 export function MobilePhotosPanel({ eventId }: Props) {
-  const { data: photos = [], isLoading } = useOrganizerPhotos(eventId);
-  const updateStatus = useUpdatePhotoStatus(eventId);
-  const toggleHighlight = useToggleHighlight(eventId);
+  const {
+    photos,
+    counts,
+    isLoading,
+    approve,
+    reject,
+    toggleHighlightPhoto,
+    updateStatus,
+    toggleHighlight,
+  } = usePhotoModeration(eventId);
 
-  const [filter, setFilter] = useState<Filter>("pending");
+  const [filter, setFilter] = useState<MobileFilter>("pending");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
 
   const touchStartX = useRef<number>(0);
@@ -28,19 +35,19 @@ export function MobilePhotosPanel({ eventId }: Props) {
     return p.status !== "deleted";
   });
 
-  const counts = {
-    pending: photos.filter((p) => p.status === "pending").length,
-    approved: photos.filter((p) => p.status === "approved").length,
+  const mobileCounts = {
+    pending: counts.pending,
+    approved: counts.approved,
     all: photos.filter((p) => p.status !== "deleted").length,
   };
 
   const handleApprove = (photo: PhotoResponse) => {
-    updateStatus.mutate({ photoId: photo.id, status: "approved" });
+    approve(photo);
     if (lightbox?.id === photo.id) setLightbox(null);
   };
 
   const handleReject = (photo: PhotoResponse) => {
-    updateStatus.mutate({ photoId: photo.id, status: "rejected" });
+    reject(photo);
     if (lightbox?.id === photo.id) setLightbox(null);
   };
 
@@ -57,10 +64,10 @@ export function MobilePhotosPanel({ eventId }: Props) {
     else if (dx < -70) handleReject(photo);
   };
 
-  const filterTabs: { key: Filter; label: string; count: number }[] = [
-    { key: "pending", label: "Pending", count: counts.pending },
-    { key: "approved", label: "Approved", count: counts.approved },
-    { key: "all", label: "All", count: counts.all },
+  const filterTabs: { key: MobileFilter; label: string; count: number }[] = [
+    { key: "pending", label: "Pending", count: mobileCounts.pending },
+    { key: "approved", label: "Approved", count: mobileCounts.approved },
+    { key: "all", label: "All", count: mobileCounts.all },
   ];
 
   if (isLoading) {
@@ -225,7 +232,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
             )}
             {lightbox.status === "approved" && (
               <button
-                onClick={() => toggleHighlight.mutate({ photoId: lightbox.id, isHighlight: !lightbox.isHighlight })}
+                onClick={() => toggleHighlightPhoto(lightbox)}
                 disabled={toggleHighlight.isPending}
                 className="flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold disabled:opacity-50"
                 style={{

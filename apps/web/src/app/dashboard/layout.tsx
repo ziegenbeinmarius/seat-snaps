@@ -1,17 +1,9 @@
 import React from "react";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 import Link from "next/link";
+import { requireAuth } from "@/lib/require-auth";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  let session: Awaited<ReturnType<typeof auth>> | null = null;
-  try {
-    session = await auth();
-  } catch {
-    redirect("/login");
-  }
-
-  if (!session) redirect("/login");
+  const session = await requireAuth();
 
   return (
     <div

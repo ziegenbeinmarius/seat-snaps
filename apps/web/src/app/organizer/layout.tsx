@@ -1,17 +1,9 @@
 import React from "react";
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { requireAuth } from "@/lib/require-auth";
 import { OrganizerNav } from "./organizer-nav";
 
 export default async function OrganizerLayout({ children }: { children: React.ReactNode }) {
-  let session: Awaited<ReturnType<typeof auth>> | null = null;
-  try {
-    session = await auth();
-  } catch {
-    redirect("/login");
-  }
-
-  if (!session) redirect("/login");
+  await requireAuth();
 
   return (
     <div
