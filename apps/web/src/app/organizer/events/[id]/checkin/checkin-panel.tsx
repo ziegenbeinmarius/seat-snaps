@@ -102,20 +102,29 @@ export function CheckinPanel({ eventId }: Props) {
   }, [handleQrCode]);
 
   const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+    const constraints = [
+      { video: { facingMode: "environment" } },
+      { video: { facingMode: "user" } },
+      { video: true },
+    ];
+
+    for (const constraint of constraints) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia(constraint);
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+        }
+        setState({ type: "scanning" });
+        rafRef.current = requestAnimationFrame(scan);
+        return;
+      } catch {
+        continue;
       }
-      setState({ type: "scanning" });
-      rafRef.current = requestAnimationFrame(scan);
-    } catch {
-      setCameraError("Camera access denied. Please allow camera permissions and try again.");
     }
+
+    setCameraError("Camera access denied. Please allow camera permissions and try again.");
   }, [scan]);
 
   useEffect(() => {
