@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Check, X, Trash2, ZoomIn, User } from "lucide-react";
-import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto } from "@/lib/api/photos";
+import { Check, X, Trash2, ZoomIn, User, Star } from "lucide-react";
+import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto, useToggleHighlight } from "@/lib/api/photos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import type { PhotoResponse, PhotoStatus } from "@seat-snaps/shared";
 
-type Filter = "all" | PhotoStatus;
+type Filter = "all" | PhotoStatus | "highlight";
 
 interface Props {
   eventId: string;
@@ -34,13 +34,18 @@ export function PhotoModerationPanel({ eventId }: Props) {
   const { data: photos = [], isLoading } = useOrganizerPhotos(eventId);
   const updateStatus = useUpdatePhotoStatus(eventId);
   const deletePhoto = useDeletePhoto(eventId);
+  const toggleHighlight = useToggleHighlight(eventId);
 
   const [filter, setFilter] = useState<Filter>("all");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
   const [bulkSelected, setBulkSelected] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
 
-  const filtered = photos.filter((p) => filter === "all" || p.status === filter);
+  const filtered = photos.filter((p) => {
+    if (filter === "all") return true;
+    if (filter === "highlight") return p.isHighlight;
+    return p.status === filter;
+  });
 
   const toggleSelect = (id: string) => {
     setBulkSelected((prev) => {
@@ -85,6 +90,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
     approved: photos.filter((p) => p.status === "approved").length,
     rejected: photos.filter((p) => p.status === "rejected").length,
     deleted: photos.filter((p) => p.status === "deleted").length,
+    highlight: photos.filter((p) => p.isHighlight).length,
   };
 
   const filterTabs: { key: Filter; label: string }[] = [
@@ -92,6 +98,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
     { key: "pending", label: `Pending (${counts.pending})` },
     { key: "approved", label: `Approved (${counts.approved})` },
     { key: "rejected", label: `Rejected (${counts.rejected})` },
+    { key: "highlight", label: `Highlights (${counts.highlight})` },
   ];
 
   return (
@@ -242,13 +249,30 @@ export function PhotoModerationPanel({ eventId }: Props) {
                     <User className="h-3 w-3 shrink-0" />
                     <span className="truncate">{photo.attendeeName}</span>
                   </span>
-                  <button
-                    title="Delete permanently"
-                    onClick={() => setDeleteTarget(photo)}
-                    className="shrink-0 rounded p-1 text-red-500 transition-colors hover:bg-red-50"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
+                  <div className="flex shrink-0 items-center gap-0.5">
+                    {photo.status === "approved" && (
+                      <button
+                        title={photo.isHighlight ? "Remove from highlights" : "Add to highlights"}
+                        onClick={() =>
+                          toggleHighlight.mutate({ photoId: photo.id, isHighlight: !photo.isHighlight })
+                        }
+                        className={`rounded p-1 transition-colors ${
+                          photo.isHighlight
+                            ? "text-yellow-500 hover:bg-yellow-50"
+                            : "text-muted-foreground hover:bg-yellow-50 hover:text-yellow-500"
+                        }`}
+                      >
+                        <Star className={`h-4 w-4 ${photo.isHighlight ? "fill-yellow-400" : ""}`} />
+                      </button>
+                    )}
+                    <button
+                      title="Delete permanently"
+                      onClick={() => setDeleteTarget(photo)}
+                      className="rounded p-1 text-red-500 transition-colors hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             );

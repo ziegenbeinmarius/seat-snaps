@@ -1,4 +1,4 @@
-import { eq, and } from "@seat-snaps/db";
+import { eq, and, asc } from "@seat-snaps/db";
 import type { Database, Photo, NewPhoto } from "@seat-snaps/db";
 import { photos } from "@seat-snaps/db";
 import type { IPhotoRepository, PhotoFilters, PhotoStatus } from "../../domain/repositories/IPhotoRepository";
@@ -12,13 +12,15 @@ export class DrizzlePhotoRepository implements IPhotoRepository {
   }
 
   async findByEventId(eventId: string, filters?: PhotoFilters): Promise<Photo[]> {
-    if (filters?.status) {
-      return this.db
-        .select()
-        .from(photos)
-        .where(and(eq(photos.eventId, eventId), eq(photos.status, filters.status)));
+    const conditions = [eq(photos.eventId, eventId)];
+    if (filters?.status) conditions.push(eq(photos.status, filters.status));
+    if (filters?.isHighlight !== undefined) conditions.push(eq(photos.isHighlight, filters.isHighlight));
+
+    const query = this.db.select().from(photos).where(and(...conditions));
+    if (filters?.isHighlight) {
+      return query.orderBy(asc(photos.highlightOrder), asc(photos.createdAt));
     }
-    return this.db.select().from(photos).where(eq(photos.eventId, eventId));
+    return query;
   }
 
   async findByAttendeeId(attendeeId: string): Promise<Photo[]> {
@@ -47,6 +49,16 @@ export class DrizzlePhotoRepository implements IPhotoRepository {
       .where(eq(photos.id, id))
       .returning();
     return result[0] ?? null;
+  }
+
+  async updateHighlight(id: string, isHighlight: boolean, highlightOrder?: number | null): Promise<Photo> {
+    const result = await this.db
+      .update(photos)
+      .set({ isHighlight, highlightOrder: highlightOrder ?? null })
+      .where(eq(photos.id, id))
+      .returning();
+    if (!result[0]) throw new Error(`Photo ${id} not found`);
+    return result[0];
   }
 
   async delete(id: string): Promise<void> {

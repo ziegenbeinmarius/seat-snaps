@@ -1,5 +1,6 @@
 import { MapPin, Calendar } from "lucide-react";
 import { getCurrentAttendee } from "@/lib/attendee-session";
+import { HighlightSlideshow } from "./highlights/highlight-slideshow";
 import type { EventResponse, ScheduleItemResponse, TableResponse } from "@seat-snaps/shared";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
@@ -210,6 +211,9 @@ export default async function AttendeeHomePage({ params }: Props) {
             <p className="event-body text-sm leading-relaxed event-card-desc">{event.description}</p>
           </div>
         )}
+
+        {/* Highlight slideshow */}
+        <HighlightSlideshow eventId={eventId} />
       </div>
     </div>
   );

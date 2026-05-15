@@ -150,6 +150,44 @@ export class PhotosService implements IPhotoService {
     return this.attachUrls(updated, attendee?.name ?? "Unknown");
   }
 
+  async toggleHighlight(
+    eventId: string,
+    photoId: string,
+    isHighlight: boolean,
+    userId: string,
+  ): Promise<PhotoWithUrl> {
+    await this.requireOrganizer(eventId, userId);
+    const photo = await this.photoRepository.findById(photoId);
+    if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
+    if (photo.status !== "approved") {
+      throw new BadRequestException("Only approved photos can be highlighted");
+    }
+
+    let highlightOrder: number | null = null;
+    if (isHighlight) {
+      const existing = await this.photoRepository.findByEventId(eventId, { isHighlight: true });
+      highlightOrder = existing.length;
+    }
+
+    const updated = await this.photoRepository.updateHighlight(photoId, isHighlight, highlightOrder);
+    const attendee = await this.attendeeRepository.findById(photo.attendeeId);
+    return this.attachUrls(updated, attendee?.name ?? "Unknown");
+  }
+
+  async listHighlights(eventId: string): Promise<PhotoWithUrl[]> {
+    const photos = await this.photoRepository.findByEventId(eventId, {
+      status: "approved",
+      isHighlight: true,
+    });
+
+    const attendees = await this.attendeeRepository.findByEventId(eventId);
+    const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
+
+    return Promise.all(
+      photos.map((p) => this.attachUrls(p, nameMap.get(p.attendeeId) ?? "Unknown")),
+    );
+  }
+
   async deletePhoto(eventId: string, photoId: string, userId: string): Promise<void> {
     await this.requireOrganizer(eventId, userId);
     const photo = await this.photoRepository.findById(photoId);

@@ -22,6 +22,8 @@ export interface IPhotoService {
   confirmUpload(eventId: string, photoId: string, attendeeId: string): Promise<PhotoWithUrl>;
   listPhotos(eventId: string, requesterId: string, requesterType: "attendee" | "organizer"): Promise<PhotoWithUrl[]>;
   updateStatus(eventId: string, photoId: string, status: PhotoStatus, userId: string): Promise<PhotoWithUrl>;
+  toggleHighlight(eventId: string, photoId: string, isHighlight: boolean, userId: string): Promise<PhotoWithUrl>;
+  listHighlights(eventId: string): Promise<PhotoWithUrl[]>;
   deletePhoto(eventId: string, photoId: string, userId: string): Promise<void>;
 }
 

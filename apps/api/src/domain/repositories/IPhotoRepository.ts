@@ -4,6 +4,7 @@ export type PhotoStatus = "pending" | "approved" | "rejected" | "deleted";
 
 export interface PhotoFilters {
   status?: PhotoStatus;
+  isHighlight?: boolean;
 }
 
 export interface IPhotoRepository {
@@ -13,6 +14,7 @@ export interface IPhotoRepository {
   create(data: NewPhoto): Promise<Photo>;
   updateStatus(id: string, status: PhotoStatus): Promise<Photo>;
   updateThumbnailKey(id: string, thumbnailKey: string): Promise<Photo | null>;
+  updateHighlight(id: string, isHighlight: boolean, highlightOrder?: number | null): Promise<Photo>;
   delete(id: string): Promise<void>;
 }
 

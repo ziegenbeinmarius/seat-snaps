@@ -73,6 +73,22 @@ export class PhotosController {
     return this.photosService.updateStatus(eventId, photoId, dto.status, user.id);
   }
 
+  @Public()
+  @Get("highlights")
+  listHighlights(@Param("eventId") eventId: string) {
+    return this.photosService.listHighlights(eventId);
+  }
+
+  @Patch(":photoId/highlight")
+  toggleHighlight(
+    @Param("eventId") eventId: string,
+    @Param("photoId") photoId: string,
+    @Body() body: { isHighlight: boolean },
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.photosService.toggleHighlight(eventId, photoId, body.isHighlight, user.id);
+  }
+
   @Delete(":photoId")
   @HttpCode(HttpStatus.NO_CONTENT)
   deletePhoto(

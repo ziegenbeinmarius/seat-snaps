@@ -24,6 +24,10 @@ const authSecret =
   ?? process.env.NEXTAUTH_SECRET
   ?? process.env.auth_secret;
 
+const trustHost = process.env.AUTH_TRUST_HOST
+  ? process.env.AUTH_TRUST_HOST === "true"
+  : true;
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -46,6 +50,7 @@ declare module "next-auth/jwt" {
 
 const nextAuth: NextAuthResult = NextAuth({
   secret: authSecret,
+  trustHost,
   providers: [
     Credentials({
       async authorize(credentials) {
