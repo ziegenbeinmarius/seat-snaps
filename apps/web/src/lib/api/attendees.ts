@@ -71,3 +71,15 @@ export function useDeleteAttendee(eventId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
   });
 }
+
+export function useCheckinByQrToken(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<AttendeeResponse, Error, string>({
+    mutationFn: (qrToken) =>
+      fetchApi(`/events/${eventId}/attendees/checkin`, {
+        method: "POST",
+        body: JSON.stringify({ qrToken }),
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+  });
+}

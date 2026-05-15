@@ -11,6 +11,7 @@ export type UpdateAttendeeData = Partial<
     | "tableId"
     | "seatId"
     | "photoLimit"
+    | "checkedInAt"
   >
 >;
 

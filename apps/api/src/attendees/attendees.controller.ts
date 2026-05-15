@@ -43,6 +43,15 @@ export class AttendeesController {
     return this.attendeesService.create(eventId, dto, user.id);
   }
 
+  @Post("checkin")
+  checkIn(
+    @Param("eventId") eventId: string,
+    @Body() body: { qrToken: string },
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.attendeesService.checkIn(eventId, body.qrToken, user.id);
+  }
+
   @Post("import")
   async importCsv(
     @Param("eventId") eventId: string,
