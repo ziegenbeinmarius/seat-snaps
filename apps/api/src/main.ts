@@ -20,6 +20,10 @@ for (const envPath of envCandidates) {
 }
 
 async function bootstrap() {
+  if (process.env.NODE_ENV === "production" && !process.env.ALLOWED_ORIGINS) {
+    throw new Error("ALLOWED_ORIGINS environment variable must be set in production");
+  }
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
