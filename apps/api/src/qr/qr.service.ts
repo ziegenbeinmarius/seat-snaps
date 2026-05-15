@@ -71,7 +71,7 @@ export class QrService implements IQrService {
         (item) => `
       <div class="card">
         <img src="${item.qrDataUrl}" alt="QR for ${item.name}" />
-        <p>${item.name}</p>
+        <p class="name">${item.name}</p>
       </div>`,
       )
       .join("");
@@ -82,15 +82,25 @@ export class QrService implements IQrService {
 <meta charset="utf-8" />
 <title>QR Codes</title>
 <style>
-  body { font-family: sans-serif; margin: 0; padding: 16px; }
-  .grid { display: flex; flex-wrap: wrap; gap: 16px; }
-  .card { text-align: center; border: 1px solid #ddd; border-radius: 8px; padding: 12px; width: 200px; }
-  .card img { width: 150px; height: 150px; }
-  .card p { margin: 8px 0 0; font-size: 12px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  @media print { .card { break-inside: avoid; } }
+  * { box-sizing: border-box; }
+  body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff; }
+  .print-btn { display: inline-block; margin-bottom: 20px; padding: 10px 24px; background: #111; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .print-btn:hover { background: #333; }
+  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+  .card { text-align: center; border: 1px solid #ddd; border-radius: 8px; padding: 16px; width: 200px; }
+  .card img { width: 160px; height: 160px; display: block; margin: 0 auto; }
+  .card .name { margin: 10px 0 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  @media print {
+    @page { size: A4; margin: 15mm; }
+    body { padding: 0; }
+    .print-btn { display: none; }
+    .grid { gap: 12px; }
+    .card { break-inside: avoid; border: 1px solid #ccc; }
+  }
 </style>
 </head>
 <body>
+<button class="print-btn" onclick="window.print()">Print QR Codes</button>
 <div class="grid">${cards}</div>
 </body>
 </html>`;
