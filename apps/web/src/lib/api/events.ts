@@ -52,9 +52,9 @@ export function useUpdateEvent(id: string) {
   return useMutation<EventResponse, Error, UpdateEventInput>({
     mutationFn: (data) =>
       fetchApi(`/events/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-    onSuccess: () => {
+    onSuccess: (updatedEvent) => {
+      qc.setQueryData(["events", id], updatedEvent);
       qc.invalidateQueries({ queryKey: ["events"] });
-      qc.invalidateQueries({ queryKey: ["events", id] });
     },
   });
 }

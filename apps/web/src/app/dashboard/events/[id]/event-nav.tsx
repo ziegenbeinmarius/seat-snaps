@@ -40,6 +40,11 @@ export function EventNav({ eventId }: EventNavProps) {
       label: "Theme",
       isActive: (path) => path.startsWith(`${base}/theme`),
     },
+    {
+      href: `${base}/schedule` as Route,
+      label: "Schedule",
+      isActive: (path) => path.startsWith(`${base}/schedule`),
+    },
   ];
 
   return (
