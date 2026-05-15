@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,7 +14,17 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
   let event: EventResponse;
   try {
     event = await apiRequest<EventResponse>(`/events/${id}`);
-  } catch {
+  } catch (err) {
+    const message = err instanceof Error ? err.message.toLowerCase() : "";
+
+    if (message.includes("unauthorized")) {
+      redirect("/login");
+    }
+
+    if (message.includes("access denied") || message.includes("forbidden")) {
+      redirect("/dashboard");
+    }
+
     notFound();
   }
 

@@ -26,7 +26,7 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
-ENV PORT=3000
+ENV PORT=3005
 ENV HOSTNAME="0.0.0.0"
 
 RUN addgroup --system --gid 1001 nodejs && \
@@ -38,6 +38,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/apps/web/.next/static ./apps/web/
 
 USER nextjs
 
-EXPOSE 3000
+EXPOSE 3005
 
 CMD ["node", "apps/web/server.js"]

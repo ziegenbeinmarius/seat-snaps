@@ -24,7 +24,7 @@
 ```
 seat-snaps/
 ├── apps/
-│   ├── web/          # Next.js 15 frontend (port 3000)
+│   ├── web/          # Next.js 15 frontend (port 3005)
 │   └── api/          # NestJS 10 backend (port 3001)
 ├── packages/
 │   ├── shared/       # Zod schemas, DTOs, shared TypeScript types
@@ -183,7 +183,7 @@ Copy `.env.example` to `.env` and fill in:
 
 ## Deployment (Railway)
 
-- **`apps/web/Dockerfile`** — multi-stage build, Next.js standalone output, port 3000
+- **`apps/web/Dockerfile`** — multi-stage build, Next.js standalone output, port 3005
 - **`apps/api/Dockerfile`** — multi-stage build, NestJS compiled dist, port 3001
 - Railway detects Dockerfiles automatically; configure `DATABASE_URL` and other env vars in Railway project settings
 - Health check endpoint: `GET /api/health` (returns 200 when service is up)
@@ -239,7 +239,7 @@ Copy `.env.example` to `.env` and fill in:
 | Variable | Description |
 |---|---|
 | `AUTH_SECRET` | HS256 signing secret shared by Auth.js (web) and NestJS JWT guard (api); min 32 chars |
-| `AUTH_URL` | Base URL of the Next.js app (e.g. `http://localhost:3000`); required in production |
+| `AUTH_URL` | Base URL of the Next.js app (e.g. `http://localhost:3005`); required in production |
 | `INTERNAL_API_URL` | NestJS base URL used by server-side Next.js code (default: `http://localhost:3001`) |
 
 ### Usage Patterns
@@ -464,7 +464,7 @@ const session = await auth();
 **URL format:**
 - Attendee QR encodes: `{APP_URL}/join/{attendee.qrToken}`
 - Event QR encodes: `{APP_URL}/join/event/{eventId}`
-- `APP_URL` env var (default: `http://localhost:3000`)
+- `APP_URL` env var (default: `http://localhost:3005`)
 
 **Implementation:**
 - Uses `qrcode` npm package (`toBuffer` for PNG, `toDataURL` for embedded HTML)

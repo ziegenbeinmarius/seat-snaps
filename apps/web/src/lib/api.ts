@@ -1,9 +1,11 @@
 import { cookies } from "next/headers";
 
-// Cookie names differ between dev (HTTP) and prod (HTTPS)
-const SESSION_COOKIE = process.env.NODE_ENV === "production"
-  ? "__Secure-authjs.session-token"
-  : "authjs.session-token";
+const SESSION_COOKIE_NAMES = [
+  "authjs.session-token",
+  "__Secure-authjs.session-token",
+  "next-auth.session-token",
+  "__Secure-next-auth.session-token",
+];
 
 /**
  * Returns the raw JWT session token for passing to the NestJS API as Bearer.
@@ -11,7 +13,26 @@ const SESSION_COOKIE = process.env.NODE_ENV === "production"
  */
 export async function getSessionToken(): Promise<string | null> {
   const cookieStore = await cookies();
-  return cookieStore.get(SESSION_COOKIE)?.value ?? null;
+  const allCookies = cookieStore.getAll();
+
+  for (const baseName of SESSION_COOKIE_NAMES) {
+    const direct = cookieStore.get(baseName)?.value;
+    if (direct) return direct;
+
+    const chunks = allCookies
+      .filter((cookie) => cookie.name.startsWith(`${baseName}.`))
+      .map((cookie) => {
+        const index = Number(cookie.name.slice(baseName.length + 1));
+        return { index, value: cookie.value };
+      })
+      .filter((chunk) => Number.isInteger(chunk.index))
+      .sort((a, b) => a.index - b.index)
+      .map((chunk) => chunk.value);
+
+    if (chunks.length > 0) return chunks.join("");
+  }
+
+  return null;
 }
 
 /**
@@ -26,9 +47,13 @@ export async function apiRequest<T>(
   const token = await getSessionToken();
 
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(init?.headers as Record<string, string>),
   };
+
+  if (init?.body !== undefined && !headers["Content-Type"]) {
+    headers["Content-Type"] = "application/json";
+  }
+
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const res = await fetch(`${apiUrl}/api${path}`, { ...init, headers });
@@ -36,5 +61,9 @@ export async function apiRequest<T>(
     const error = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error(error.message ?? "API request failed");
   }
-  return res.json() as Promise<T>;
+  if (res.status === 204) return undefined as T;
+
+  const bodyText = await res.text();
+  if (!bodyText) return undefined as T;
+  return JSON.parse(bodyText) as T;
 }

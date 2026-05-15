@@ -1,8 +1,23 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter, type NestFastifyApplication } from "@nestjs/platform-fastify";
 import { ValidationPipe } from "@nestjs/common";
+import { config as loadEnv } from "dotenv";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import fastifyCookie from "@fastify/cookie";
 import { AppModule } from "./app.module";
+
+const envCandidates = [
+  resolve(process.cwd(), ".env"),
+  resolve(process.cwd(), "../../.env"),
+];
+
+for (const envPath of envCandidates) {
+  if (existsSync(envPath)) {
+    loadEnv({ path: envPath });
+    break;
+  }
+}
 
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -13,7 +28,7 @@ async function bootstrap() {
   await app.register(fastifyCookie as never);
 
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3000"],
+    origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"],
     credentials: true,
   });
 

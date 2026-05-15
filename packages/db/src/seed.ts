@@ -1,6 +1,21 @@
 import { eq } from "drizzle-orm";
+import { config as loadEnv } from "dotenv";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { createDb } from "./index.js";
 import { users, events, eventMemberships, attendees, tables, seats } from "./schema/index.js";
+
+const envCandidates = [
+  resolve(process.cwd(), ".env"),
+  resolve(process.cwd(), "../../.env"),
+];
+
+for (const envPath of envCandidates) {
+  if (existsSync(envPath)) {
+    loadEnv({ path: envPath });
+    break;
+  }
+}
 
 const DATABASE_URL = process.env.DATABASE_URL;
 if (!DATABASE_URL) {

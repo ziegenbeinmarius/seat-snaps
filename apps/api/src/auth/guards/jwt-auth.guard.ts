@@ -37,10 +37,45 @@ export class JwtAuthGuard implements CanActivate {
   }
 
   private extractToken(request: FastifyRequest): string | null {
+    const cookieToken = this.extractAuthJsTokenFromCookies(request);
+    if (cookieToken) return cookieToken;
+
     const authHeader = request.headers.authorization;
     if (authHeader?.startsWith("Bearer ")) {
       return authHeader.slice(7);
     }
+    return null;
+  }
+
+  private extractAuthJsTokenFromCookies(request: FastifyRequest): string | null {
+    const cookies = (request as FastifyRequest & { cookies?: Record<string, string> }).cookies;
+    if (!cookies) return null;
+
+    const baseNames = [
+      "authjs.session-token",
+      "__Secure-authjs.session-token",
+      "next-auth.session-token",
+      "__Secure-next-auth.session-token",
+    ];
+
+    for (const baseName of baseNames) {
+      const direct = cookies[baseName];
+      if (direct) return direct;
+
+      // NextAuth/Auth.js may chunk long cookie values as .0, .1, ...
+      const chunks = Object.entries(cookies)
+        .filter(([name]) => name.startsWith(`${baseName}.`))
+        .map(([name, value]) => {
+          const index = Number(name.slice(baseName.length + 1));
+          return { index, value };
+        })
+        .filter((chunk) => Number.isInteger(chunk.index))
+        .sort((a, b) => a.index - b.index)
+        .map((chunk) => chunk.value);
+
+      if (chunks.length > 0) return chunks.join("");
+    }
+
     return null;
   }
 }

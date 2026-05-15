@@ -7,6 +7,7 @@ import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IQrService } from "./domain/IQrService";
+import type { AttendeeQrResult } from "./domain/IQrService";
 
 @Injectable()
 export class QrService implements IQrService {
@@ -23,22 +24,23 @@ export class QrService implements IQrService {
     attendeeId: string,
     eventId: string,
     userId: string,
-  ): Promise<Buffer> {
+  ): Promise<AttendeeQrResult> {
     await this.requireMember(eventId, userId);
 
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/${attendee.qrToken}`;
-    return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
+    const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
+    return { buffer, attendeeName: attendee.name };
   }
 
   async generateBulkZip(eventId: string, userId: string): Promise<Buffer> {
     await this.requireMember(eventId, userId);
 
     const attendees = await this.attendeeRepository.findByEventId(eventId);
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
 
     const items = await Promise.all(
       attendees.map(async (a) => {
@@ -58,7 +60,7 @@ export class QrService implements IQrService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }

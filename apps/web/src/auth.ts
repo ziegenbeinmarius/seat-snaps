@@ -2,7 +2,27 @@ import NextAuth, { type DefaultSession, type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
+import { config as loadEnv } from "dotenv";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { LoginSchema } from "@seat-snaps/shared";
+
+const envCandidates = [
+  resolve(process.cwd(), ".env"),
+  resolve(process.cwd(), "../../.env"),
+];
+
+for (const envPath of envCandidates) {
+  if (existsSync(envPath)) {
+    loadEnv({ path: envPath });
+    break;
+  }
+}
+
+const authSecret =
+  process.env.AUTH_SECRET
+  ?? process.env.NEXTAUTH_SECRET
+  ?? process.env.auth_secret;
 
 declare module "next-auth" {
   interface Session {
@@ -25,6 +45,7 @@ declare module "next-auth/jwt" {
 }
 
 const nextAuth: NextAuthResult = NextAuth({
+  secret: authSecret,
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -51,7 +72,16 @@ const nextAuth: NextAuthResult = NextAuth({
     async encode({ secret, token, maxAge }) {
       if (!token) return "";
       const signingSecret = Array.isArray(secret) ? secret[0] : (secret as string);
-      return jwt.sign(token as object, signingSecret, {
+      if (!signingSecret) return "";
+
+      const payload = { ...(token as Record<string, unknown>) };
+      const hasExp = typeof payload.exp === "number";
+
+      if (hasExp) {
+        return jwt.sign(payload, signingSecret, { algorithm: "HS256" });
+      }
+
+      return jwt.sign(payload, signingSecret, {
         algorithm: "HS256",
         expiresIn: maxAge ?? 30 * 24 * 60 * 60,
       });
@@ -59,6 +89,7 @@ const nextAuth: NextAuthResult = NextAuth({
     async decode({ secret, token }) {
       if (!token) return null;
       const signingSecret = Array.isArray(secret) ? secret[0] : (secret as string);
+      if (!signingSecret) return null;
       try {
         return jwt.verify(token, signingSecret, { algorithms: ["HS256"] }) as JWT;
       } catch {

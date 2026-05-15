@@ -42,6 +42,8 @@ export class EventsService implements IEventService {
   }
 
   async create(data: CreateEventInput, userId: string): Promise<Event> {
+    console.log(data);
+    
     const event = await this.eventRepository.create({
       title: data.title,
       description: data.description ?? null,

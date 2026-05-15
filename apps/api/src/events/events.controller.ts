@@ -27,6 +27,8 @@ export class EventsController {
 
   @Post()
   createEvent(@Body() dto: CreateEventDto, @CurrentUser() user: SessionUser) {
+    console.log("yoo");
+    
     return this.eventsService.create(
       {
         title: dto.title,
