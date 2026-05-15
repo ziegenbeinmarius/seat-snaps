@@ -156,15 +156,23 @@ export function MobilePhotosPanel({ eventId }: Props) {
                 )}
               </div>
 
-              {/* Quick action overlay for pending */}
+              {/* Quick action buttons for pending */}
               {photo.status === "pending" && (
-                <div className="absolute inset-0 flex items-center justify-between px-3 opacity-0 transition-opacity active:opacity-100">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/80">
+                <div className="absolute inset-0 flex items-center justify-between px-3">
+                  <button
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/80 active:bg-green-600"
+                    onClick={(e) => { e.stopPropagation(); handleApprove(photo); }}
+                    aria-label="Approve"
+                  >
                     <Check className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/80">
+                  </button>
+                  <button
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/80 active:bg-red-600"
+                    onClick={(e) => { e.stopPropagation(); handleReject(photo); }}
+                    aria-label="Reject"
+                  >
                     <X className="h-6 w-6 text-white" />
-                  </div>
+                  </button>
                 </div>
               )}
             </div>

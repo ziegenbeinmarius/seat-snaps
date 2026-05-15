@@ -106,7 +106,11 @@ export function SchedulePanel({ eventId }: Props) {
   }
 
   async function handleDelete(id: string) {
-    await deleteMutation.mutateAsync(id);
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (e) {
+      setError((e as Error).message);
+    }
   }
 
   const isPending = createMutation.isPending || updateMutation.isPending;
@@ -119,6 +123,10 @@ export function SchedulePanel({ eventId }: Props) {
           Add Item
         </Button>
       </div>
+
+      {error && !showAddDialog && !editingItem && (
+        <p className="text-sm text-destructive">{error}</p>
+      )}
 
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
