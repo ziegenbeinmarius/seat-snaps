@@ -26,21 +26,21 @@ export default async function JoinEventPage({ params }: Props) {
     ]);
   } catch {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center p-6 text-center">
-        <div className="max-w-sm">
-          <div className="mb-4 text-6xl">❌</div>
-          <h1 className="mb-2 text-xl font-bold text-gray-900">Event Not Found</h1>
-          <p className="text-gray-500">This event does not exist or is no longer available.</p>
+      <main
+        className="flex min-h-screen flex-col items-center justify-center p-6 text-center"
+        style={{ background: "linear-gradient(160deg, #f5ede0 0%, #ede0cc 100%)" }}
+      >
+        <div className="dashboard-glass max-w-sm rounded-2xl px-8 py-10">
+          <p className="mb-2 text-lg font-semibold" style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 20%)" }}>
+            Event Not Found
+          </p>
+          <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
+            This event does not exist or is no longer available.
+          </p>
         </div>
-      </div>
+      </main>
     );
   }
 
-  return (
-    <JoinEventClient
-      eventId={eventId}
-      attendees={attendees}
-      eventTitle={event.title}
-    />
-  );
+  return <JoinEventClient eventId={eventId} attendees={attendees} eventTitle={event.title} />;
 }

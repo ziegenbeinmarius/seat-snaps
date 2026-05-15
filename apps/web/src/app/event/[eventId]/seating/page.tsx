@@ -30,79 +30,106 @@ export default async function SeatingPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white px-6 py-6 shadow-sm">
-        <h1 className="text-xl font-bold text-gray-900">Seating Plan</h1>
-        <p className="mt-0.5 text-sm text-gray-500">Your seat is highlighted in blue</p>
+    <div className="min-h-screen px-4 pb-6 pt-8">
+      <div className="mb-6 px-2">
+        <h1 className="event-heading text-2xl font-semibold text-white drop-shadow-sm">
+          Seating Plan
+        </h1>
+        <p className="event-body mt-0.5 text-sm text-white/65">Your seat is highlighted</p>
       </div>
 
-      <div className="p-4">
-        {tables.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <MapPin className="mb-3 h-12 w-12 text-gray-200" />
-            <p className="text-gray-400">No seating plan yet</p>
-          </div>
-        )}
+      {tables.length === 0 && (
+        <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
+          <MapPin className="mb-3 h-10 w-10 event-card-muted-text" />
+          <p className="event-body event-card-muted-text">No seating plan yet</p>
+        </div>
+      )}
 
-        <div className="space-y-4">
-          {tables.map((table) => {
-            const isMyTable = table.id === attendee?.tableId;
+      <div className="space-y-3">
+        {tables.map((table) => {
+          const isMyTable = table.id === attendee?.tableId;
 
-            return (
-              <div
-                key={table.id}
-                className={`rounded-2xl p-4 shadow-sm ${
-                  isMyTable ? "border-2 border-blue-400 bg-blue-50" : "bg-white"
-                }`}
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <h3 className={`font-bold ${isMyTable ? "text-blue-900" : "text-gray-900"}`}>
-                    {table.name}
-                    {isMyTable && (
-                      <span className="ml-2 text-sm font-normal text-blue-600">← Your table</span>
-                    )}
-                  </h3>
-                  {table.capacity && (
-                    <span className="text-xs text-gray-400">{table.capacity} seats</span>
+          return (
+            <div
+              key={table.id}
+              className="glass-card rounded-2xl p-4"
+              style={
+                isMyTable
+                  ? { background: "var(--event-card-chip-bg)", border: "1.5px solid var(--event-primary)" }
+                  : {}
+              }
+            >
+              <div className="mb-3 flex items-center justify-between">
+                <h3 className="event-heading font-semibold event-card-title">
+                  {table.name}
+                  {isMyTable && (
+                    <span
+                      className="ml-2 rounded-full px-2 py-0.5 text-xs font-medium text-white"
+                      style={{ background: "var(--event-primary)" }}
+                    >
+                      Your table
+                    </span>
                   )}
-                </div>
-
-                {table.seats && table.seats.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                    {table.seats.map((seat) => {
-                      const isMySeats = seat.attendeeId === attendee?.id;
-                      const occupantName = seat.attendeeId
-                        ? attendeesMap.get(seat.attendeeId) ?? "Guest"
-                        : null;
-
-                      return (
-                        <div
-                          key={seat.id}
-                          className={`rounded-xl p-3 text-center ${
-                            isMySeats
-                              ? "bg-blue-600 text-white"
-                              : seat.attendeeId
-                                ? "bg-gray-100 text-gray-700"
-                                : "border border-dashed border-gray-200 bg-white text-gray-300"
-                          }`}
-                        >
-                          {seat.label && (
-                            <div className="text-xs font-medium opacity-70">
-                              {seat.label}
-                            </div>
-                          )}
-                          <div className={`text-sm font-medium ${isMySeats ? "text-white" : ""}`}>
-                            {isMySeats ? "You" : occupantName ?? "Empty"}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
+                </h3>
+                {table.capacity && (
+                  <span className="event-body text-xs event-card-muted-text">
+                    {table.capacity} seats
+                  </span>
                 )}
               </div>
-            );
-          })}
-        </div>
+
+              {table.seats && table.seats.length > 0 && (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {table.seats.map((seat) => {
+                    const isMySeat = seat.attendeeId === attendee?.id;
+                    const occupantName = seat.attendeeId
+                      ? attendeesMap.get(seat.attendeeId) ?? "Guest"
+                      : null;
+
+                    return (
+                      <div
+                        key={seat.id}
+                        className="rounded-xl p-3 text-center"
+                        style={
+                          isMySeat
+                            ? {
+                                background: "var(--event-card-chip-bg)",
+                                outline: `2px solid var(--event-primary)`,
+                                outlineOffset: "-1px",
+                              }
+                            : seat.attendeeId
+                              ? { background: "rgba(0,0,0,0.04)" }
+                              : {
+                                  border: "1px dashed var(--event-card-divider)",
+                                  background: "transparent",
+                                }
+                        }
+                      >
+                        {seat.label && (
+                          <div className="event-body mb-0.5 text-xs font-medium event-card-muted-text">
+                            {seat.label}
+                          </div>
+                        )}
+                        <div
+                          className={`event-heading text-sm font-medium ${isMySeat ? "font-bold" : ""}`}
+                          style={{
+                            color: isMySeat
+                              ? "var(--event-primary)"
+                              : seat.attendeeId
+                                ? "var(--event-card-text)"
+                                : "var(--event-card-muted)",
+                          }}
+                        >
+                          {isMySeat ? "You" : occupantName ?? "Empty"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

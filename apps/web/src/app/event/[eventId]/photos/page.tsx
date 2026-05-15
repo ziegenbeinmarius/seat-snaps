@@ -10,11 +10,11 @@ export default async function PhotosPage({ params }: Props) {
   const attendee = await getCurrentAttendee();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white border-b border-gray-200 px-4 py-4">
-        <h1 className="text-xl font-bold text-gray-900">Photos</h1>
+    <div className="min-h-screen px-4 pb-6 pt-8">
+      <div className="mb-5 px-2">
+        <h1 className="event-heading text-2xl font-semibold text-white drop-shadow-sm">Photos</h1>
         {attendee && (
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="event-body mt-0.5 text-sm text-white/60">
             {attendee.photoLimit} photo limit per guest
           </p>
         )}

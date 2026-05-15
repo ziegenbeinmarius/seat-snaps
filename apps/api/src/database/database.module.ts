@@ -11,6 +11,7 @@ import {
   DrizzlePhotoRepository,
   DrizzleAttendeeSessionRepository,
   DrizzleScheduleItemRepository,
+  DrizzleEventThemeRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
@@ -23,6 +24,7 @@ import {
   PHOTO_REPOSITORY,
   ATTENDEE_SESSION_REPOSITORY,
   SCHEDULE_ITEM_REPOSITORY,
+  EVENT_THEME_REPOSITORY,
 } from "../domain/repositories";
 
 const DB_PROVIDER = Symbol("DATABASE");
@@ -89,6 +91,11 @@ const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleScheduleItemRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: EVENT_THEME_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventThemeRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
   exports: [
     USER_REPOSITORY,
@@ -101,6 +108,7 @@ const DB_PROVIDER = Symbol("DATABASE");
     PHOTO_REPOSITORY,
     ATTENDEE_SESSION_REPOSITORY,
     SCHEDULE_ITEM_REPOSITORY,
+    EVENT_THEME_REPOSITORY,
   ],
 })
 export class DatabaseModule {}

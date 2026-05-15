@@ -9,3 +9,4 @@ export * from "./IPhotoRepository";
 export * from "./IBroadcastRepository";
 export * from "./IAttendeeSessionRepository";
 export * from "./IScheduleItemRepository";
+export * from "./IEventThemeRepository";
