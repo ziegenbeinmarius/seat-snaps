@@ -26,8 +26,8 @@
     {
       "idx": 3,
       "version": "7",
-      "when": 1747500000000,
-      "tag": "0003_room_layout",
+      "when": 1747440000000,
+      "tag": "0003_attendee_checkin",
       "breakpoints": true
     }
   ]

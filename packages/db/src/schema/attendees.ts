@@ -18,6 +18,7 @@ export const attendees = pgTable(
     seatId: uuid("seat_id"),
     qrToken: text("qr_token").notNull().unique(),
     photoLimit: integer("photo_limit").notNull().default(10),
+    checkedInAt: timestamp("checked_in_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
