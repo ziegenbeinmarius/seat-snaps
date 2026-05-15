@@ -45,7 +45,11 @@ export function PhotoModerationPanel({ eventId }: Props) {
   const toggleSelect = (id: string) => {
     setBulkSelected((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, type ChangeEvent } from "react";
 import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees } from "@/lib/api/attendees";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { AttendeeResponse } from "@seat-snaps/shared";
@@ -61,7 +61,7 @@ export function AttendeesPanel({ eventId }: Props) {
     await deleteMutation.mutateAsync(id);
   }
 
-  async function handleCsvImport(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleCsvImport(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
     const text = await file.text();
