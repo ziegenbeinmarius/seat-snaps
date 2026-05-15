@@ -15,6 +15,7 @@ import {
 import { AttendeesService } from "./attendees.service";
 import { CreateAttendeeDto } from "./dto/create-attendee.dto";
 import { UpdateAttendeeDto } from "./dto/update-attendee.dto";
+import { CheckinDto } from "./dto/checkin.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
@@ -46,10 +47,10 @@ export class AttendeesController {
   @Post("checkin")
   checkIn(
     @Param("eventId") eventId: string,
-    @Body() body: { qrToken: string },
+    @Body() dto: CheckinDto,
     @CurrentUser() user: SessionUser,
   ) {
-    return this.attendeesService.checkIn(eventId, body.qrToken, user.id);
+    return this.attendeesService.checkIn(eventId, dto.qrToken, user.id);
   }
 
   @Post("import")
