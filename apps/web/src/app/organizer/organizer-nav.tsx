@@ -3,7 +3,7 @@
 import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar } from "lucide-react";
+import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
@@ -13,28 +13,36 @@ export function OrganizerNav() {
   const eventMatch = pathname.match(/^\/organizer\/events\/([^/]+)/);
   const eventId = eventMatch?.[1];
 
-  const links: { href: Route; icon: React.ElementType; label: string; active: boolean }[] = eventId
+  const eventBase = eventId ? `/organizer/events/${eventId}` : null;
+
+  const links: { href: Route; icon: React.ElementType; label: string; active: boolean }[] = eventId && eventBase
     ? [
         {
-          href: `/organizer/events/${eventId}/attendees` as Route,
+          href: eventBase as Route,
+          icon: Home,
+          label: "Home",
+          active: pathname === eventBase,
+        },
+        {
+          href: `${eventBase}/attendees` as Route,
           icon: Users,
           label: "Attendees",
           active: pathname.includes("/attendees"),
         },
         {
-          href: `/organizer/events/${eventId}/schedule` as Route,
+          href: `${eventBase}/schedule` as Route,
           icon: Calendar,
           label: "Schedule",
           active: pathname.includes("/schedule"),
         },
         {
-          href: `/organizer/events/${eventId}/photos` as Route,
+          href: `${eventBase}/photos` as Route,
           icon: Camera,
           label: "Photos",
           active: pathname.includes("/photos"),
         },
         {
-          href: `/organizer/events/${eventId}/checkin` as Route,
+          href: `${eventBase}/checkin` as Route,
           icon: QrCode,
           label: "Check-in",
           active: pathname.includes("/checkin"),

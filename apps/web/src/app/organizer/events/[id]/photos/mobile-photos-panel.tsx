@@ -17,7 +17,8 @@ export function MobilePhotosPanel({ eventId }: Props) {
   const toggleHighlight = useToggleHighlight(eventId);
 
   const [filter, setFilter] = useState<Filter>("pending");
-  const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
+  const [lightboxId, setLightboxId] = useState<string | null>(null);
+  const lightbox = lightboxId ? (photos.find((p) => p.id === lightboxId) ?? null) : null;
 
   const touchStartX = useRef<number>(0);
   const touchStartY = useRef<number>(0);
@@ -36,12 +37,12 @@ export function MobilePhotosPanel({ eventId }: Props) {
 
   const handleApprove = (photo: PhotoResponse) => {
     updateStatus.mutate({ photoId: photo.id, status: "approved" });
-    if (lightbox?.id === photo.id) setLightbox(null);
+    if (lightboxId === photo.id) setLightboxId(null);
   };
 
   const handleReject = (photo: PhotoResponse) => {
     updateStatus.mutate({ photoId: photo.id, status: "rejected" });
-    if (lightbox?.id === photo.id) setLightbox(null);
+    if (lightboxId === photo.id) setLightboxId(null);
   };
 
   const onTouchStart = (e: React.TouchEvent) => {
@@ -130,7 +131,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
               className="relative overflow-hidden rounded-2xl"
               onTouchStart={onTouchStart}
               onTouchEnd={(e) => onTouchEnd(e, photo)}
-              onClick={() => setLightbox(photo)}
+              onClick={() => setLightboxId(photo.id)}
             >
               <div className="aspect-square">
                 <img
@@ -175,13 +176,13 @@ export function MobilePhotosPanel({ eventId }: Props) {
       {lightbox && (
         <div
           className="fixed inset-0 z-50 flex flex-col bg-black/95"
-          onClick={() => setLightbox(null)}
+          onClick={() => setLightboxId(null)}
         >
           <div className="flex items-center justify-between p-4">
             <span className="text-sm text-white">{lightbox.attendeeName}</span>
             <button
               className="rounded-full bg-white/10 p-2 text-white"
-              onClick={() => setLightbox(null)}
+              onClick={() => setLightboxId(null)}
             >
               <X className="h-5 w-5" />
             </button>

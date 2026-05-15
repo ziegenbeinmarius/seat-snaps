@@ -4,7 +4,6 @@ import { ArrowLeft, LogOut } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
-import { OrganizerEventNav } from "./organizer-event-nav";
 
 interface Props {
   children: ReactNode;
@@ -78,8 +77,6 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
           style={{ background: "white" }}
         />
       </div>
-
-      <OrganizerEventNav eventId={id} />
 
       <div className="px-4 py-4">{children}</div>
     </div>
