@@ -177,6 +177,15 @@ export function SchedulePanel({ eventId }: Props) {
         </div>
       )}
 
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}
+        title="Delete schedule item?"
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => { const id = confirmDelete; setConfirmDelete(null); if (id) void handleDelete(id); }}
+      />
+
       <Dialog
         open={showAddDialog || !!editingItem}
         onOpenChange={(open) => { if (!open) closeDialog(); }}
