@@ -3,7 +3,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CreateInviteSchema, type CreateInviteInput, type EventMember } from "@seat-snaps/shared";
+import { CreateInviteSchema, type EventMember } from "@seat-snaps/shared";
+
+type InviteFormValues = { email: string; role: "organizer"; expiresInDays?: number };
 import { useEventMembers, useRemoveMember } from "@/lib/api/events";
 import { useCreateInvite, useEventInvites } from "@/lib/api/invites";
 import { Button } from "@/components/ui/button";
@@ -32,13 +34,13 @@ export function TeamPanel({ eventId, initialMembers }: TeamPanelProps) {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<CreateInviteInput>({
+  } = useForm<InviteFormValues>({
     resolver: zodResolver(CreateInviteSchema),
     defaultValues: { role: "organizer", expiresInDays: 7 },
   });
 
-  async function onInviteSubmit(data: CreateInviteInput) {
-    await createInvite.mutateAsync(data);
+  async function onInviteSubmit(data: InviteFormValues) {
+    await createInvite.mutateAsync({ ...data, expiresInDays: data.expiresInDays ?? 7 });
     reset();
     setInviteOpen(false);
   }

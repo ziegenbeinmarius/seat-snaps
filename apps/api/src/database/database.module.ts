@@ -5,12 +5,18 @@ import {
   DrizzleEventRepository,
   DrizzleEventMembershipRepository,
   DrizzleOrganizerInviteRepository,
+  DrizzleAttendeeRepository,
+  DrizzleTableRepository,
+  DrizzleSeatRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
   EVENT_REPOSITORY,
   EVENT_MEMBERSHIP_REPOSITORY,
   ORGANIZER_INVITE_REPOSITORY,
+  ATTENDEE_REPOSITORY,
+  TABLE_REPOSITORY,
+  SEAT_REPOSITORY,
 } from "../domain/repositories";
 
 const DB_PROVIDER = Symbol("DATABASE");
@@ -46,7 +52,30 @@ const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleOrganizerInviteRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: ATTENDEE_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleAttendeeRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: TABLE_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleTableRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: SEAT_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleSeatRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
-  exports: [USER_REPOSITORY, EVENT_REPOSITORY, EVENT_MEMBERSHIP_REPOSITORY, ORGANIZER_INVITE_REPOSITORY],
+  exports: [
+    USER_REPOSITORY,
+    EVENT_REPOSITORY,
+    EVENT_MEMBERSHIP_REPOSITORY,
+    ORGANIZER_INVITE_REPOSITORY,
+    ATTENDEE_REPOSITORY,
+    TABLE_REPOSITORY,
+    SEAT_REPOSITORY,
+  ],
 })
 export class DatabaseModule {}

@@ -1,10 +1,11 @@
 import { auth } from "./auth";
 import { NextResponse } from "next/server";
+import type { NextMiddleware } from "next/server";
 
 const PROTECTED = ["/dashboard"];
 const AUTH_ONLY = ["/login", "/register"];
 
-export default auth((req) => {
+const middleware = auth((req: { auth: unknown; nextUrl: URL }) => {
   const { nextUrl } = req;
   const session = req.auth;
 
@@ -21,6 +22,8 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/dashboard", nextUrl));
   }
 });
+
+export default middleware as unknown as NextMiddleware;
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icons|manifest.json).*)"],

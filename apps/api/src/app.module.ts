@@ -7,6 +7,10 @@ import { AuthModule } from "./auth/auth.module";
 import { EventsModule } from "./events/events.module";
 import { EventMembershipsModule } from "./event-memberships/event-memberships.module";
 import { OrganizerInvitesModule } from "./organizer-invites/organizer-invites.module";
+import { AttendeesModule } from "./attendees/attendees.module";
+import { TablesModule } from "./tables/tables.module";
+import { SeatsModule } from "./seats/seats.module";
+import { QrModule } from "./qr/qr.module";
 
 @Module({
   imports: [
@@ -16,6 +20,10 @@ import { OrganizerInvitesModule } from "./organizer-invites/organizer-invites.mo
     EventsModule,
     EventMembershipsModule,
     OrganizerInvitesModule,
+    AttendeesModule,
+    TablesModule,
+    SeatsModule,
+    QrModule,
   ],
   controllers: [AppController],
   providers: [AppService],

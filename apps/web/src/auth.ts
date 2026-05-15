@@ -1,4 +1,4 @@
-import NextAuth, { type DefaultSession } from "next-auth";
+import NextAuth, { type DefaultSession, type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import type { JWT } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
@@ -24,7 +24,7 @@ declare module "next-auth/jwt" {
   }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+const nextAuth: NextAuthResult = NextAuth({
   providers: [
     Credentials({
       async authorize(credentials) {
@@ -87,3 +87,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     strategy: "jwt",
   },
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const { handlers, auth, signIn, signOut } = nextAuth as any;
+export { handlers, auth, signIn, signOut };
