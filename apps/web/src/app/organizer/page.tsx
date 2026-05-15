@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { apiRequest } from "@/lib/api";
-import { CalendarDays, MapPin, Plus } from "lucide-react";
+import { CalendarDays, MapPin } from "lucide-react";
 import type { EventResponse } from "@seat-snaps/shared";
+import { NewEventDialog } from "@/components/events/new-event-dialog";
 
 export const metadata: Metadata = { title: "My Events — Organizer" };
 
@@ -37,13 +38,11 @@ export default async function OrganizerPage() {
         >
           My Events
         </h1>
-        <Link
-          href="/dashboard/events/new"
+        <NewEventDialog
+          iconOnly
           className="flex h-10 w-10 items-center justify-center rounded-full shadow-md"
           style={{ background: "hsl(28 65% 44%)", color: "white" }}
-        >
-          <Plus className="h-5 w-5" />
-        </Link>
+        />
       </div>
 
       {events.length === 0 ? (
@@ -52,14 +51,10 @@ export default async function OrganizerPage() {
           <p className="mb-4 text-sm" style={{ color: "hsl(28 8% 50%)" }}>
             No events yet. Create your first event to get started.
           </p>
-          <Link
-            href="/dashboard/events/new"
+          <NewEventDialog
             className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-medium text-white"
             style={{ background: "hsl(28 65% 44%)" }}
-          >
-            <Plus className="h-4 w-4" />
-            Create event
-          </Link>
+          />
         </div>
       ) : (
         <div className="space-y-3">

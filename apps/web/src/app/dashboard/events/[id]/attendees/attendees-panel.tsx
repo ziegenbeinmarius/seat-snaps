@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees, useUnassignAttendee } from "@/lib/api/attendees";
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { AttendeeResponse } from "@seat-snaps/shared";
 import { AttendeeQrDialog } from "./attendee-qr-dialog";
@@ -36,6 +38,7 @@ export function AttendeesPanel({ eventId }: Props) {
   const [editingAttendee, setEditingAttendee] = useState<AttendeeResponse | null>(null);
   const [form, setForm] = useState({ name: "", email: "", groupLabel: "" });
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function openAdd() {
@@ -69,7 +72,6 @@ export function AttendeesPanel({ eventId }: Props) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this attendee?")) return;
     await deleteMutation.mutateAsync(id);
   }
 
@@ -188,16 +190,23 @@ export function AttendeesPanel({ eventId }: Props) {
                     )}
                   <TableCell>
                     <div className="flex gap-1 justify-end">
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(a)}>
-                        Edit
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                        onClick={() => openEdit(a)}
+                        aria-label="Edit"
+                      >
+                        <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="text-destructive"
-                        onClick={() => handleDelete(a.id)}
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                        onClick={() => setConfirmDelete(a.id)}
+                        aria-label="Delete"
                       >
-                        Del
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -207,6 +216,15 @@ export function AttendeesPanel({ eventId }: Props) {
           </Table>
         </Card>
       )}
+
+      <ConfirmDialog
+        open={!!confirmDelete}
+        onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}
+        title="Delete this attendee?"
+        description="This action cannot be undone."
+        confirmLabel="Delete"
+        onConfirm={() => { if (confirmDelete) handleDelete(confirmDelete); }}
+      />
 
       <Dialog
         open={showAddDialog || !!editingAttendee}

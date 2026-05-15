@@ -5,6 +5,9 @@ import { Pencil, Trash2 } from "lucide-react";
 import { useScheduleItems, useCreateScheduleItem, useUpdateScheduleItem, useDeleteScheduleItem } from "@/lib/api/schedule";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -166,15 +169,6 @@ export function SchedulePanel({ eventId }: Props) {
         </div>
       )}
 
-      <ConfirmDialog
-        open={!!confirmDelete}
-        onOpenChange={(open) => { if (!open) setConfirmDelete(null); }}
-        title="Delete schedule item?"
-        description="This action cannot be undone."
-        confirmLabel="Delete"
-        onConfirm={() => { if (confirmDelete) void handleDelete(confirmDelete); }}
-      />
-
       <Dialog
         open={showAddDialog || !!editingItem}
         onOpenChange={(open) => { if (!open) closeDialog(); }}
@@ -184,28 +178,37 @@ export function SchedulePanel({ eventId }: Props) {
             <DialogTitle>{editingItem ? "Edit Schedule Item" : "Add Schedule Item"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Input
-              placeholder="Title *"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-            />
-            <Input
-              placeholder="Description (optional)"
-              value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
-            />
-            <div className="space-y-1">
-              <label className="text-sm font-medium">Start time *</label>
+            <div className="space-y-1.5">
+              <Label htmlFor="schedule-title">Title *</Label>
               <Input
-                type="datetime-local"
+                id="schedule-title"
+                placeholder="Title *"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="schedule-description">Description</Label>
+              <Textarea
+                id="schedule-description"
+                placeholder="Description (optional)"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="schedule-start">Start time *</Label>
+              <DateTimePicker
+                id="schedule-start"
                 value={form.startTime}
                 onChange={(e) => setForm({ ...form, startTime: e.target.value })}
               />
             </div>
-            <div className="space-y-1">
-              <label className="text-sm font-medium">End time (optional)</label>
-              <Input
-                type="datetime-local"
+            <div className="space-y-1.5">
+              <Label htmlFor="schedule-end">End time (optional)</Label>
+              <DateTimePicker
+                id="schedule-end"
                 value={form.endTime}
                 onChange={(e) => setForm({ ...form, endTime: e.target.value })}
               />
