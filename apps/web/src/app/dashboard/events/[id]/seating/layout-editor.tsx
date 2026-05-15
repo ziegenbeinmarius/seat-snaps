@@ -330,11 +330,12 @@ export function LayoutEditor({ eventId }: Props) {
                 const h = table.height ?? SHAPE_DEFAULTS[shape].h;
                 const cx = pos.x + w / 2;
                 const cy = pos.y + h / 2;
-                // Scale chairs proportionally with the table
+                // Scale chairs gently with table size (sqrt for moderate growth)
                 const scaleFactor = w / SHAPE_DEFAULTS[shape].w;
-                const chairR = Math.max(8, Math.min(22, Math.round(12 * scaleFactor)));
-                const gap = Math.max(4, Math.round(6 * scaleFactor));
-                const labelFontSize = Math.max(8, Math.min(14, Math.round(9 * scaleFactor)));
+                const sqrtScale = Math.sqrt(scaleFactor);
+                const chairR = Math.max(8, Math.min(17, Math.round(12 * sqrtScale)));
+                const gap = Math.max(4, Math.round(6 * sqrtScale));
+                const labelFontSize = Math.max(8, Math.min(12, Math.round(9 * sqrtScale)));
 
                 return seats.map((seat, i) => {
                   const total = seats.length;

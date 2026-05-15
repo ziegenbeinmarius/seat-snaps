@@ -23,16 +23,38 @@ interface Props {
 export function RoomLayout({ tables, attendeesMap, myAttendeeId, myTableId, mySeatId }: Props) {
   const [activeTable, setActiveTable] = useState<TableResponse | null>(null);
 
+  // Auto-zoom: compute bounding box of all tables so content fills the view
+  const PADDING = 60;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const t of tables) {
+    const tx = t.positionX ?? 80;
+    const ty = t.positionY ?? 80;
+    const shape = (t.shape ?? "rectangular") as TableShape;
+    const tw = t.width ?? SHAPE_DEFAULTS[shape].w;
+    const th = t.height ?? SHAPE_DEFAULTS[shape].h;
+    minX = Math.min(minX, tx);
+    minY = Math.min(minY, ty);
+    maxX = Math.max(maxX, tx + tw);
+    maxY = Math.max(maxY, ty + th);
+  }
+  const hasContent = tables.length > 0 && isFinite(minX);
+  const vbX = hasContent ? Math.max(0, minX - PADDING) : 0;
+  const vbY = hasContent ? Math.max(0, minY - PADDING) : 0;
+  const vbW = hasContent ? Math.min(CANVAS_W, maxX + PADDING) - vbX : CANVAS_W;
+  const vbH = hasContent ? Math.min(CANVAS_H, maxY + PADDING) - vbY : CANVAS_H;
+  // Use the content aspect ratio for the container height
+  const aspectRatio = vbH / vbW;
+
   return (
     <div className="space-y-4">
       {/* Room canvas */}
       <div
         className="relative w-full overflow-hidden rounded-2xl glass-card"
-        style={{ paddingBottom: `${(CANVAS_H / CANVAS_W) * 100}%` }}
+        style={{ paddingBottom: `${aspectRatio * 100}%` }}
       >
         <div className="absolute inset-0">
           <svg
-            viewBox={`0 0 ${CANVAS_W} ${CANVAS_H}`}
+            viewBox={`${vbX} ${vbY} ${vbW} ${vbH}`}
             className="w-full h-full"
             style={{ display: "block" }}
           >
@@ -119,25 +141,25 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId, myTableId, mySe
                   )}
                   <text
                     x={cx}
-                    y={cy - (table.capacity ? 9 : 0)}
+                    y={cy - (table.capacity ? 14 : 0)}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={16}
+                    fontSize={24}
                     fontWeight={700}
                     fill={textColor}
                     style={{ pointerEvents: "none" }}
                   >
-                    {table.name.length > 16 ? table.name.slice(0, 15) + "…" : table.name}
+                    {table.name.length > 12 ? table.name.slice(0, 11) + "…" : table.name}
                   </text>
                   {table.capacity && (
                     <text
                       x={cx}
-                      y={cy + 13}
+                      y={cy + 18}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fontSize={13}
+                      fontSize={18}
                       fill={textColor}
-                      opacity={0.75}
+                      opacity={0.8}
                       style={{ pointerEvents: "none" }}
                     >
                       {table.seats?.filter((s) => s.attendeeId).length ?? 0}/{table.capacity}
@@ -145,9 +167,9 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId, myTableId, mySe
                   )}
                   {isMyTable && (
                     <circle
-                      cx={x + w - 8}
-                      cy={y + 8}
-                      r={7}
+                      cx={x + w - 14}
+                      cy={y + 14}
+                      r={12}
                       fill="white"
                     />
                   )}
