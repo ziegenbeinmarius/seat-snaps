@@ -1,5 +1,7 @@
 export * from "./DrizzleUserRepository";
 export * from "./DrizzleEventRepository";
+export * from "./DrizzleEventMembershipRepository";
+export * from "./DrizzleOrganizerInviteRepository";
 export * from "./DrizzleAttendeeRepository";
 export * from "./DrizzleTableRepository";
 export * from "./DrizzleSeatRepository";

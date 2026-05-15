@@ -1,7 +1,17 @@
 import { Module, Global } from "@nestjs/common";
 import { createDb } from "@seat-snaps/db";
-import { DrizzleUserRepository } from "../infrastructure/repositories";
-import { USER_REPOSITORY } from "../domain/repositories";
+import {
+  DrizzleUserRepository,
+  DrizzleEventRepository,
+  DrizzleEventMembershipRepository,
+  DrizzleOrganizerInviteRepository,
+} from "../infrastructure/repositories";
+import {
+  USER_REPOSITORY,
+  EVENT_REPOSITORY,
+  EVENT_MEMBERSHIP_REPOSITORY,
+  ORGANIZER_INVITE_REPOSITORY,
+} from "../domain/repositories";
 
 const DB_PROVIDER = Symbol("DATABASE");
 
@@ -21,7 +31,22 @@ const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleUserRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: EVENT_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: EVENT_MEMBERSHIP_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventMembershipRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: ORGANIZER_INVITE_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleOrganizerInviteRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
-  exports: [USER_REPOSITORY],
+  exports: [USER_REPOSITORY, EVENT_REPOSITORY, EVENT_MEMBERSHIP_REPOSITORY, ORGANIZER_INVITE_REPOSITORY],
 })
 export class DatabaseModule {}
