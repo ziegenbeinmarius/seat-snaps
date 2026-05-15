@@ -151,6 +151,8 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
               <Image
                 src={photo.thumbnailUrl ?? photo.url}
                 alt="Photo"
+                fill
+                sizes="(max-width: 768px) 33vw, 20vw"
                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
               />
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
