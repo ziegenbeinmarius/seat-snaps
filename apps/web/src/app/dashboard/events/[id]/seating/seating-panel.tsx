@@ -1,19 +1,62 @@
 "use client";
 
 import { useState } from "react";
-import { useTables, useCreateTable, useDeleteTable, useSeats, useAssignSeat, useUnassignSeat } from "@/lib/api/tables";
+import { LayoutEditor } from "./layout-editor";
+import { useTables, useCreateTable, useDeleteTable, useAssignSeat, useUnassignSeat } from "@/lib/api/tables";
 import { useAttendees } from "@/lib/api/attendees";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import type { SeatResponse, AttendeeResponse } from "@seat-snaps/shared";
+import type { SeatResponse } from "@seat-snaps/shared";
 
 interface Props {
   eventId: string;
 }
 
+type ViewMode = "layout" | "list";
+
 export function SeatingPanel({ eventId }: Props) {
+  const [viewMode, setViewMode] = useState<ViewMode>("layout");
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium text-muted-foreground">View:</span>
+        <div className="flex rounded-md border border-border overflow-hidden">
+          <button
+            className={`px-3 py-1.5 text-sm font-medium transition-colors ${
+              viewMode === "layout"
+                ? "bg-accent text-accent-foreground"
+                : "bg-background text-muted-foreground hover:bg-accent/50"
+            }`}
+            onClick={() => setViewMode("layout")}
+          >
+            Layout
+          </button>
+          <button
+            className={`px-3 py-1.5 text-sm font-medium transition-colors border-l border-border ${
+              viewMode === "list"
+                ? "bg-accent text-accent-foreground"
+                : "bg-background text-muted-foreground hover:bg-accent/50"
+            }`}
+            onClick={() => setViewMode("list")}
+          >
+            List
+          </button>
+        </div>
+      </div>
+
+      {viewMode === "layout" ? (
+        <LayoutEditor eventId={eventId} />
+      ) : (
+        <ListSeatingPanel eventId={eventId} />
+      )}
+    </div>
+  );
+}
+
+function ListSeatingPanel({ eventId }: Props) {
   const { data: tables = [], isLoading: tablesLoading } = useTables(eventId);
   const { data: attendees = [] } = useAttendees(eventId);
   const createTable = useCreateTable(eventId);
@@ -72,8 +115,7 @@ export function SeatingPanel({ eventId }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Seating Plan</h2>
+      <div className="flex justify-end">
         <Button size="sm" onClick={() => setShowAddTable(true)}>
           Add Table
         </Button>
@@ -82,7 +124,7 @@ export function SeatingPanel({ eventId }: Props) {
       {tables.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            No tables yet. Add a table to start planning.
+            No tables yet. Switch to Layout view to start planning.
           </CardContent>
         </Card>
       ) : (

@@ -4,6 +4,8 @@ import { parse } from "csv-parse/sync";
 import type { Attendee } from "@seat-snaps/db";
 import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
 import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
+import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
+import { SEAT_REPOSITORY } from "../domain/repositories/ISeatRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
@@ -16,6 +18,8 @@ export class AttendeesService implements IAttendeeService {
   constructor(
     @Inject(ATTENDEE_REPOSITORY)
     private readonly attendeeRepository: IAttendeeRepository,
+    @Inject(SEAT_REPOSITORY)
+    private readonly seatRepository: ISeatRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
@@ -102,6 +106,16 @@ export class AttendeesService implements IAttendeeService {
       }),
       ...(data.photoLimit !== undefined && { photoLimit: data.photoLimit }),
     });
+  }
+
+  async clearSeatAssignment(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {
+    await this.requireMember(eventId, userId);
+    const attendee = await this.attendeeRepository.findById(attendeeId);
+    if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
+    if (attendee.seatId) {
+      await this.seatRepository.unassignAttendee(attendee.seatId);
+    }
+    return this.attendeeRepository.update(attendeeId, { tableId: null, seatId: null });
   }
 
   async delete(attendeeId: string, eventId: string, userId: string): Promise<void> {

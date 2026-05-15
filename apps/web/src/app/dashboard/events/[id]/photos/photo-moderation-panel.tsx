@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Check, X, Trash2, ZoomIn, User, Star } from "lucide-react";
 import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto, useToggleHighlight } from "@/lib/api/photos";
 import { Badge } from "@/components/ui/badge";
@@ -177,10 +178,14 @@ export function PhotoModerationPanel({ eventId }: Props) {
               >
                 {/* Image area */}
                 <div className="relative aspect-square">
-                  <img
+                  <Image
                     src={photo.thumbnailUrl ?? photo.url}
                     alt={`Photo by ${photo.attendeeName}`}
-                    className="h-full w-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    className="object-cover"
+                    style={{ borderRadius: 'inherit' }}
+                    priority={filter === "highlight"}
                   />
 
                   {/* Decorative hover overlay — never intercepts clicks */}
@@ -304,12 +309,17 @@ export function PhotoModerationPanel({ eventId }: Props) {
             </button>
           </div>
 
-          <img
-            src={lightbox.url}
-            alt={`Photo by ${lightbox.attendeeName}`}
-            className="max-h-[80vh] max-w-[90vw] rounded-lg object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
+          <div style={{ position: 'relative', width: '90vw', height: '80vh', maxWidth: '90vw', maxHeight: '80vh' }}>
+            <Image
+              src={lightbox.url}
+              alt={`Photo by ${lightbox.attendeeName}`}
+              fill
+              sizes="90vw"
+              className="object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+              priority
+            />
+          </div>
 
           <div className="mt-4 flex gap-3" onClick={(e) => e.stopPropagation()}>
             {lightbox.status !== "approved" && (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { QrPanel } from "./qr-panel";
+// import { QrPanel } from "./qr-panel";
 
 export const metadata: Metadata = { title: "QR Codes" };
 
@@ -19,8 +19,8 @@ export default async function QrPage({ params }: { params: Promise<{ id: string 
           </Link>
         </Button>
       </div>
-
-      <QrPanel eventId={id} />
+      <div className="text-muted-foreground text-sm">Bulk QR codes are now in the Attendees section.</div>
+      {/* Deprecated QR codes button removed */}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {
 import { TablesService } from "./tables.service";
 import { CreateTableDto } from "./dto/create-table.dto";
 import { UpdateTableDto } from "./dto/update-table.dto";
+import { BulkUpdatePositionsDto } from "./dto/bulk-update-positions.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
@@ -29,6 +30,16 @@ export class TablesController {
   @Get()
   list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {
     return this.tablesService.listForEvent(eventId, user.id);
+  }
+
+  @Patch("positions")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  bulkUpdatePositions(
+    @Param("eventId") eventId: string,
+    @Body() dto: BulkUpdatePositionsDto,
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.tablesService.bulkUpdatePositions(eventId, dto.positions, user.id);
   }
 
   @Post()

@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
   output: "standalone",
   transpilePackages: ["@seat-snaps/shared"],
   typedRoutes: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "t3.storageapi.dev",
+        port: "",
+        pathname: "/**",
+      },
+    ],
+  },
   webpack: (config) => {
     config.resolve.extensionAlias = {
       ".js": [".ts", ".tsx", ".js", ".jsx"],

@@ -1,7 +1,7 @@
 import type { Table, NewTable } from "@seat-snaps/db";
 
 export type UpdateTableData = Partial<
-  Pick<NewTable, "name" | "label" | "capacity" | "positionX" | "positionY">
+  Pick<NewTable, "name" | "label" | "capacity" | "positionX" | "positionY" | "shape" | "rotation" | "width" | "height">
 >;
 
 export interface ITableRepository {

@@ -4,12 +4,14 @@ import type { ITableRepository } from "../domain/repositories/ITableRepository";
 import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
 import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
 import { SEAT_REPOSITORY } from "../domain/repositories/ISeatRepository";
+import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
+import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { ITableService, TableWithSeats } from "./domain/ITableService";
-import type { CreateTableInput, UpdateTableInput } from "@seat-snaps/shared";
+import type { CreateTableInput, UpdateTableInput, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
 
 @Injectable()
 export class TablesService implements ITableService {
@@ -18,6 +20,8 @@ export class TablesService implements ITableService {
     private readonly tableRepository: ITableRepository,
     @Inject(SEAT_REPOSITORY)
     private readonly seatRepository: ISeatRepository,
+    @Inject(ATTENDEE_REPOSITORY)
+    private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
@@ -53,6 +57,10 @@ export class TablesService implements ITableService {
       capacity: data.capacity ?? null,
       positionX: data.positionX ?? null,
       positionY: data.positionY ?? null,
+      shape: data.shape ?? "rectangular",
+      rotation: data.rotation ?? 0,
+      width: data.width ?? null,
+      height: data.height ?? null,
     });
 
     if (data.capacity && data.capacity > 0) {
@@ -86,13 +94,43 @@ export class TablesService implements ITableService {
       ...(data.capacity !== undefined && { capacity: data.capacity }),
       ...(data.positionX !== undefined && { positionX: data.positionX }),
       ...(data.positionY !== undefined && { positionY: data.positionY }),
+      ...(data.shape !== undefined && { shape: data.shape }),
+      ...(data.rotation !== undefined && { rotation: data.rotation }),
+      ...(data.width !== undefined && { width: data.width }),
+      ...(data.height !== undefined && { height: data.height }),
     });
+  }
+
+  async bulkUpdatePositions(
+    eventId: string,
+    positions: BulkUpdateTablePositionsInput,
+    userId: string,
+  ): Promise<void> {
+    await this.requireMember(eventId, userId);
+    await Promise.all(
+      positions.map((item) =>
+        this.tableRepository.update(item.tableId, {
+          positionX: item.positionX,
+          positionY: item.positionY,
+          ...(item.rotation !== undefined && { rotation: item.rotation }),
+        }),
+      ),
+    );
   }
 
   async delete(tableId: string, eventId: string, userId: string): Promise<void> {
     await this.requireMember(eventId, userId);
     const existing = await this.tableRepository.findById(tableId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Table not found");
+
+    // Clear denormalized tableId/seatId on any attendees assigned to this table's seats
+    const seats = await this.seatRepository.findByTableId(tableId);
+    await Promise.all(
+      seats
+        .filter((s) => s.attendeeId)
+        .map((s) => this.attendeeRepository.update(s.attendeeId!, { tableId: null, seatId: null })),
+    );
+
     await this.tableRepository.delete(tableId);
   }
 

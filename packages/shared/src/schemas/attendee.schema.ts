@@ -1,5 +1,8 @@
 import { z } from "zod";
 
+export const TableShapeSchema = z.enum(["round", "rectangular", "long"]);
+export type TableShape = z.infer<typeof TableShapeSchema>;
+
 export const CreateAttendeeSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email().optional(),
@@ -37,11 +40,26 @@ export const CreateTableSchema = z.object({
   capacity: z.number().int().positive().optional(),
   positionX: z.number().optional(),
   positionY: z.number().optional(),
+  shape: TableShapeSchema.optional(),
+  rotation: z.number().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
 });
 export type CreateTableInput = z.infer<typeof CreateTableSchema>;
 
 export const UpdateTableSchema = CreateTableSchema.partial();
 export type UpdateTableInput = z.infer<typeof UpdateTableSchema>;
+
+export const BulkUpdateTablePositionSchema = z.object({
+  tableId: z.string().uuid(),
+  positionX: z.number(),
+  positionY: z.number(),
+  rotation: z.number().optional(),
+});
+export type BulkUpdateTablePositionItem = z.infer<typeof BulkUpdateTablePositionSchema>;
+
+export const BulkUpdateTablePositionsSchema = z.array(BulkUpdateTablePositionSchema);
+export type BulkUpdateTablePositionsInput = z.infer<typeof BulkUpdateTablePositionsSchema>;
 
 export const SeatResponseSchema = z.object({
   id: z.string().uuid(),
@@ -62,6 +80,10 @@ export const TableResponseSchema = z.object({
   capacity: z.number().nullable(),
   positionX: z.number().nullable(),
   positionY: z.number().nullable(),
+  shape: TableShapeSchema.nullable(),
+  rotation: z.number().nullable(),
+  width: z.number().nullable(),
+  height: z.number().nullable(),
   createdAt: z.coerce.date(),
   seats: z.array(SeatResponseSchema).optional(),
 });
