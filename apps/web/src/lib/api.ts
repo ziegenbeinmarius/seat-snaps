@@ -45,6 +45,8 @@ export async function apiRequest<T>(
 ): Promise<T> {
   const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
   const token = await getSessionToken();
+  const method = init?.method ?? "GET";
+  const url = `${apiUrl}/api${path}`;
 
   const headers: Record<string, string> = {
     ...(init?.headers as Record<string, string>),
@@ -56,10 +58,36 @@ export async function apiRequest<T>(
 
   if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(`${apiUrl}/api${path}`, { ...init, headers });
+  const res = await fetch(url, { ...init, headers }).catch((error: unknown) => {
+    console.error("[server api] network failure", {
+      method,
+      path,
+      url,
+      hasToken: !!token,
+      error,
+    });
+    throw new Error(
+      `Could not reach API for ${method} ${path}. Check INTERNAL_API_URL (${apiUrl}) and API availability.`,
+    );
+  });
+
   if (!res.ok) {
-    const error = await res.json().catch(() => ({ message: res.statusText }));
-    throw new Error(error.message ?? "API request failed");
+    const error = await res.json().catch(() => ({}));
+    const message = Array.isArray((error as { message?: string | string[] }).message)
+      ? (error as { message: string[] }).message.join(", ")
+      : (error as { message?: string }).message;
+
+    console.error("[server api] request failed", {
+      method,
+      path,
+      url,
+      hasToken: !!token,
+      status: res.status,
+      statusText: res.statusText,
+      errorBody: error,
+    });
+
+    throw new Error(message ?? `API request failed (${res.status} ${res.statusText}) for ${method} ${path}`);
   }
   if (res.status === 204) return undefined as T;
 
