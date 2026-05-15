@@ -172,7 +172,7 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
           onClick={() => setLightbox(null)}
         >
           <button
-            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white"
+            className="absolute right-4 top-4 rounded-full bg-black/60 p-2 text-white shadow-lg hover:bg-black/80"
             onClick={() => setLightbox(null)}
           >
             <X className="h-6 w-6" />
