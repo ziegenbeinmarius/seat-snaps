@@ -45,6 +45,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role?: string | null;
+    checkedAt?: number;
   }
 }
 
@@ -103,11 +104,31 @@ const nextAuth: NextAuthResult = NextAuth({
     },
   },
   callbacks: {
-    jwt({ token, user }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.role = user.role ?? null;
+        token.checkedAt = Math.floor(Date.now() / 1000);
+        return token;
       }
+
+      // Re-check user existence every 5 minutes so deleted accounts are evicted
+      const now = Math.floor(Date.now() / 1000);
+      const lastChecked = typeof token.checkedAt === "number" ? token.checkedAt : 0;
+      if (now - lastChecked > 5 * 60) {
+        const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
+        try {
+          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/exists`);
+          if (res.ok) {
+            const body = (await res.json()) as { exists: boolean };
+            if (!body.exists) return null; // clears the session cookie
+          }
+        } catch {
+          // Network error — keep session valid rather than logging everyone out
+        }
+        token.checkedAt = now;
+      }
+
       return token;
     },
     session({ session, token }) {

@@ -3,6 +3,7 @@
 import { signIn, signOut } from "@/auth";
 import { RegisterSchema } from "@seat-snaps/shared";
 import { AuthError } from "next-auth";
+import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -60,29 +61,27 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
 
 export async function logoutAction(): Promise<void> {
   try {
-    await signOut({ redirect: false });
-  } catch {
-    // Ignore and clear cookies below as a fallback.
-  }
+    // Auth.js v5: signOut clears the session cookie then throws NEXT_REDIRECT.
+    // Re-throwing the redirect lets the Set-Cookie header propagate correctly.
+    await signOut({ redirectTo: "/login" });
+  } catch (e) {
+    if (isRedirectError(e)) throw e;
 
-  const cookieStore = await cookies();
-  const baseNames = [
-    "authjs.session-token",
-    "__Secure-authjs.session-token",
-    "next-auth.session-token",
-    "__Secure-next-auth.session-token",
-  ];
-
-  const allCookies = cookieStore.getAll().map((cookie) => cookie.name);
-
-  for (const baseName of baseNames) {
-    cookieStore.delete(baseName);
-    for (const name of allCookies) {
-      if (name.startsWith(`${baseName}.`)) {
-        cookieStore.delete(name);
+    // Real error: Auth.js couldn't sign out, so manually scrub the cookies.
+    const cookieStore = await cookies();
+    const baseNames = [
+      "authjs.session-token",
+      "__Secure-authjs.session-token",
+      "next-auth.session-token",
+      "__Secure-next-auth.session-token",
+    ];
+    const allCookies = cookieStore.getAll().map((c) => c.name);
+    for (const baseName of baseNames) {
+      cookieStore.delete(baseName);
+      for (const name of allCookies) {
+        if (name.startsWith(`${baseName}.`)) cookieStore.delete(name);
       }
     }
+    redirect("/login");
   }
-
-  redirect("/login");
 }
