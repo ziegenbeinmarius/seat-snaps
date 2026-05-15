@@ -2,48 +2,27 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Warm beige/cream palette */
+    --background: 39 33% 97%;
+    --foreground: 24 12% 18%;
+    --card: 38 30% 99%;
+    --card-foreground: 24 12% 18%;
+    --popover: 38 30% 99%;
+    --popover-foreground: 24 12% 18%;
+    --primary: 28 65% 44%;
+    --primary-foreground: 39 33% 97%;
+    --secondary: 35 22% 91%;
+    --secondary-foreground: 24 12% 22%;
+    --muted: 35 18% 92%;
+    --muted-foreground: 28 8% 52%;
+    --accent: 35 22% 91%;
+    --accent-foreground: 24 12% 22%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
-    --radius: 0.5rem;
-  }
-
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    --destructive-foreground: 39 33% 97%;
+    --border: 33 18% 86%;
+    --input: 33 18% 86%;
+    --ring: 28 65% 44%;
+    --radius: 0.75rem;
   }
 }
 
@@ -76,15 +55,95 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter, system-ui, sans-serif);
   }
 }
 
-/* Event theme CSS custom properties — set by the attendee layout via inline style */
-:root {
-  --event-primary: #3b82f6;
-  --event-secondary: #eff6ff;
+/* ─── Event theme CSS custom properties ─────────────────────────────────────
+   Set on the data-event-theme wrapper by the attendee layout. Inline style
+   overrides --event-primary / --event-secondary if the organizer customised them.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* Default (neutral warm) */
+[data-event-theme] {
+  --event-primary: #a07850;
+  --event-secondary: #f7f0e6;
+  --event-gradient: linear-gradient(145deg, #c4a882 0%, #a07850 45%, #7d5c38 100%);
+  --event-card-bg: rgba(255, 255, 255, 0.62);
+  --event-card-border: rgba(255, 255, 255, 0.5);
+  --event-card-shadow: 0 4px 24px rgba(100, 70, 30, 0.12);
+  --event-active-color: #a07850;
+  --event-nav-bg: rgba(255, 248, 238, 0.92);
+  --event-heading-font: var(--font-cormorant, Georgia, serif);
+  --event-body-font: var(--font-inter, system-ui, sans-serif);
 }
 
-.event-primary-bg { background-color: var(--event-primary); }
-.event-secondary-bg { background-color: var(--event-secondary); }
-.event-primary-text { color: var(--event-primary); }
+/* Wedding */
+[data-event-theme="wedding"] {
+  --event-primary: #b56b7e;
+  --event-secondary: #f9eef1;
+  --event-gradient: linear-gradient(145deg, #d4a8b4 0%, #b56b7e 45%, #8e4a5c 100%);
+  --event-card-bg: rgba(255, 255, 255, 0.65);
+  --event-card-border: rgba(255, 240, 244, 0.7);
+  --event-card-shadow: 0 4px 28px rgba(140, 70, 90, 0.13);
+  --event-active-color: #b56b7e;
+  --event-nav-bg: rgba(255, 248, 250, 0.93);
+  --event-heading-font: var(--font-cormorant, Georgia, serif);
+  --event-body-font: var(--font-lato, system-ui, sans-serif);
+}
+
+/* Birthday */
+[data-event-theme="birthday"] {
+  --event-primary: #e8623a;
+  --event-secondary: #fff3ee;
+  --event-gradient: linear-gradient(145deg, #f8a44c 0%, #e8623a 45%, #c040a0 100%);
+  --event-card-bg: rgba(255, 255, 255, 0.7);
+  --event-card-border: rgba(255, 255, 255, 0.65);
+  --event-card-shadow: 0 4px 24px rgba(200, 80, 50, 0.14);
+  --event-active-color: #e8623a;
+  --event-nav-bg: rgba(255, 250, 248, 0.93);
+  --event-heading-font: var(--font-nunito, system-ui, sans-serif);
+  --event-body-font: var(--font-nunito, system-ui, sans-serif);
+}
+
+/* Corporate */
+[data-event-theme="corporate"] {
+  --event-primary: #2558c4;
+  --event-secondary: #eff4ff;
+  --event-gradient: linear-gradient(145deg, #1a2f5e 0%, #2558c4 55%, #4a7fe0 100%);
+  --event-card-bg: rgba(255, 255, 255, 0.78);
+  --event-card-border: rgba(220, 230, 255, 0.5);
+  --event-card-shadow: 0 4px 24px rgba(30, 60, 140, 0.13);
+  --event-active-color: #2558c4;
+  --event-nav-bg: rgba(248, 250, 255, 0.94);
+  --event-heading-font: var(--font-inter, system-ui, sans-serif);
+  --event-body-font: var(--font-inter, system-ui, sans-serif);
+}
+
+/* ─── Glass card utility class ─────────────────────────────────────────────── */
+.glass-card {
+  background: var(--event-card-bg, rgba(255, 255, 255, 0.7));
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--event-card-border, rgba(255, 255, 255, 0.5));
+  box-shadow: var(--event-card-shadow, 0 4px 24px rgba(0, 0, 0, 0.08));
+}
+
+/* ─── Attendee typography helpers ───────────────────────────────────────────── */
+.event-heading {
+  font-family: var(--event-heading-font, inherit);
+  letter-spacing: -0.01em;
+}
+
+.event-body {
+  font-family: var(--event-body-font, inherit);
+}
+
+/* ─── Dashboard glass card ──────────────────────────────────────────────────── */
+.dashboard-glass {
+  background: rgba(255, 252, 247, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(220, 210, 195, 0.6);
+  box-shadow: 0 2px 20px rgba(120, 85, 40, 0.07);
+}

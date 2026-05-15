@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { MapPin, Calendar, Users, Camera } from "lucide-react";
+import { MapPin, Calendar } from "lucide-react";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import type { EventResponse, ScheduleItemResponse, TableResponse } from "@seat-snaps/shared";
 
@@ -72,49 +71,52 @@ export default async function AttendeeHomePage({ params }: Props) {
   const nextItem = scheduleItems ? getNextScheduleItem(scheduleItems) : null;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Hero header */}
-      <div
-        className="px-6 pb-8 pt-10 text-white"
-        style={{ background: "linear-gradient(to bottom, var(--event-primary), color-mix(in srgb, var(--event-primary) 80%, black))" }}
-      >
-        <div className="mb-1 flex items-center gap-2">
-          <span className="rounded-full bg-white/20 px-3 py-0.5 text-xs font-medium">
+    <div className="min-h-screen px-4 pb-6 pt-10">
+      {/* Hero header — sits on top of the gradient background */}
+      <div className="mb-6 px-2 text-white">
+        <div className="mb-2">
+          <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-medium backdrop-blur-sm">
             {EVENT_TYPE_LABEL[event?.type ?? "other"] ?? "Event"}
           </span>
         </div>
-        <h1 className="text-2xl font-bold">{event?.title ?? "Event"}</h1>
+        <h1 className="event-heading text-3xl font-semibold leading-tight text-white drop-shadow-sm">
+          {event?.title ?? "Event"}
+        </h1>
         {event?.date && (
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-blue-100">
-            <Calendar className="h-4 w-4" />
+          <p className="mt-1.5 flex items-center gap-1.5 text-sm text-white/80">
+            <Calendar className="h-3.5 w-3.5" />
             {formatDate(event.date)}
           </p>
         )}
         {event?.location && (
-          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-blue-100">
-            <MapPin className="h-4 w-4" />
+          <p className="mt-0.5 flex items-center gap-1.5 text-sm text-white/70">
+            <MapPin className="h-3.5 w-3.5" />
             {event.location}
           </p>
         )}
-        <p className="mt-3 text-lg font-medium">
+        <p className="event-body mt-4 text-lg font-medium text-white">
           Welcome, {attendee?.name ?? "Guest"}!
         </p>
       </div>
 
-      <div className="space-y-4 p-4">
+      <div className="space-y-3">
         {/* Schedule highlight */}
         {(currentItem || nextItem) && (
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div className="glass-card rounded-2xl p-4">
+            <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest text-white/60">
               Schedule
             </h2>
             {currentItem && (
-              <div className="mb-2 flex items-start gap-3 rounded-xl bg-blue-50 p-3">
-                <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-blue-500" />
+              <div className="mb-2 flex items-start gap-3 rounded-xl bg-white/20 p-3">
+                <div className="mt-1 h-2 w-2 shrink-0 animate-pulse rounded-full bg-white" />
                 <div>
-                  <div className="text-xs font-medium text-blue-600">Now</div>
-                  <div className="font-medium text-gray-900">{currentItem.title}</div>
-                  <div className="text-xs text-gray-500">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-white/70">
+                    Happening now
+                  </div>
+                  <div className="event-heading mt-0.5 font-semibold text-white">
+                    {currentItem.title}
+                  </div>
+                  <div className="event-body text-xs text-white/60">
                     {formatTime(currentItem.startTime)}
                     {currentItem.endTime && ` – ${formatTime(currentItem.endTime)}`}
                   </div>
@@ -122,12 +124,14 @@ export default async function AttendeeHomePage({ params }: Props) {
               </div>
             )}
             {nextItem && (
-              <div className="flex items-start gap-3 rounded-xl bg-gray-50 p-3">
-                <div className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-gray-300" />
+              <div className="flex items-start gap-3 rounded-xl bg-white/10 p-3">
+                <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-white/40" />
                 <div>
-                  <div className="text-xs font-medium text-gray-500">Next</div>
-                  <div className="font-medium text-gray-900">{nextItem.title}</div>
-                  <div className="text-xs text-gray-500">{formatTime(nextItem.startTime)}</div>
+                  <div className="text-xs font-medium text-white/50">Up next</div>
+                  <div className="event-heading font-medium text-white/90">{nextItem.title}</div>
+                  <div className="event-body text-xs text-white/50">
+                    {formatTime(nextItem.startTime)}
+                  </div>
                 </div>
               </div>
             )}
@@ -136,29 +140,29 @@ export default async function AttendeeHomePage({ params }: Props) {
 
         {/* My Seat */}
         {myTable && (
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div className="glass-card rounded-2xl p-4">
+            <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest text-white/60">
               My Seat
             </h2>
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
-                <MapPin className="h-6 w-6" />
+              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-white/20">
+                <MapPin className="h-6 w-6 text-white" />
               </div>
               <div>
-                <div className="text-lg font-bold text-gray-900">{myTable.name}</div>
+                <div className="event-heading text-xl font-semibold text-white">{myTable.name}</div>
                 {mySeat?.label && (
-                  <div className="text-sm text-gray-500">Seat {mySeat.label}</div>
+                  <div className="event-body text-sm text-white/70">Seat {mySeat.label}</div>
                 )}
               </div>
             </div>
             {nearbyAttendees && nearbyAttendees.length > 0 && (
-              <div className="mt-3 border-t border-gray-100 pt-3">
-                <div className="mb-1.5 text-xs text-gray-400">At your table</div>
-                <div className="flex flex-wrap gap-1">
+              <div className="mt-3 border-t border-white/15 pt-3">
+                <div className="event-body mb-1.5 text-xs text-white/50">Also at your table</div>
+                <div className="flex flex-wrap gap-1.5">
                   {nearbyAttendees.map((s) => (
                     <span
                       key={s.id}
-                      className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600"
+                      className="event-body rounded-full bg-white/20 px-2.5 py-0.5 text-xs text-white/80"
                     >
                       {s.attendeeId}
                     </span>
@@ -169,43 +173,13 @@ export default async function AttendeeHomePage({ params }: Props) {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="rounded-2xl bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            Explore
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
-            <Link
-              href={`/event/${eventId}/schedule`}
-              className="flex flex-col items-center gap-2 rounded-xl bg-blue-50 p-4 text-blue-700"
-            >
-              <Calendar className="h-6 w-6" />
-              <span className="text-xs font-medium">Schedule</span>
-            </Link>
-            <Link
-              href={`/event/${eventId}/attendees`}
-              className="flex flex-col items-center gap-2 rounded-xl bg-purple-50 p-4 text-purple-700"
-            >
-              <Users className="h-6 w-6" />
-              <span className="text-xs font-medium">Guests</span>
-            </Link>
-            <Link
-              href={`/event/${eventId}/seating`}
-              className="flex flex-col items-center gap-2 rounded-xl bg-green-50 p-4 text-green-700"
-            >
-              <Camera className="h-6 w-6" />
-              <span className="text-xs font-medium">Seating</span>
-            </Link>
-          </div>
-        </div>
-
         {/* Event description */}
         {event?.description && (
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+          <div className="glass-card rounded-2xl p-4">
+            <h2 className="event-body mb-2 text-xs font-semibold uppercase tracking-widest text-white/60">
               About
             </h2>
-            <p className="text-sm text-gray-700">{event.description}</p>
+            <p className="event-body text-sm leading-relaxed text-white/85">{event.description}</p>
           </div>
         )}
       </div>

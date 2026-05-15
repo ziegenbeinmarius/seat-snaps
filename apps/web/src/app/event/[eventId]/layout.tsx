@@ -9,6 +9,10 @@ interface Props {
   params: Promise<{ eventId: string }>;
 }
 
+interface EventInfo {
+  type: "wedding" | "birthday" | "corporate" | "other";
+}
+
 interface EventTheme {
   primaryColor: string | null;
   secondaryColor: string | null;
@@ -16,23 +20,24 @@ interface EventTheme {
   backgroundUrl: string | null;
 }
 
-async function fetchTheme(eventId: string): Promise<EventTheme | null> {
-  try {
-    const res = await fetch(`${API_URL}/api/events/${eventId}/theme`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json() as Promise<EventTheme>;
-  } catch {
-    return null;
-  }
-}
+async function fetchEventAndTheme(eventId: string) {
+  const [eventRes, themeRes] = await Promise.allSettled([
+    fetch(`${API_URL}/api/events/${eventId}/info`, { cache: "no-store" }),
+    fetch(`${API_URL}/api/events/${eventId}/theme`, { cache: "no-store" }),
+  ]);
 
-function buildThemeStyle(theme: EventTheme | null): React.CSSProperties {
-  if (!theme) return {};
-  const style: Record<string, string> = {};
-  if (theme.primaryColor) style["--event-primary"] = theme.primaryColor;
-  if (theme.secondaryColor) style["--event-secondary"] = theme.secondaryColor;
-  if (theme.backgroundUrl) style["--event-background-url"] = `url(${theme.backgroundUrl})`;
-  return style as React.CSSProperties;
+  let event: EventInfo | null = null;
+  let theme: EventTheme | null = null;
+
+  if (eventRes.status === "fulfilled" && eventRes.value.ok) {
+    event = (await eventRes.value.json()) as EventInfo;
+  }
+  if (themeRes.status === "fulfilled" && themeRes.value.ok) {
+    const body = await themeRes.value.json();
+    if (body && (body.primaryColor || body.secondaryColor)) theme = body as EventTheme;
+  }
+
+  return { event, theme };
 }
 
 export default async function AttendeeLayout({ children, params }: Props) {
@@ -49,11 +54,27 @@ export default async function AttendeeLayout({ children, params }: Props) {
     return null;
   }
 
-  const theme = await fetchTheme(eventId);
-  const themeStyle = buildThemeStyle(theme);
+  const { event, theme } = await fetchEventAndTheme(eventId);
+
+  // Map event type → CSS theme class; also allow custom colors to override
+  const eventThemeType = event?.type ?? "other";
+
+  const themeVars: Record<string, string> = {};
+  if (theme?.primaryColor) themeVars["--event-primary"] = theme.primaryColor;
+  if (theme?.secondaryColor) themeVars["--event-secondary"] = theme.secondaryColor;
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50" style={themeStyle}>
+    <div
+      className="flex min-h-screen flex-col"
+      data-event-theme={eventThemeType}
+      style={themeVars as React.CSSProperties}
+    >
+      {/* Full-page gradient background */}
+      <div
+        className="fixed inset-0 -z-10"
+        style={{ background: "var(--event-gradient)" }}
+        aria-hidden="true"
+      />
       <main className="flex-1 pb-20">{children}</main>
       <AttendeeNav eventId={eventId} />
     </div>

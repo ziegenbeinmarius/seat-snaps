@@ -33,70 +33,70 @@ export default async function SchedulePage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="bg-white px-6 py-6 shadow-sm">
-        <h1 className="text-xl font-bold text-gray-900">Schedule</h1>
-      </div>
+    <div className="min-h-screen px-4 pb-6 pt-8">
+      <h1 className="event-heading mb-6 px-2 text-2xl font-semibold text-white drop-shadow-sm">
+        Schedule
+      </h1>
 
-      <div className="p-4">
-        {items.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <Clock className="mb-3 h-12 w-12 text-gray-200" />
-            <p className="text-gray-400">No schedule yet</p>
-          </div>
-        )}
-
-        <div className="space-y-1">
-          {items.map((item, index) => {
-            const active = isActive(item);
-            const past = isPast(item);
-
-            return (
-              <div key={item.id} className="flex gap-4">
-                {/* Timeline line */}
-                <div className="flex flex-col items-center">
-                  <div
-                    className={`mt-4 h-3 w-3 shrink-0 rounded-full border-2 ${
-                      active
-                        ? "border-blue-500 bg-blue-500"
-                        : past
-                          ? "border-gray-300 bg-gray-300"
-                          : "border-gray-300 bg-white"
-                    }`}
-                  />
-                  {index < items.length - 1 && (
-                    <div className="w-0.5 flex-1 bg-gray-200" />
-                  )}
-                </div>
-
-                {/* Content */}
-                <div
-                  className={`mb-1 flex-1 rounded-2xl p-4 ${
-                    active ? "bg-blue-50" : "bg-white"
-                  } shadow-sm`}
-                >
-                  {active && (
-                    <span className="mb-1 inline-block rounded-full bg-blue-600 px-2 py-0.5 text-xs font-medium text-white">
-                      Happening now
-                    </span>
-                  )}
-                  <div
-                    className={`font-semibold ${active ? "text-blue-900" : past ? "text-gray-400" : "text-gray-900"}`}
-                  >
-                    {item.title}
-                  </div>
-                  <div className="mt-0.5 text-xs text-gray-500">
-                    {formatTime(item.startTime)}
-                    {item.endTime && ` – ${formatTime(item.endTime)}`}
-                  </div>
-                  {item.description && (
-                    <p className="mt-1.5 text-sm text-gray-600">{item.description}</p>
-                  )}
-                </div>
-              </div>
-            );
-          })}
+      {items.length === 0 && (
+        <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
+          <Clock className="mb-3 h-10 w-10 text-white/30" />
+          <p className="event-body text-white/50">No schedule yet</p>
         </div>
+      )}
+
+      <div className="space-y-1">
+        {items.map((item, index) => {
+          const active = isActive(item);
+          const past = isPast(item);
+
+          return (
+            <div key={item.id} className="flex gap-3">
+              {/* Timeline */}
+              <div className="flex flex-col items-center pt-4">
+                <div
+                  className={`h-3 w-3 shrink-0 rounded-full border-2 ${
+                    active
+                      ? "border-white bg-white"
+                      : past
+                        ? "border-white/20 bg-white/20"
+                        : "border-white/50 bg-transparent"
+                  }`}
+                />
+                {index < items.length - 1 && (
+                  <div className="w-0.5 flex-1 bg-white/15" />
+                )}
+              </div>
+
+              {/* Card */}
+              <div
+                className={`mb-1 flex-1 rounded-2xl p-4 ${
+                  active ? "glass-card" : past ? "bg-white/8 opacity-60" : "glass-card"
+                }`}
+                style={active ? { background: "rgba(255,255,255,0.22)" } : {}}
+              >
+                {active && (
+                  <span className="mb-1.5 inline-flex items-center gap-1.5 rounded-full bg-white/25 px-2.5 py-0.5 text-xs font-semibold text-white">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+                    Happening now
+                  </span>
+                )}
+                <div className={`event-heading font-semibold ${past ? "text-white/40" : "text-white"}`}>
+                  {item.title}
+                </div>
+                <div className="event-body mt-0.5 text-xs text-white/55">
+                  {formatTime(item.startTime)}
+                  {item.endTime && ` – ${formatTime(item.endTime)}`}
+                </div>
+                {item.description && (
+                  <p className="event-body mt-1.5 text-sm leading-relaxed text-white/70">
+                    {item.description}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

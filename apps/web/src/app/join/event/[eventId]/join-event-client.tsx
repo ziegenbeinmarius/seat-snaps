@@ -24,10 +24,7 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
   async function handleJoin() {
     if (!selected) return;
     try {
-      const result = await createSession.mutateAsync({
-        attendeeId: selected,
-        eventId,
-      });
+      const result = await createSession.mutateAsync({ attendeeId: selected, eventId });
       document.cookie = `attendee-session=${result.token}; path=/; max-age=${90 * 24 * 60 * 60}; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
       router.push(`/event/${eventId}`);
     } catch {
@@ -36,54 +33,115 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <div className="bg-blue-600 px-6 py-10 text-white">
-        <h1 className="text-2xl font-bold">{eventTitle}</h1>
-        <p className="mt-1 text-blue-100">Find your name to join</p>
+    <div
+      className="flex min-h-screen flex-col"
+      style={{ background: "linear-gradient(160deg, #f5ede0 0%, #f0e6d4 40%, #ede0cc 100%)" }}
+    >
+      {/* Hero */}
+      <div
+        className="px-6 py-10"
+        style={{
+          background: "rgba(250, 244, 234, 0.6)",
+          backdropFilter: "blur(12px)",
+          borderBottom: "1px solid rgba(200, 175, 140, 0.3)",
+        }}
+      >
+        <p
+          className="mb-1 text-xs font-semibold uppercase tracking-widest"
+          style={{ color: "hsl(28 50% 50%)" }}
+        >
+          You&apos;re invited
+        </p>
+        <h1
+          className="text-3xl font-semibold"
+          style={{
+            fontFamily: "var(--font-cormorant, Georgia, serif)",
+            color: "hsl(24 12% 20%)",
+          }}
+        >
+          {eventTitle}
+        </h1>
+        <p className="mt-1 text-sm" style={{ color: "hsl(28 8% 52%)" }}>
+          Find your name below to get started
+        </p>
       </div>
 
       <div className="flex-1 p-6">
-        <input
-          type="text"
-          placeholder="Search your name..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="mb-4 w-full rounded-xl border border-gray-200 px-4 py-3 text-base outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-        />
+        <div
+          className="dashboard-glass mb-4 flex items-center rounded-2xl px-4 py-3"
+        >
+          <input
+            type="text"
+            placeholder="Search your name..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="flex-1 bg-transparent text-sm outline-none"
+            style={{ color: "hsl(24 12% 22%)" }}
+          />
+        </div>
 
         <div className="space-y-2">
           {filtered.length === 0 && (
-            <p className="py-8 text-center text-gray-400">No attendees found</p>
+            <p className="py-8 text-center text-sm" style={{ color: "hsl(28 8% 60%)" }}>
+              No attendees found
+            </p>
           )}
           {filtered.map((a) => (
             <button
               key={a.id}
               onClick={() => setSelected(a.id)}
-              className={`w-full rounded-xl border p-4 text-left transition-colors ${
+              className="w-full rounded-2xl p-4 text-left transition-all"
+              style={
                 selected === a.id
-                  ? "border-blue-500 bg-blue-50 text-blue-900"
-                  : "border-gray-100 bg-gray-50 text-gray-900 hover:border-blue-200"
-              }`}
+                  ? {
+                      background: "rgba(196, 148, 90, 0.18)",
+                      border: "1.5px solid rgba(196, 148, 90, 0.5)",
+                    }
+                  : {
+                      background: "rgba(255, 252, 247, 0.65)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid rgba(200, 175, 140, 0.35)",
+                    }
+              }
             >
-              <div className="font-medium">{a.name}</div>
+              <div
+                className="font-medium"
+                style={{
+                  fontFamily: "var(--font-cormorant, Georgia, serif)",
+                  fontSize: "1.05rem",
+                  color: "hsl(24 12% 20%)",
+                }}
+              >
+                {a.name}
+              </div>
               {a.groupLabel && (
-                <div className="mt-0.5 text-sm text-gray-500">{a.groupLabel}</div>
+                <div className="mt-0.5 text-xs" style={{ color: "hsl(28 8% 55%)" }}>
+                  {a.groupLabel}
+                </div>
               )}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="sticky bottom-0 border-t border-gray-100 bg-white p-6">
+      <div
+        className="sticky bottom-0 p-6"
+        style={{
+          background: "rgba(250, 244, 234, 0.88)",
+          backdropFilter: "blur(16px)",
+          borderTop: "1px solid rgba(200, 175, 140, 0.3)",
+        }}
+      >
         {createSession.error && (
-          <p className="mb-3 text-center text-sm text-red-500">{createSession.error.message}</p>
+          <p className="mb-3 text-center text-sm text-destructive">{createSession.error.message}</p>
         )}
         <button
           onClick={handleJoin}
           disabled={!selected || createSession.isPending}
-          className="w-full rounded-xl bg-blue-600 py-4 text-base font-semibold text-white disabled:opacity-50"
+          className="w-full rounded-2xl py-4 text-base font-semibold text-white transition-opacity disabled:opacity-40"
+          style={{ background: "linear-gradient(135deg, #c4955a 0%, #a07850 100%)" }}
         >
-          {createSession.isPending ? "Joining..." : "Join Event"}
+          {createSession.isPending ? "Joining…" : "Join Event →"}
         </button>
       </div>
     </div>
