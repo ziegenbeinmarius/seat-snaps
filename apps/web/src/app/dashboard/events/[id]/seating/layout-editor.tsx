@@ -28,9 +28,9 @@ const CANVAS_H = 680;
 
 // Default table dimensions per shape (in canvas units)
 const SHAPE_DEFAULTS: Record<TableShape, { w: number; h: number }> = {
-  round: { w: 90, h: 90 },
-  rectangular: { w: 120, h: 80 },
-  long: { w: 190, h: 65 },
+  round: { w: 140, h: 140 },
+  rectangular: { w: 180, h: 110 },
+  long: { w: 280, h: 90 },
 };
 
 interface Props {
@@ -69,6 +69,7 @@ export function LayoutEditor({ eventId }: Props) {
   const [selectedTable, setSelectedTable] = useState<TableResponse | null>(null);
   const [assignDialog, setAssignDialog] = useState<SeatResponse | null>(null);
   const [selectedAttendeeId, setSelectedAttendeeId] = useState("");
+  const [tableScalePercent, setTableScalePercent] = useState(100);
 
   // Compute canvas scale based on container width
   useEffect(() => {
@@ -192,6 +193,15 @@ export function LayoutEditor({ eventId }: Props) {
   const unassignedAttendees = attendees.filter((a) => !a.seatId);
 
   const currentSelectedTable = tables.find((t) => t.id === selectedTable?.id) ?? null;
+
+  // Sync scale slider to selected table's current dimensions
+  useEffect(() => {
+    if (currentSelectedTable) {
+      const shape = currentSelectedTable.shape ?? "rectangular";
+      const w = currentSelectedTable.width ?? SHAPE_DEFAULTS[shape].w;
+      setTableScalePercent(Math.round((w / SHAPE_DEFAULTS[shape].w) * 100));
+    }
+  }, [currentSelectedTable?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
 
@@ -320,19 +330,25 @@ export function LayoutEditor({ eventId }: Props) {
                 const h = table.height ?? SHAPE_DEFAULTS[shape].h;
                 const cx = pos.x + w / 2;
                 const cy = pos.y + h / 2;
-                const chairR = 10;
+                const chairR = 12;
                 const gap = 6;
 
                 return seats.map((seat, i) => {
                   const total = seats.length;
                   let sx: number;
                   let sy: number;
+                  let labelAnchorY: number;
+                  let labelBaseline: "auto" | "hanging";
 
                   if (shape === "round") {
                     const angle = (2 * Math.PI * i) / total - Math.PI / 2;
                     const orbitR = w / 2 + gap + chairR;
                     sx = cx + orbitR * Math.cos(angle);
                     sy = cy + orbitR * Math.sin(angle);
+                    // Label below chair for bottom half, above for top half
+                    const isBottom = Math.sin(angle) >= 0;
+                    labelAnchorY = isBottom ? sy + chairR + 9 : sy - chairR - 3;
+                    labelBaseline = isBottom ? "hanging" : "auto";
                   } else {
                     // Distribute along top and bottom edges
                     const perRow = Math.ceil(total / 2);
@@ -344,19 +360,15 @@ export function LayoutEditor({ eventId }: Props) {
                     sy = row === 0
                       ? pos.y - gap - chairR
                       : pos.y + h + gap + chairR;
+                    labelAnchorY = row === 0 ? sy - chairR - 3 : sy + chairR + 9;
+                    labelBaseline = row === 0 ? "auto" : "hanging";
                   }
 
                   const name = seat.attendeeId
                     ? (attendees.find((a) => a.id === seat.attendeeId)?.name ?? "")
                     : "";
-                  const initials = name
-                    ? name
-                        .split(" ")
-                        .slice(0, 2)
-                        .map((p) => p[0])
-                        .join("")
-                        .toUpperCase()
-                    : "";
+                  const firstName = name ? name.split(" ")[0] : "";
+                  const displayName = firstName.length > 9 ? firstName.slice(0, 8) + "…" : firstName;
                   const occupied = !!seat.attendeeId;
 
                   return (
@@ -370,17 +382,17 @@ export function LayoutEditor({ eventId }: Props) {
                         strokeWidth={1}
                         opacity={0.9}
                       />
-                      {initials && (
+                      {displayName && (
                         <text
                           x={sx}
-                          y={sy + 1}
+                          y={labelAnchorY}
                           textAnchor="middle"
-                          dominantBaseline="middle"
-                          fontSize={7}
-                          fontWeight={700}
-                          fill={occupied ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))"}
+                          dominantBaseline={labelBaseline}
+                          fontSize={9}
+                          fontWeight={600}
+                          fill="hsl(var(--foreground))"
                         >
-                          {initials}
+                          {displayName}
                         </text>
                       )}
                     </g>
@@ -412,6 +424,34 @@ export function LayoutEditor({ eventId }: Props) {
               Shape: {currentSelectedTable.shape ?? "rectangular"} ·{" "}
               Capacity: {currentSelectedTable.capacity ?? "—"}
             </p>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs text-muted-foreground">Size</label>
+                <span className="text-xs font-medium">{tableScalePercent}%</span>
+              </div>
+              <input
+                type="range"
+                min={40}
+                max={300}
+                step={10}
+                value={tableScalePercent}
+                onChange={(e) => setTableScalePercent(Number(e.target.value))}
+                onPointerUp={async () => {
+                  if (!currentSelectedTable) return;
+                  const shape = currentSelectedTable.shape ?? "rectangular";
+                  const defaults = SHAPE_DEFAULTS[shape];
+                  await updateTable.mutateAsync({
+                    tableId: currentSelectedTable.id,
+                    data: {
+                      width: Math.round(defaults.w * tableScalePercent / 100),
+                      height: Math.round(defaults.h * tableScalePercent / 100),
+                    },
+                  });
+                }}
+                className="w-full accent-primary"
+              />
+            </div>
 
             <div className="space-y-1.5">
               {(currentSelectedTable.seats ?? []).length === 0 ? (
