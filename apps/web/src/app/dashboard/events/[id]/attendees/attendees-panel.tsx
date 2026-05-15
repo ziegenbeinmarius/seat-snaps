@@ -15,6 +15,13 @@ interface Props {
 }
 
 export function AttendeesPanel({ eventId }: Props) {
+    // Helper to build the join URL for an attendee
+    const getJoinUrl = (qrToken: string) => {
+      if (typeof window !== "undefined") {
+        return `${window.location.origin}/join/${qrToken}`;
+      }
+      return `http://localhost:3005/join/${qrToken}`;
+    };
   const { data: attendees = [], isLoading } = useAttendees(eventId);
   const { data: tables = [] } = useTables(eventId);
   const tableMap = new Map(tables.map((t) => [t.id, t.name]));
@@ -117,6 +124,7 @@ export function AttendeesPanel({ eventId }: Props) {
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
                 <TableHead>Table</TableHead>
+                <TableHead>Join Link</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
@@ -147,6 +155,16 @@ export function AttendeesPanel({ eventId }: Props) {
                     ) : (
                       "—"
                     )}
+                  </TableCell>
+                  <TableCell className="text-xs">
+                    <a
+                      href={getJoinUrl(a.qrToken)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="break-all text-blue-700 underline hover:text-blue-900"
+                    >
+                      {getJoinUrl(a.qrToken)}
+                    </a>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1 justify-end">

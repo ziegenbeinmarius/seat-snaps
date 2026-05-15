@@ -21,7 +21,6 @@ export function AttendeeNav({ eventId }: Props) {
     { href: `${base}/attendees` as Route, icon: Users, label: "Guests" },
     { href: `${base}/seating` as Route, icon: MapPin, label: "Seating" },
     { href: `${base}/photos` as Route, icon: Camera, label: "Photos" },
-    { href: `${base}/highlights` as Route, icon: Star, label: "Highlights" },
   ];
 
   return (
