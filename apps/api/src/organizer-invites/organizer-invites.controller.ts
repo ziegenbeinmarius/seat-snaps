@@ -9,6 +9,7 @@ import {
 } from "@nestjs/common";
 import { OrganizerInvitesService } from "./organizer-invites.service";
 import { CreateInviteDto } from "./dto/create-invite.dto";
+import { AcceptWithRegistrationDto } from "./dto/accept-with-registration.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
@@ -47,5 +48,15 @@ export class OrganizerInvitesController {
   @HttpCode(HttpStatus.OK)
   acceptInvite(@Param("token") token: string, @CurrentUser() user: SessionUser) {
     return this.invitesService.acceptInvite(token, user.id);
+  }
+
+  @Post("invites/:token/accept-with-registration")
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  acceptWithRegistration(
+    @Param("token") token: string,
+    @Body() dto: AcceptWithRegistrationDto,
+  ) {
+    return this.invitesService.acceptWithRegistration(token, dto);
   }
 }
