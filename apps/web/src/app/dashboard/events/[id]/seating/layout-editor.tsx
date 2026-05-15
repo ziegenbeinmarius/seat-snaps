@@ -330,8 +330,11 @@ export function LayoutEditor({ eventId }: Props) {
                 const h = table.height ?? SHAPE_DEFAULTS[shape].h;
                 const cx = pos.x + w / 2;
                 const cy = pos.y + h / 2;
-                const chairR = 12;
-                const gap = 6;
+                // Scale chairs proportionally with the table
+                const scaleFactor = w / SHAPE_DEFAULTS[shape].w;
+                const chairR = Math.max(8, Math.min(22, Math.round(12 * scaleFactor)));
+                const gap = Math.max(4, Math.round(6 * scaleFactor));
+                const labelFontSize = Math.max(8, Math.min(14, Math.round(9 * scaleFactor)));
 
                 return seats.map((seat, i) => {
                   const total = seats.length;
@@ -345,9 +348,8 @@ export function LayoutEditor({ eventId }: Props) {
                     const orbitR = w / 2 + gap + chairR;
                     sx = cx + orbitR * Math.cos(angle);
                     sy = cy + orbitR * Math.sin(angle);
-                    // Label below chair for bottom half, above for top half
                     const isBottom = Math.sin(angle) >= 0;
-                    labelAnchorY = isBottom ? sy + chairR + 9 : sy - chairR - 3;
+                    labelAnchorY = isBottom ? sy + chairR + 2 : sy - chairR - 2;
                     labelBaseline = isBottom ? "hanging" : "auto";
                   } else {
                     // Distribute along top and bottom edges
@@ -360,7 +362,7 @@ export function LayoutEditor({ eventId }: Props) {
                     sy = row === 0
                       ? pos.y - gap - chairR
                       : pos.y + h + gap + chairR;
-                    labelAnchorY = row === 0 ? sy - chairR - 3 : sy + chairR + 9;
+                    labelAnchorY = row === 0 ? sy - chairR - 2 : sy + chairR + 2;
                     labelBaseline = row === 0 ? "auto" : "hanging";
                   }
 
@@ -388,7 +390,7 @@ export function LayoutEditor({ eventId }: Props) {
                           y={labelAnchorY}
                           textAnchor="middle"
                           dominantBaseline={labelBaseline}
-                          fontSize={9}
+                          fontSize={labelFontSize}
                           fontWeight={600}
                           fill="hsl(var(--foreground))"
                         >

@@ -7,9 +7,9 @@ const CANVAS_W = 1000;
 const CANVAS_H = 680;
 
 const SHAPE_DEFAULTS: Record<TableShape, { w: number; h: number }> = {
-  round: { w: 90, h: 90 },
-  rectangular: { w: 120, h: 80 },
-  long: { w: 190, h: 65 },
+  round: { w: 140, h: 140 },
+  rectangular: { w: 180, h: 110 },
+  long: { w: 280, h: 90 },
 };
 
 interface Props {
@@ -119,25 +119,25 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId, myTableId, mySe
                   )}
                   <text
                     x={cx}
-                    y={cy - (table.capacity ? 6 : 0)}
+                    y={cy - (table.capacity ? 9 : 0)}
                     textAnchor="middle"
                     dominantBaseline="middle"
-                    fontSize={11}
-                    fontWeight={600}
+                    fontSize={16}
+                    fontWeight={700}
                     fill={textColor}
                     style={{ pointerEvents: "none" }}
                   >
-                    {table.name.length > 10 ? table.name.slice(0, 9) + "…" : table.name}
+                    {table.name.length > 16 ? table.name.slice(0, 15) + "…" : table.name}
                   </text>
                   {table.capacity && (
                     <text
                       x={cx}
-                      y={cy + 10}
+                      y={cy + 13}
                       textAnchor="middle"
                       dominantBaseline="middle"
-                      fontSize={9}
+                      fontSize={13}
                       fill={textColor}
-                      opacity={0.7}
+                      opacity={0.75}
                       style={{ pointerEvents: "none" }}
                     >
                       {table.seats?.filter((s) => s.attendeeId).length ?? 0}/{table.capacity}
