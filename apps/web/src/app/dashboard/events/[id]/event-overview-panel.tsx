@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
@@ -154,8 +155,14 @@ export function EventOverviewPanel({ eventId }: Props) {
         ) : (
           <span />
         )}
-        <Button size="sm" variant="outline" onClick={startEdit}>
-          Edit
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          onClick={startEdit}
+          aria-label="Edit event"
+        >
+          <Pencil className="h-4 w-4" />
         </Button>
       </div>
 
