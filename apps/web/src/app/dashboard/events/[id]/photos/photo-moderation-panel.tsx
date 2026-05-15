@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircle, XCircle, Trash2, ZoomIn, X } from "lucide-react";
+import { Check, X, Trash2, ZoomIn } from "lucide-react";
 import { useOrganizerPhotos, useUpdatePhotoStatus, useDeletePhoto } from "@/lib/api/photos";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,10 @@ interface Props {
   eventId: string;
 }
 
-const STATUS_BADGE: Record<PhotoStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const STATUS_BADGE: Record<
+  PhotoStatus,
+  { label: string; variant: "default" | "secondary" | "destructive" | "outline" }
+> = {
   pending: { label: "Pending", variant: "secondary" },
   approved: { label: "Approved", variant: "default" },
   rejected: { label: "Rejected", variant: "destructive" },
@@ -41,14 +44,18 @@ export function PhotoModerationPanel({ eventId }: Props) {
 
   const bulkApprove = async () => {
     await Promise.all(
-      [...bulkSelected].map((id) => updateStatus.mutateAsync({ photoId: id, status: "approved" })),
+      [...bulkSelected].map((id) =>
+        updateStatus.mutateAsync({ photoId: id, status: "approved" }),
+      ),
     );
     setBulkSelected(new Set());
   };
 
   const bulkReject = async () => {
     await Promise.all(
-      [...bulkSelected].map((id) => updateStatus.mutateAsync({ photoId: id, status: "rejected" })),
+      [...bulkSelected].map((id) =>
+        updateStatus.mutateAsync({ photoId: id, status: "rejected" }),
+      ),
     );
     setBulkSelected(new Set());
   };
@@ -75,7 +82,10 @@ export function PhotoModerationPanel({ eventId }: Props) {
         {filterTabs.map(({ key, label }) => (
           <button
             key={key}
-            onClick={() => { setFilter(key); setBulkSelected(new Set()); }}
+            onClick={() => {
+              setFilter(key);
+              setBulkSelected(new Set());
+            }}
             className={`rounded-full px-3 py-1 text-sm font-medium transition-colors ${
               filter === key
                 ? "bg-primary text-primary-foreground"
@@ -91,11 +101,21 @@ export function PhotoModerationPanel({ eventId }: Props) {
       {bulkSelected.size > 0 && (
         <div className="flex items-center gap-3 rounded-lg border bg-muted/50 px-4 py-2">
           <span className="text-sm text-muted-foreground">{bulkSelected.size} selected</span>
-          <Button size="sm" variant="outline" onClick={bulkApprove} disabled={updateStatus.isPending}>
-            <CheckCircle className="mr-1.5 h-3.5 w-3.5" /> Approve all
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={bulkApprove}
+            disabled={updateStatus.isPending}
+          >
+            <Check className="mr-1.5 h-3.5 w-3.5" /> Approve all
           </Button>
-          <Button size="sm" variant="outline" onClick={bulkReject} disabled={updateStatus.isPending}>
-            <XCircle className="mr-1.5 h-3.5 w-3.5" /> Reject all
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={bulkReject}
+            disabled={updateStatus.isPending}
+          >
+            <X className="mr-1.5 h-3.5 w-3.5" /> Reject all
           </Button>
           <button
             className="ml-auto text-xs text-muted-foreground hover:text-foreground"
@@ -125,82 +145,89 @@ export function PhotoModerationPanel({ eventId }: Props) {
             return (
               <div
                 key={photo.id}
-                className={`relative group rounded-lg overflow-hidden border-2 transition-all ${
+                className={`group relative rounded-lg overflow-hidden border-2 transition-all ${
                   selected ? "border-primary" : "border-transparent"
                 }`}
               >
-                {/* Checkbox */}
-                <button
-                  className="absolute left-2 top-2 z-10"
-                  onClick={() => toggleSelect(photo.id)}
-                >
-                  <div
-                    className={`h-5 w-5 rounded border-2 flex items-center justify-center transition-colors ${
-                      selected
-                        ? "bg-primary border-primary text-primary-foreground"
-                        : "bg-white/80 border-white/60"
-                    }`}
-                  >
-                    {selected && <span className="text-[10px] leading-none">✓</span>}
-                  </div>
-                </button>
-
-                {/* Status badge */}
-                <div className="absolute right-2 top-2 z-10">
-                  <Badge variant={badge.variant} className="text-[10px] px-1.5 py-0">
-                    {badge.label}
-                  </Badge>
-                </div>
-
-                {/* Image */}
-                <button
-                  className="block aspect-square w-full"
-                  onClick={() => setLightbox(photo)}
-                >
+                {/* Image area — clicking opens lightbox */}
+                <div className="relative aspect-square">
                   <img
                     src={photo.thumbnailUrl ?? photo.url}
                     alt="Photo"
                     className="h-full w-full object-cover"
                   />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <ZoomIn className="h-6 w-6 text-white" />
-                  </div>
-                </button>
 
-                {/* Actions */}
-                <div className="flex items-center justify-between gap-1 bg-white px-2 py-1.5">
-                  <div className="flex gap-1">
+                  {/* Hover overlay — pointer-events-none so it never intercepts clicks */}
+                  <div className="pointer-events-none absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/30" />
+
+                  {/* Checkbox — top-left */}
+                  <button
+                    className="absolute left-2 top-2 z-20"
+                    onClick={() => toggleSelect(photo.id)}
+                  >
+                    <div
+                      className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                        selected
+                          ? "border-primary bg-primary text-primary-foreground"
+                          : "border-white/60 bg-white/80"
+                      }`}
+                    >
+                      {selected && <span className="text-[10px] leading-none">✓</span>}
+                    </div>
+                  </button>
+
+                  {/* Status badge — top-right */}
+                  <div className="absolute right-2 top-2 z-20">
+                    <Badge variant={badge.variant} className="px-1.5 py-0 text-[10px]">
+                      {badge.label}
+                    </Badge>
+                  </div>
+
+                  {/* Quick approve / reject — appear on hover, center of image */}
+                  <div className="absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 items-center justify-center gap-3 opacity-0 transition-opacity group-hover:opacity-100">
                     {photo.status !== "approved" && (
                       <button
                         title="Approve"
                         onClick={() =>
                           updateStatus.mutate({ photoId: photo.id, status: "approved" })
                         }
-                        className="rounded p-1 text-green-600 hover:bg-green-50 transition-colors"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-green-500 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                       >
-                        <CheckCircle className="h-4 w-4" />
+                        <Check className="h-5 w-5" />
                       </button>
                     )}
+                    <button
+                      title="View full size"
+                      onClick={() => setLightbox(photo)}
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-white shadow backdrop-blur-sm transition-transform hover:scale-110"
+                    >
+                      <ZoomIn className="h-4 w-4" />
+                    </button>
                     {photo.status !== "rejected" && (
                       <button
                         title="Reject"
                         onClick={() =>
                           updateStatus.mutate({ photoId: photo.id, status: "rejected" })
                         }
-                        className="rounded p-1 text-amber-600 hover:bg-amber-50 transition-colors"
+                        className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-transform hover:scale-110 active:scale-95"
                       >
-                        <XCircle className="h-4 w-4" />
+                        <X className="h-5 w-5" />
                       </button>
                     )}
                   </div>
+                </div>
+
+                {/* Action bar — below image, never overlapped by hover overlay */}
+                <div className="flex items-center justify-between gap-1 bg-white px-2 py-1.5">
+                  <span className="text-xs text-muted-foreground">{badge.label}</span>
                   <button
-                    title="Delete"
+                    title="Delete permanently"
                     onClick={() => {
                       if (confirm("Delete this photo permanently?")) {
                         deletePhoto.mutate(photo.id);
                       }
                     }}
-                    className="rounded p-1 text-red-500 hover:bg-red-50 transition-colors"
+                    className="rounded p-1 text-red-500 transition-colors hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -228,12 +255,14 @@ export function PhotoModerationPanel({ eventId }: Props) {
               <X className="h-5 w-5" />
             </button>
           </div>
+
           <img
             src={lightbox.url}
             alt="Photo"
             className="max-h-[80vh] max-w-[90vw] rounded-lg object-contain"
             onClick={(e) => e.stopPropagation()}
           />
+
           <div className="mt-4 flex gap-3" onClick={(e) => e.stopPropagation()}>
             {lightbox.status !== "approved" && (
               <Button
@@ -243,7 +272,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
                   setLightbox(null);
                 }}
               >
-                <CheckCircle className="mr-1.5 h-4 w-4" /> Approve
+                <Check className="mr-1.5 h-4 w-4" /> Approve
               </Button>
             )}
             {lightbox.status !== "rejected" && (
@@ -255,9 +284,21 @@ export function PhotoModerationPanel({ eventId }: Props) {
                   setLightbox(null);
                 }}
               >
-                <XCircle className="mr-1.5 h-4 w-4" /> Reject
+                <X className="mr-1.5 h-4 w-4" /> Reject
               </Button>
             )}
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => {
+                if (confirm("Delete this photo permanently?")) {
+                  deletePhoto.mutate(lightbox.id);
+                  setLightbox(null);
+                }
+              }}
+            >
+              <Trash2 className="mr-1.5 h-4 w-4" /> Delete
+            </Button>
           </div>
         </div>
       )}
