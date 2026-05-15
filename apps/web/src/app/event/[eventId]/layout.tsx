@@ -1,3 +1,4 @@
+import React from "react";
 import { redirect } from "next/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";

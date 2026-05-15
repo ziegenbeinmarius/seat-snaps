@@ -1,3 +1,4 @@
+import React from "react";
 import type { Metadata, Viewport } from "next";
 import { Inter, Cormorant_Garamond, Nunito, Lato } from "next/font/google";
 import { Toaster } from "sonner";
