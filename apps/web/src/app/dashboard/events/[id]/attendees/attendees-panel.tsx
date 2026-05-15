@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { AttendeeResponse } from "@seat-snaps/shared";
+import { AttendeeQrDialog } from "./attendee-qr-dialog";
 
 interface Props {
   eventId: string;
@@ -86,6 +87,14 @@ export function AttendeesPanel({ eventId }: Props) {
 
   const isPending = createMutation.isPending || updateMutation.isPending;
 
+  const [qrDialog, setQrDialog] = useState<{ open: boolean; attendee: AttendeeResponse | null }>({ open: false, attendee: null });
+
+  // Helper to get QR code image URL for an attendee
+  const getQrUrl = (qrToken: string) => {
+    // Use the same join URL as the QR code route
+    return `/api/qr/${qrToken}`;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -124,7 +133,7 @@ export function AttendeesPanel({ eventId }: Props) {
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
                 <TableHead>Table</TableHead>
-                <TableHead>Join Link</TableHead>
+                <TableHead>QR / Link</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
@@ -157,15 +166,26 @@ export function AttendeesPanel({ eventId }: Props) {
                     )}
                   </TableCell>
                   <TableCell className="text-xs">
-                    <a
-                      href={getJoinUrl(a.qrToken)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="break-all text-blue-700 underline hover:text-blue-900"
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setQrDialog({ open: true, attendee: a })}
                     >
-                      {getJoinUrl(a.qrToken)}
-                    </a>
+                      Show QR / Link
+                    </Button>
                   </TableCell>
+                    {qrDialog.attendee && (
+                      <AttendeeQrDialog
+                        open={qrDialog.open}
+                        onOpenChange={(open: boolean) => setQrDialog({ open, attendee: open ? qrDialog.attendee : null })}
+                        name={qrDialog.attendee.name}
+                        tableName={qrDialog.attendee.tableId ? tableMap.get(qrDialog.attendee.tableId) ?? null : null}
+                        joinUrl={getJoinUrl(qrDialog.attendee.qrToken)}
+                        qrUrl={getQrUrl(qrDialog.attendee.qrToken)}
+                        eventId={eventId}
+                        attendeeId={qrDialog.attendee.id}
+                      />
+                    )}
                   <TableCell>
                     <div className="flex gap-1 justify-end">
                       <Button variant="ghost" size="sm" onClick={() => openEdit(a)}>
@@ -236,6 +256,22 @@ export function AttendeesPanel({ eventId }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Bulk QR download button at bottom */}
+      <div className="flex justify-end pt-6">
+        <Button
+          size="sm"
+          variant="default"
+          onClick={() => {
+            const API_BASE = process.env.NEXT_PUBLIC_API_URL
+              ?? (typeof window !== "undefined"
+                ? `${window.location.protocol}//${window.location.hostname}:3001`
+                : "http://localhost:3001");
+            window.open(`${API_BASE}/api/events/${eventId}/qr/bulk`, "_blank");
+          }}
+        >
+          Download All QR Codes (HTML)
+        </Button>
+      </div>
     </div>
   );
 }

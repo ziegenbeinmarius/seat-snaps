@@ -11,15 +11,6 @@ export default async function SeatingPage({ params }: { params: Promise<{ id: st
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-end">
-        <Button asChild variant="outline" size="sm">
-          <Link href={`/dashboard/events/${id}/seating/qr`}>
-            <QrCode className="h-4 w-4" />
-            QR Codes
-          </Link>
-        </Button>
-      </div>
-
       <SeatingPanel eventId={id} />
     </div>
   );
