@@ -1,4 +1,6 @@
 import { Module } from "@nestjs/common";
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerModule } from "@nestjs/throttler";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HealthModule } from "./health/health.module";
@@ -15,9 +17,14 @@ import { AttendeeSessionsModule } from "./attendee-sessions/attendee-sessions.mo
 import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
 import { PhotosModule } from "./photos/photos.module";
 import { ThemesModule } from "./themes/themes.module";
+import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      { name: "short", ttl: 60_000, limit: 10 },
+      { name: "long", ttl: 600_000, limit: 100 },
+    ]),
     DatabaseModule,
     AuthModule,
     HealthModule,
@@ -34,6 +41,9 @@ import { ThemesModule } from "./themes/themes.module";
     ThemesModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    { provide: APP_GUARD, useClass: FastifyThrottlerGuard },
+  ],
 })
 export class AppModule {}

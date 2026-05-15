@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { attendees } from "./attendees.js";
 import { events } from "./events.js";
 
@@ -20,6 +20,7 @@ export const attendeeSessions = pgTable(
   (t) => [
     index("attendee_sessions_attendee_id_idx").on(t.attendeeId),
     index("attendee_sessions_event_id_idx").on(t.eventId),
+    uniqueIndex("attendee_sessions_token_idx").on(t.token),
   ],
 );
 
