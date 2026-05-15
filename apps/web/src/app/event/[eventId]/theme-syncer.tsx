@@ -2,8 +2,6 @@
 
 import { useEffect } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
-
 interface Props {
   eventId: string;
 }
@@ -15,8 +13,8 @@ export function ThemeSyncer({ eventId }: Props) {
     async function sync() {
       try {
         const [eventRes, themeRes] = await Promise.allSettled([
-          fetch(`${API_URL}/api/events/${eventId}/info`),
-          fetch(`${API_URL}/api/events/${eventId}/theme`),
+          fetch(`/api/proxy/events/${eventId}/info`),
+          fetch(`/api/proxy/events/${eventId}/theme`),
         ]);
 
         if (!mounted) return;

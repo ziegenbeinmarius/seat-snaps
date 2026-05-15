@@ -12,7 +12,7 @@ import { AUTH_SERVICE } from "./domain/IAuthService";
     JwtModule.registerAsync({
       useFactory: () => ({
         secret: process.env.AUTH_SECRET,
-        signOptions: { algorithm: "HS256" },
+        signOptions: { algorithm: "HS256", expiresIn: "30d" },
         verifyOptions: { algorithms: ["HS256"] },
       }),
     }),

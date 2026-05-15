@@ -1,6 +1,6 @@
 import type { User, NewUser } from "@seat-snaps/db";
 
-export type UpdateUserData = Partial<Pick<NewUser, "name" | "email" | "passwordHash" | "avatarUrl">>;
+export type UpdateUserData = Partial<Pick<NewUser, "name" | "email" | "passwordHash" | "avatarUrl" | "tokenVersion">>;
 
 export interface IUserRepository {
   findById(id: string): Promise<User | null>;
