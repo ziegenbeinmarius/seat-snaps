@@ -8,7 +8,11 @@ import { useEvent, useUpdateEvent } from "@/lib/api/events";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface Props {
   eventId: string;
@@ -25,7 +29,7 @@ function toDatetimeLocal(date: Date | string | null | undefined): string {
 export function EventOverviewPanel({ eventId }: Props) {
   const { data: event, isLoading } = useEvent(eventId);
   const updateMutation = useUpdateEvent(eventId);
-  const [editing, setEditing] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [saved, setSaved] = useState(false);
 
   const {
@@ -37,7 +41,7 @@ export function EventOverviewPanel({ eventId }: Props) {
     resolver: zodResolver(UpdateEventSchema),
   });
 
-  function startEdit() {
+  function openEdit() {
     if (!event) return;
     reset({
       title: event.title,
@@ -47,20 +51,20 @@ export function EventOverviewPanel({ eventId }: Props) {
       location: event.location ?? undefined,
       type: event.type,
     });
+    updateMutation.reset();
     setSaved(false);
-    setEditing(true);
+    setEditOpen(true);
   }
 
-  function cancelEdit() {
-    setEditing(false);
-    updateMutation.reset();
+  function closeEdit() {
+    setEditOpen(false);
   }
 
   async function onSubmit(data: UpdateEventInput) {
     try {
       await updateMutation.mutateAsync(data);
       setSaved(true);
-      setEditing(false);
+      setEditOpen(false);
     } catch {
       // error displayed via updateMutation.error
     }
@@ -81,130 +85,131 @@ export function EventOverviewPanel({ eventId }: Props) {
     minute: "2-digit",
   });
 
-  if (editing) {
-    return (
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {updateMutation.error && (
-          <p className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
-            {updateMutation.error.message}
-          </p>
-        )}
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Title *</label>
-          <Input {...register("title")} />
-          {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Description</label>
-          <Input {...register("description")} placeholder="A brief description…" />
-        </div>
-
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1">
-            <label className="text-sm font-medium">Start Date *</label>
-            <Input type="datetime-local" {...register("date")} />
-            {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
-          </div>
-          <div className="space-y-1">
-            <label className="text-sm font-medium">End Date</label>
-            <Input type="datetime-local" {...register("endDate")} />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Location</label>
-          <Input {...register("location")} placeholder="Venue name or address" />
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-sm font-medium">Type *</label>
-          <Select {...register("type")}>
-            <option value="wedding">Wedding</option>
-            <option value="birthday">Birthday</option>
-            <option value="corporate">Corporate</option>
-            <option value="other">Other</option>
-          </Select>
-          {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
-        </div>
-
-        <div className="flex gap-3 pt-2">
-          <Button type="submit" disabled={updateMutation.isPending}>
-            {updateMutation.isPending ? "Saving…" : "Save changes"}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={cancelEdit}
-            disabled={updateMutation.isPending}
-          >
-            Cancel
-          </Button>
-        </div>
-      </form>
-    );
-  }
-
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        {saved ? (
-          <p className="text-sm font-medium text-green-600">Changes saved.</p>
-        ) : (
-          <span />
-        )}
-        <Button size="sm" variant="outline" onClick={startEdit}>
-          Edit
-        </Button>
-      </div>
+    <>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          {saved ? (
+            <p className="text-sm font-medium text-green-600">Changes saved.</p>
+          ) : (
+            <span />
+          )}
+          <Button size="sm" variant="outline" onClick={openEdit}>
+            Edit
+          </Button>
+        </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2 text-sm">
-            <div className="flex gap-2">
-              <span className="text-muted-foreground w-20 shrink-0 font-medium">Date</span>
-              <span>{startDate}</span>
-            </div>
-            <div className="flex gap-2">
-              <span className="text-muted-foreground w-20 shrink-0 font-medium">Time</span>
-              <span>{startTime}</span>
-            </div>
-            {event.location && (
-              <div className="flex gap-2">
-                <span className="text-muted-foreground w-20 shrink-0 font-medium">Location</span>
-                <span>{event.location}</span>
-              </div>
-            )}
-            {event.endDate && (
-              <div className="flex gap-2">
-                <span className="text-muted-foreground w-20 shrink-0 font-medium">Ends</span>
-                <span>
-                  {new Date(event.endDate).toLocaleDateString("en-US", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </span>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {event.description && (
+        <div className="grid gap-4 sm:grid-cols-2">
           <Card>
             <CardHeader>
-              <CardTitle className="text-base">Description</CardTitle>
+              <CardTitle className="text-base">Details</CardTitle>
             </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-sm">{event.description}</p>
+            <CardContent className="space-y-2 text-sm">
+              <div className="flex gap-2">
+                <span className="text-muted-foreground w-20 shrink-0 font-medium">Date</span>
+                <span>{startDate}</span>
+              </div>
+              <div className="flex gap-2">
+                <span className="text-muted-foreground w-20 shrink-0 font-medium">Time</span>
+                <span>{startTime}</span>
+              </div>
+              {event.location && (
+                <div className="flex gap-2">
+                  <span className="text-muted-foreground w-20 shrink-0 font-medium">Location</span>
+                  <span>{event.location}</span>
+                </div>
+              )}
+              {event.endDate && (
+                <div className="flex gap-2">
+                  <span className="text-muted-foreground w-20 shrink-0 font-medium">Ends</span>
+                  <span>
+                    {new Date(event.endDate).toLocaleDateString("en-US", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </span>
+                </div>
+              )}
             </CardContent>
           </Card>
-        )}
+
+          {event.description && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Description</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-muted-foreground text-sm">{event.description}</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Event</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-2">
+            {updateMutation.error && (
+              <p className="rounded-md bg-destructive/10 px-4 py-2 text-sm text-destructive">
+                {updateMutation.error.message}
+              </p>
+            )}
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-title">Title *</Label>
+              <Input id="edit-title" {...register("title")} />
+              {errors.title && <p className="text-xs text-destructive">{errors.title.message}</p>}
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-description">Description</Label>
+              <Textarea id="edit-description" {...register("description")} placeholder="A brief description…" rows={3} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-date">Start Date *</Label>
+                <DateTimePicker id="edit-date" {...register("date")} />
+                {errors.date && <p className="text-xs text-destructive">{errors.date.message}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="edit-end-date">End Date</Label>
+                <DateTimePicker id="edit-end-date" {...register("endDate")} />
+              </div>
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-location">Location</Label>
+              <Input id="edit-location" {...register("location")} placeholder="Venue name or address" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-type">Type *</Label>
+              <Select id="edit-type" {...register("type")}>
+                <option value="wedding">Wedding</option>
+                <option value="birthday">Birthday</option>
+                <option value="corporate">Corporate</option>
+                <option value="other">Other</option>
+              </Select>
+              {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button type="button" variant="outline" onClick={closeEdit} disabled={updateMutation.isPending}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={updateMutation.isPending}>
+                {updateMutation.isPending ? "Saving…" : "Save changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
