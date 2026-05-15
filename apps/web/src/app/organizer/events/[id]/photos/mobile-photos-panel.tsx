@@ -1,32 +1,36 @@
 "use client";
 
-import Image from "next/image";
-
 import { useState } from "react";
+import Image from "next/image";
 import { Check, X, Star, Loader2, Trash2 } from "lucide-react";
-import {
-  useOrganizerPhotos,
-  useUpdatePhotoStatus,
-  useToggleHighlight,
-  useDeletePhoto,
-} from "@/lib/api/photos";
+import { usePhotoModeration } from "@/lib/api/use-photo-moderation";
+import { PhotoLightbox } from "@/components/photos/photo-lightbox";
+import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
 import type { PhotoResponse } from "@seat-snaps/shared";
 
 interface Props {
   eventId: string;
 }
 
-type Filter = "pending" | "all" | "approved";
+type MobileFilter = "pending" | "all" | "approved";
 
 export function MobilePhotosPanel({ eventId }: Props) {
-  const { data: photos = [], isLoading } = useOrganizerPhotos(eventId);
-  const updateStatus = useUpdatePhotoStatus(eventId);
-  const toggleHighlight = useToggleHighlight(eventId);
-  const deletePhoto = useDeletePhoto(eventId);
+  const {
+    photos,
+    counts,
+    isLoading,
+    approve,
+    reject,
+    remove,
+    toggleHighlightPhoto,
+    updateStatus,
+    deletePhoto,
+    toggleHighlight,
+  } = usePhotoModeration(eventId);
 
-  const [filter, setFilter] = useState<Filter>("pending");
-  const [lightboxId, setLightboxId] = useState<string | null>(null);
-  const lightbox = lightboxId ? (photos.find((p) => p.id === lightboxId) ?? null) : null;
+  const [filter, setFilter] = useState<MobileFilter>("pending");
+  const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
   const [mutationError, setMutationError] = useState<string | null>(null);
 
   const filtered = photos.filter((p) => {
@@ -35,9 +39,9 @@ export function MobilePhotosPanel({ eventId }: Props) {
     return p.status !== "deleted";
   });
 
-  const counts = {
-    pending: photos.filter((p) => p.status === "pending").length,
-    approved: photos.filter((p) => p.status === "approved").length,
+  const mobileCounts = {
+    pending: counts.pending,
+    approved: counts.approved,
     all: photos.filter((p) => p.status !== "deleted").length,
   };
 
@@ -45,26 +49,28 @@ export function MobilePhotosPanel({ eventId }: Props) {
 
   const handleApprove = (photo: PhotoResponse) => {
     setMutationError(null);
-    updateStatus.mutate({ photoId: photo.id, status: "approved" }, { onError });
-    if (lightboxId === photo.id) setLightboxId(null);
+    approve(photo);
+    if (lightbox?.id === photo.id) setLightbox(null);
   };
 
   const handleReject = (photo: PhotoResponse) => {
     setMutationError(null);
-    updateStatus.mutate({ photoId: photo.id, status: "rejected" }, { onError });
-    if (lightboxId === photo.id) setLightboxId(null);
+    reject(photo);
+    if (lightbox?.id === photo.id) setLightbox(null);
   };
 
-  const handleDelete = (photo: PhotoResponse) => {
+  const confirmDelete = () => {
+    if (!deleteTarget) return;
     setMutationError(null);
-    deletePhoto.mutate(photo.id, { onError });
-    if (lightboxId === photo.id) setLightboxId(null);
+    remove(deleteTarget.id);
+    setDeleteTarget(null);
+    if (lightbox?.id === deleteTarget.id) setLightbox(null);
   };
 
-  const filterTabs: { key: Filter; label: string; count: number }[] = [
-    { key: "pending", label: "Pending", count: counts.pending },
-    { key: "approved", label: "Approved", count: counts.approved },
-    { key: "all", label: "All", count: counts.all },
+  const filterTabs: { key: MobileFilter; label: string; count: number }[] = [
+    { key: "pending", label: "Pending", count: mobileCounts.pending },
+    { key: "approved", label: "Approved", count: mobileCounts.approved },
+    { key: "all", label: "All", count: mobileCounts.all },
   ];
 
   if (isLoading) {
@@ -128,19 +134,19 @@ export function MobilePhotosPanel({ eventId }: Props) {
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((photo) => (
             <div key={photo.id} className="overflow-hidden rounded-2xl">
-              {/* Thumbnail — tap to open lightbox */}
               <div
-                className="aspect-square cursor-pointer"
-                onClick={() => setLightboxId(photo.id)}
+                className="relative aspect-square cursor-pointer"
+                onClick={() => setLightbox(photo)}
               >
                 <Image
                   src={photo.thumbnailUrl ?? photo.url}
                   alt={`Photo by ${photo.attendeeName}`}
-                  className="h-full w-full object-cover"
+                  fill
+                  sizes="(max-width: 768px) 50vw, 25vw"
+                  className="object-cover"
                 />
               </div>
 
-              {/* Action strip below photo */}
               <div
                 className="flex items-center justify-between gap-1 px-2 py-1.5"
                 style={{ background: "rgba(0,0,0,0.7)" }}
@@ -171,12 +177,10 @@ export function MobilePhotosPanel({ eventId }: Props) {
                   )}
                   {photo.status === "approved" && (
                     <button
-                      onClick={() =>
-                        toggleHighlight.mutate(
-                          { photoId: photo.id, isHighlight: !photo.isHighlight },
-                          { onError },
-                        )
-                      }
+                      onClick={() => {
+                        setMutationError(null);
+                        toggleHighlightPhoto(photo);
+                      }}
                       disabled={toggleHighlight.isPending}
                       aria-label={photo.isHighlight ? "Remove highlight" : "Highlight"}
                       className="disabled:opacity-40"
@@ -187,7 +191,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
                     </button>
                   )}
                   <button
-                    onClick={() => handleDelete(photo)}
+                    onClick={() => setDeleteTarget(photo)}
                     disabled={deletePhoto.isPending}
                     aria-label="Delete"
                     className="disabled:opacity-40"
@@ -201,91 +205,30 @@ export function MobilePhotosPanel({ eventId }: Props) {
         </div>
       )}
 
-      {/* Lightbox */}
       {lightbox && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col bg-black/95"
-          onClick={() => setLightboxId(null)}
-        >
-          <div className="flex items-center justify-between p-4">
-            <span className="text-sm text-white">{lightbox.attendeeName}</span>
-            <button
-              className="rounded-full bg-white/10 p-2 text-white"
-              onClick={(e) => { e.stopPropagation(); setLightboxId(null); }}
-            >
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-
-          <div className="flex flex-1 items-center justify-center px-4">
-            <Image
-              src={lightbox.url}
-              alt={`Photo by ${lightbox.attendeeName}`}
-              className="max-h-full max-w-full rounded-xl object-contain"
-              onClick={(e) => e.stopPropagation()}
-              fill={false}
-              width={800}
-              height={800}
-              unoptimized
-            />
-          </div>
-
-          {/* Action bar */}
-          <div
-            className="flex gap-3 p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {lightbox.status !== "approved" && (
-              <button
-                onClick={() => handleApprove(lightbox)}
-                disabled={updateStatus.isPending}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: "hsl(130 45% 42%)" }}
-              >
-                <Check className="h-5 w-5" />
-                Approve
-              </button>
-            )}
-            {lightbox.status !== "rejected" && (
-              <button
-                onClick={() => handleReject(lightbox)}
-                disabled={updateStatus.isPending}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-semibold text-white disabled:opacity-50"
-                style={{ background: "hsl(0 65% 52%)" }}
-              >
-                <X className="h-5 w-5" />
-                Reject
-              </button>
-            )}
-            {lightbox.status === "approved" && (
-              <button
-                onClick={() =>
-                  toggleHighlight.mutate(
-                    { photoId: lightbox.id, isHighlight: !lightbox.isHighlight },
-                    { onError },
-                  )
-                }
-                disabled={toggleHighlight.isPending}
-                className="flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold disabled:opacity-50"
-                style={{
-                  background: lightbox.isHighlight ? "rgba(234,179,8,0.15)" : "rgba(255,255,255,0.1)",
-                  color: lightbox.isHighlight ? "hsl(45 90% 45%)" : "white",
-                }}
-              >
-                <Star className={`h-5 w-5 ${lightbox.isHighlight ? "fill-yellow-400" : ""}`} />
-              </button>
-            )}
-            <button
-              onClick={() => handleDelete(lightbox)}
-              disabled={deletePhoto.isPending}
-              className="flex items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold text-white/70 disabled:opacity-50"
-              style={{ background: "rgba(255,255,255,0.08)" }}
-            >
-              <Trash2 className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
+        <PhotoLightbox
+          photo={lightbox}
+          variant="mobile"
+          isPending={updateStatus.isPending}
+          isHighlightPending={toggleHighlight.isPending}
+          onClose={() => setLightbox(null)}
+          onApprove={() => handleApprove(lightbox)}
+          onReject={() => handleReject(lightbox)}
+          onToggleHighlight={() => toggleHighlightPhoto(lightbox)}
+          onDelete={() => {
+            setDeleteTarget(lightbox);
+            setLightbox(null);
+          }}
+        />
       )}
+
+      <DeletePhotoDialog
+        open={!!deleteTarget}
+        attendeeName={deleteTarget?.attendeeName}
+        isPending={deletePhoto.isPending}
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }
