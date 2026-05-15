@@ -9,6 +9,7 @@ export interface IAttendeeService {
   bulkImport(eventId: string, csv: string, userId: string): Promise<Attendee[]>;
   update(attendeeId: string, eventId: string, data: UpdateAttendeeInput, userId: string): Promise<Attendee>;
   delete(attendeeId: string, eventId: string, userId: string): Promise<void>;
+  checkIn(eventId: string, qrToken: string, userId: string): Promise<Attendee>;
 }
 
 export const ATTENDEE_SERVICE = Symbol("IAttendeeService");

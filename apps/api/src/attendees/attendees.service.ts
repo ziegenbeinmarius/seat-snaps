@@ -111,6 +111,13 @@ export class AttendeesService implements IAttendeeService {
     await this.attendeeRepository.delete(attendeeId);
   }
 
+  async checkIn(eventId: string, qrToken: string, userId: string): Promise<Attendee> {
+    await this.requireMember(eventId, userId);
+    const attendee = await this.attendeeRepository.findByQrToken(qrToken);
+    if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
+    return this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
+  }
+
   private async requireMember(eventId: string, userId: string): Promise<void> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");

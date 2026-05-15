@@ -25,6 +25,7 @@ export const AttendeeResponseSchema = z.object({
   seatId: z.string().uuid().nullable(),
   qrToken: z.string(),
   photoLimit: z.number(),
+  checkedInAt: z.coerce.date().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

@@ -2,7 +2,7 @@ import { auth } from "./auth";
 import { NextResponse } from "next/server";
 import type { NextMiddleware } from "next/server";
 
-const PROTECTED = ["/dashboard"];
+const PROTECTED = ["/dashboard", "/organizer"];
 const AUTH_ONLY = ["/login", "/register"];
 
 const middleware = auth((req: { auth: unknown; nextUrl: URL }) => {
