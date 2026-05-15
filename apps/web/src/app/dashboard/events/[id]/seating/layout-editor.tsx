@@ -304,6 +304,90 @@ export function LayoutEditor({ eventId }: Props) {
                 </div>
               );
             })}
+
+            {/* Chair overlay — attendee initials around each table */}
+            <svg
+              className="absolute inset-0 pointer-events-none"
+              width={CANVAS_W}
+              height={CANVAS_H}
+            >
+              {tables.map((table) => {
+                const seats = table.seats ?? [];
+                if (seats.length === 0) return null;
+                const pos = getPos(table);
+                const shape = table.shape ?? "rectangular";
+                const w = table.width ?? SHAPE_DEFAULTS[shape].w;
+                const h = table.height ?? SHAPE_DEFAULTS[shape].h;
+                const cx = pos.x + w / 2;
+                const cy = pos.y + h / 2;
+                const chairR = 10;
+                const gap = 6;
+
+                return seats.map((seat, i) => {
+                  const total = seats.length;
+                  let sx: number;
+                  let sy: number;
+
+                  if (shape === "round") {
+                    const angle = (2 * Math.PI * i) / total - Math.PI / 2;
+                    const orbitR = w / 2 + gap + chairR;
+                    sx = cx + orbitR * Math.cos(angle);
+                    sy = cy + orbitR * Math.sin(angle);
+                  } else {
+                    // Distribute along top and bottom edges
+                    const perRow = Math.ceil(total / 2);
+                    const row = i < perRow ? 0 : 1;
+                    const col = i < perRow ? i : i - perRow;
+                    const rowCount = row === 0 ? perRow : total - perRow;
+                    const spacing = w / (rowCount + 1);
+                    sx = pos.x + spacing * (col + 1);
+                    sy = row === 0
+                      ? pos.y - gap - chairR
+                      : pos.y + h + gap + chairR;
+                  }
+
+                  const name = seat.attendeeId
+                    ? (attendees.find((a) => a.id === seat.attendeeId)?.name ?? "")
+                    : "";
+                  const initials = name
+                    ? name
+                        .split(" ")
+                        .slice(0, 2)
+                        .map((p) => p[0])
+                        .join("")
+                        .toUpperCase()
+                    : "";
+                  const occupied = !!seat.attendeeId;
+
+                  return (
+                    <g key={seat.id}>
+                      <circle
+                        cx={sx}
+                        cy={sy}
+                        r={chairR}
+                        fill={occupied ? "hsl(var(--primary))" : "hsl(var(--muted))"}
+                        stroke="hsl(var(--border))"
+                        strokeWidth={1}
+                        opacity={0.9}
+                      />
+                      {initials && (
+                        <text
+                          x={sx}
+                          y={sy + 1}
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          fontSize={7}
+                          fontWeight={700}
+                          fill={occupied ? "hsl(var(--primary-foreground))" : "hsl(var(--muted-foreground))"}
+                        >
+                          {initials}
+                        </text>
+                      )}
+                    </g>
+                  );
+                });
+              })}
+            </svg>
           </div>
         </div>
       </div>

@@ -110,3 +110,15 @@ export function useCheckinByQrToken(eventId: string) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
   });
 }
+
+export function useUnassignAttendee(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<AttendeeResponse, Error, string>({
+    mutationFn: (attendeeId) =>
+      fetchApi(`/events/${eventId}/attendees/${attendeeId}/unassign`, { method: "PATCH" }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+    },
+  });
+}

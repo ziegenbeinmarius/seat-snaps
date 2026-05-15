@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees } from "@/lib/api/attendees";
+import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees, useUnassignAttendee } from "@/lib/api/attendees";
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ export function AttendeesPanel({ eventId }: Props) {
   const updateMutation = useUpdateAttendee(eventId);
   const deleteMutation = useDeleteAttendee(eventId);
   const importMutation = useImportAttendees(eventId);
+  const unassignMutation = useUnassignAttendee(eventId);
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingAttendee, setEditingAttendee] = useState<AttendeeResponse | null>(null);
@@ -126,9 +127,26 @@ export function AttendeesPanel({ eventId }: Props) {
                   <TableCell className="text-muted-foreground">{a.email ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{a.groupLabel ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {a.tableId
-                      ? tableMap.get(a.tableId) ?? "Assigned (table deleted)"
-                      : "—"}
+                    {a.tableId ? (
+                      tableMap.has(a.tableId) ? (
+                        tableMap.get(a.tableId)
+                      ) : (
+                        <span className="flex items-center gap-1.5">
+                          <span className="text-destructive text-xs">Stale assignment</span>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-5 px-1.5 text-xs text-destructive hover:text-destructive"
+                            onClick={() => unassignMutation.mutate(a.id)}
+                            disabled={unassignMutation.isPending}
+                          >
+                            Fix
+                          </Button>
+                        </span>
+                      )
+                    ) : (
+                      "—"
+                    )}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1 justify-end">
@@ -178,7 +196,7 @@ export function AttendeesPanel({ eventId }: Props) {
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
             <Input
-              placeholder="Group / Table label"
+              placeholder="Group"
               value={form.groupLabel}
               onChange={(e) => setForm({ ...form, groupLabel: e.target.value })}
             />

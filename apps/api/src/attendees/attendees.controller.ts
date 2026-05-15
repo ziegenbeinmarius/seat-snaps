@@ -71,6 +71,16 @@ export class AttendeesController {
     return this.attendeesService.getById(attendeeId, eventId, user.id);
   }
 
+  @Patch(":attendeeId/unassign")
+  @HttpCode(HttpStatus.OK)
+  unassign(
+    @Param("eventId") eventId: string,
+    @Param("attendeeId") attendeeId: string,
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.attendeesService.clearSeatAssignment(attendeeId, eventId, user.id);
+  }
+
   @Patch(":attendeeId")
   update(
     @Param("eventId") eventId: string,
