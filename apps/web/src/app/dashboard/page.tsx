@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { apiRequest } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import type { EventResponse } from "@seat-snaps/shared";
+import { NewEventDialog } from "@/components/events/new-event-dialog";
 
 export const metadata: Metadata = { title: "My Events" };
 
@@ -43,21 +43,15 @@ export default async function DashboardPage() {
             Events you own or help organise
           </p>
         </div>
-        <Button asChild className="shrink-0">
-          <Link href="/dashboard/events/new">New Event</Link>
-        </Button>
+        <NewEventDialog />
       </div>
 
       {events.length === 0 ? (
-        <div
-          className="dashboard-glass rounded-2xl px-6 py-16 text-center"
-        >
+        <div className="dashboard-glass rounded-2xl px-6 py-16 text-center">
           <p className="mb-4 text-base" style={{ color: "hsl(28 8% 50%)" }}>
             No events yet. Create your first event to get started.
           </p>
-          <Button asChild>
-            <Link href="/dashboard/events/new">Create your first event</Link>
-          </Button>
+          <NewEventDialog />
         </div>
       ) : (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
