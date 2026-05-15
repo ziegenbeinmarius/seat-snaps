@@ -28,7 +28,6 @@ export function PhotoModerationPanel({ eventId }: Props) {
     toggleHighlightPhoto,
     updateStatus,
     deletePhoto,
-    toggleHighlight,
   } = usePhotoModeration(eventId);
 
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);

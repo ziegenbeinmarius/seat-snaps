@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 export interface TabLink {
   href: Route;
   label: string;
-  isActive?: (pathname: string) => boolean;
+  exact?: boolean;
 }
 
 interface EventTabNavProps {
@@ -22,8 +22,8 @@ function DesktopNav({ links }: { links: TabLink[] }) {
   return (
     <nav className="border-border -mx-1 overflow-x-auto border-b pb-2">
       <div className="flex min-w-max gap-2 px-1">
-        {links.map(({ href, label, isActive }) => {
-          const active = isActive ? isActive(pathname) : pathname === (href as string);
+        {links.map(({ href, label, exact }) => {
+          const active = exact ? pathname === (href as string) : pathname.startsWith(href as string);
           return (
             <Link
               key={href}
@@ -53,8 +53,8 @@ function MobileNav({ links }: { links: TabLink[] }) {
       style={{ background: "rgba(252, 248, 243, 0.95)", backdropFilter: "blur(12px)" }}
     >
       <div className="flex min-w-max px-4">
-        {links.map(({ href, label, isActive }) => {
-          const active = isActive ? isActive(pathname) : pathname === (href as string);
+        {links.map(({ href, label, exact }) => {
+          const active = exact ? pathname === (href as string) : pathname.startsWith(href as string);
           return (
             <Link
               key={href}

@@ -23,9 +23,9 @@ export function MobilePhotosPanel({ eventId }: Props) {
     reject,
     remove,
     toggleHighlightPhoto,
+    toggleHighlight,
     updateStatus,
     deletePhoto,
-    toggleHighlight,
   } = usePhotoModeration(eventId);
 
   const [filter, setFilter] = useState<MobileFilter>("pending");
@@ -44,8 +44,6 @@ export function MobilePhotosPanel({ eventId }: Props) {
     approved: counts.approved,
     all: photos.filter((p) => p.status !== "deleted").length,
   };
-
-  const onError = (err: Error) => setMutationError(err.message);
 
   const handleApprove = (photo: PhotoResponse) => {
     setMutationError(null);

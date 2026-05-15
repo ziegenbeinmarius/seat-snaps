@@ -18,13 +18,13 @@ export default async function EventLayout({ children, params }: EventLayoutProps
   const base = `/dashboard/events/${id}`;
 
   const links: TabLink[] = [
-    { href: base as Route, label: "Overview", isActive: (path) => path === base },
-    { href: `${base}/team` as Route, label: "Team", isActive: (path) => path.startsWith(`${base}/team`) },
-    { href: `${base}/attendees` as Route, label: "Attendees", isActive: (path) => path.startsWith(`${base}/attendees`) },
-    { href: `${base}/seating` as Route, label: "Seating", isActive: (path) => path.startsWith(`${base}/seating`) },
-    { href: `${base}/photos` as Route, label: "Photos", isActive: (path) => path.startsWith(`${base}/photos`) },
-    { href: `${base}/theme` as Route, label: "Theme", isActive: (path) => path.startsWith(`${base}/theme`) },
-    { href: `${base}/schedule` as Route, label: "Schedule", isActive: (path) => path.startsWith(`${base}/schedule`) },
+    { href: base as Route, label: "Overview", exact: true },
+    { href: `${base}/team` as Route, label: "Team" },
+    { href: `${base}/attendees` as Route, label: "Attendees" },
+    { href: `${base}/seating` as Route, label: "Seating" },
+    { href: `${base}/photos` as Route, label: "Photos" },
+    { href: `${base}/theme` as Route, label: "Theme" },
+    { href: `${base}/schedule` as Route, label: "Schedule" },
   ];
 
   return (

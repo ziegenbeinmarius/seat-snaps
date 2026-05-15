@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { CalendarDays } from "lucide-react";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";

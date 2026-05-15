@@ -1,8 +1,9 @@
 import { notFound, redirect } from "next/navigation";
+import type { Route } from "next";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
 
-export async function loadEvent(id: string, fallbackRedirect: string): Promise<EventResponse> {
+export async function loadEvent(id: string, fallbackRedirect: Route): Promise<EventResponse> {
   try {
     return await apiRequest<EventResponse>(`/events/${id}`);
   } catch (err) {

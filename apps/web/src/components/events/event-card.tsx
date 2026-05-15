@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { CalendarDays, MapPin } from "lucide-react";
 import type { EventResponse } from "@seat-snaps/shared";
 import { getTypeGradient, getTypeLabel } from "@/lib/event-helpers";
@@ -26,7 +27,7 @@ function TypeBadge({ type }: { type: string }) {
 
 function GridCard({ event, href }: Omit<EventCardProps, "variant">) {
   return (
-    <Link href={href} className="group block">
+    <Link href={href as Route} className="group block">
       <div className="dashboard-glass overflow-hidden rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
         <div
           className="h-1.5 w-full"
@@ -62,7 +63,7 @@ function GridCard({ event, href }: Omit<EventCardProps, "variant">) {
 
 function ListCard({ event, href }: Omit<EventCardProps, "variant">) {
   return (
-    <Link href={href} className="block">
+    <Link href={href as Route} className="block">
       <div className="dashboard-glass overflow-hidden rounded-2xl">
         <div
           className="h-1.5 w-full"

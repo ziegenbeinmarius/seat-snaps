@@ -17,10 +17,10 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
   const base = `/organizer/events/${id}`;
 
   const links: TabLink[] = [
-    { href: base as Route, label: "Overview", isActive: (path) => path === base },
-    { href: `${base}/checkin` as Route, label: "Check-In", isActive: (path) => path.startsWith(`${base}/checkin`) },
-    { href: `${base}/photos` as Route, label: "Photos", isActive: (path) => path.startsWith(`${base}/photos`) },
-    { href: `${base}/schedule` as Route, label: "Schedule", isActive: (path) => path.startsWith(`${base}/schedule`) },
+    { href: base as Route, label: "Overview", exact: true },
+    { href: `${base}/checkin` as Route, label: "Check-In" },
+    { href: `${base}/photos` as Route, label: "Photos" },
+    { href: `${base}/schedule` as Route, label: "Schedule" },
   ];
 
   return (
