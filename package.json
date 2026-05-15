@@ -13,6 +13,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "start": "npm run start --workspace=${RAILWAY_WORKSPACE:-@seat-snaps/api}",
+    "start:api": "npm run start --workspace=@seat-snaps/api",
+    "start:web": "npm run start --workspace=@seat-snaps/web",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
