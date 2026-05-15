@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar, Home } from "lucide-react";

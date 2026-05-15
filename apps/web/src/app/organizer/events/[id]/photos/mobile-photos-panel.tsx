@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+
 import { useState } from "react";
 import { Check, X, Star, Loader2, Trash2 } from "lucide-react";
 import {
@@ -131,7 +133,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
                 className="aspect-square cursor-pointer"
                 onClick={() => setLightboxId(photo.id)}
               >
-                <img
+                <Image
                   src={photo.thumbnailUrl ?? photo.url}
                   alt={`Photo by ${photo.attendeeName}`}
                   className="h-full w-full object-cover"
@@ -216,11 +218,15 @@ export function MobilePhotosPanel({ eventId }: Props) {
           </div>
 
           <div className="flex flex-1 items-center justify-center px-4">
-            <img
+            <Image
               src={lightbox.url}
               alt={`Photo by ${lightbox.attendeeName}`}
               className="max-h-full max-w-full rounded-xl object-contain"
               onClick={(e) => e.stopPropagation()}
+              fill={false}
+              width={800}
+              height={800}
+              unoptimized
             />
           </div>
 

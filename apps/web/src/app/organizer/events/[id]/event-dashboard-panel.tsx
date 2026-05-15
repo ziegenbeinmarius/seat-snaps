@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import Link from "next/link";
 import { useAttendees } from "@/lib/api/attendees";
 import { useOrganizerPhotos } from "@/lib/api/photos";

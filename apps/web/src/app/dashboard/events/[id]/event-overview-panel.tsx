@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Pencil } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";

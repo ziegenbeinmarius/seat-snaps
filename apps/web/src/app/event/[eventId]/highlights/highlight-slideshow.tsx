@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight, Maximize2, X } from "lucide-react";
 import { useHighlightPhotos } from "@/lib/api/photos";
 
@@ -52,7 +53,7 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
             className="relative aspect-video bg-black cursor-pointer"
             onClick={() => setFullscreen(true)}
           >
-            <img
+            <Image
               key={photo?.id}
               src={photo?.url}
               alt={`Highlight by ${photo?.attendeeName}`}
@@ -126,12 +127,17 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
             <X className="h-6 w-6" />
           </button>
 
-          <img
-            src={photo?.url}
-            alt={`Highlight by ${photo?.attendeeName}`}
-            className="max-h-screen max-w-full object-contain"
+          <div
+            className="relative h-screen w-full"
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <Image
+              src={photo?.url ?? ""}
+              alt={`Highlight by ${photo?.attendeeName}`}
+              fill
+              className="object-contain"
+            />
+          </div>
 
           {total > 1 && (
             <>

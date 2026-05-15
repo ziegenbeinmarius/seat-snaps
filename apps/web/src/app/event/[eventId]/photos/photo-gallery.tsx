@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import imageCompression from "browser-image-compression";
 import { Camera, Upload, X, ZoomIn } from "lucide-react";
 import {
@@ -147,7 +148,7 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
               onClick={() => setLightbox(photo)}
               className="relative aspect-square overflow-hidden rounded-lg bg-gray-100 group"
             >
-              <img
+              <Image
                 src={photo.thumbnailUrl ?? photo.url}
                 alt="Photo"
                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
@@ -177,12 +178,17 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
           >
             <X className="h-6 w-6" />
           </button>
-          <img
-            src={lightbox.url}
-            alt="Photo"
-            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+          <div
+            className="relative h-[90vh] w-[90vw] rounded-lg"
             onClick={(e) => e.stopPropagation()}
-          />
+          >
+            <Image
+              src={lightbox.url}
+              alt="Photo"
+              fill
+              className="object-contain rounded-lg"
+            />
+          </div>
         </div>
       )}
     </div>
