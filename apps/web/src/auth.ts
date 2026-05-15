@@ -4,6 +4,11 @@ import type { JWT } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
 import { LoginSchema } from "@seat-snaps/shared";
 
+const authSecret =
+  process.env.AUTH_SECRET
+  ?? process.env.NEXTAUTH_SECRET
+  ?? process.env.auth_secret;
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -25,6 +30,7 @@ declare module "next-auth/jwt" {
 }
 
 const nextAuth: NextAuthResult = NextAuth({
+  secret: authSecret,
   providers: [
     Credentials({
       async authorize(credentials) {

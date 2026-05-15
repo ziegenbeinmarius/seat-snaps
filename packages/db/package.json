@@ -2,12 +2,16 @@
   "name": "@seat-snaps/db",
   "version": "0.0.1",
   "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
   },
   "scripts": {
+    "build": "tsc -p tsconfig.json",
     "db:generate": "tsx ../../node_modules/drizzle-kit/bin.cjs generate",
     "db:migrate": "tsx ../../node_modules/drizzle-kit/bin.cjs migrate",
     "db:push": "tsx ../../node_modules/drizzle-kit/bin.cjs push",
@@ -17,6 +21,7 @@
     "lint:fix": "eslint \"src/**/*.ts\" --fix"
   },
   "dependencies": {
+    "dotenv": "^16.6.1",
     "drizzle-orm": "^0.38.3",
     "postgres": "^3.4.5"
   },

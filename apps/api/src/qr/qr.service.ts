@@ -29,7 +29,7 @@ export class QrService implements IQrService {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/${attendee.qrToken}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
@@ -38,7 +38,7 @@ export class QrService implements IQrService {
     await this.requireMember(eventId, userId);
 
     const attendees = await this.attendeeRepository.findByEventId(eventId);
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
 
     const items = await Promise.all(
       attendees.map(async (a) => {
@@ -58,7 +58,7 @@ export class QrService implements IQrService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }

@@ -3,7 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { EventResponse, CreateEventInput, UpdateEventInput, EventMember } from "@seat-snaps/shared";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL
+  ?? (typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname}:3001`
+    : "http://localhost:3001");
 
 async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_BASE}/api${path}`, {
@@ -11,6 +14,8 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...init?.headers },
     credentials: "include",
   });
+  console.log(res);
+  
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error((err as { message?: string }).message ?? "Request failed");
