@@ -97,6 +97,9 @@
   --event-heading-font: var(--font-cormorant, Georgia, serif);
   --event-body-font: var(--font-lato, system-ui, sans-serif);
   --event-card-chip-bg: rgba(181, 107, 126, 0.1);
+  --event-card-text: hsl(340 20% 14%);
+  --event-card-sub: hsl(340 15% 30%);
+  --event-card-muted: hsl(340 10% 42%);
 }
 
 /* Birthday */
