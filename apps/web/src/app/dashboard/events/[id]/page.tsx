@@ -59,6 +59,18 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
         >
           Team
         </Link>
+        <Link
+          href={`/dashboard/events/${id}/attendees`}
+          className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        >
+          Attendees
+        </Link>
+        <Link
+          href={`/dashboard/events/${id}/seating`}
+          className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+        >
+          Seating
+        </Link>
       </nav>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -111,6 +123,12 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
       <div className="flex gap-3">
         <Button asChild variant="outline">
           <Link href={`/dashboard/events/${id}/team`}>Manage Team</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href={`/dashboard/events/${id}/attendees`}>Manage Attendees</Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href={`/dashboard/events/${id}/seating`}>Seating Plan</Link>
         </Button>
       </div>
     </div>

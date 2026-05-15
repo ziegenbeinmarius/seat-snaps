@@ -384,10 +384,139 @@ const session = await auth();
 **React Query setup:** `ReactQueryProvider` in `apps/web/src/lib/query-client.tsx` is mounted in `apps/web/src/app/layout.tsx`.
 
 **shadcn/ui components added (`apps/web/src/components/ui/`):**
-- `button.tsx` — Button with variants (default, destructive, outline, secondary, ghost, link) and sizes
+- `button.tsx` — Button with variants (default, destructive, outline, secondary, ghost, link) and sizes; supports `asChild` prop via React.cloneElement
 - `card.tsx` — Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter
 - `input.tsx` — Input (text, email, date, number)
 - `select.tsx` — Native select styled as shadcn Select
 - `badge.tsx` — Badge with variants (default, secondary, destructive, outline)
 - `table.tsx` — Table, TableHeader, TableBody, TableRow, TableHead, TableCell
 - `dialog.tsx` — Lightweight Dialog with overlay (Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter)
+
+## Attendee & Seating Management (Sprint 5)
+
+### Attendee Module (`apps/api/src/attendees/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/attendees` | JWT + member | List all attendees for event |
+| `POST` | `/api/events/:eventId/attendees` | JWT + member | Create single attendee |
+| `POST` | `/api/events/:eventId/attendees/import` | JWT + member | Bulk import from CSV (name, email, group columns) |
+| `GET` | `/api/events/:eventId/attendees/:attendeeId` | JWT + member | Get attendee detail |
+| `PATCH` | `/api/events/:eventId/attendees/:attendeeId` | JWT + member | Update attendee fields |
+| `DELETE` | `/api/events/:eventId/attendees/:attendeeId` | JWT + member | Delete attendee |
+
+**Service contract (`IAttendeeService`):**
+- `listForEvent(eventId, userId)` — member check; returns all attendees
+- `getById(attendeeId, eventId, userId)` — verifies attendee belongs to event
+- `create(eventId, data, userId)` — generates unique `qrToken` (UUID)
+- `bulkImport(eventId, csv, userId)` — parses CSV rows (name, email, group columns); skips rows without name
+- `update(attendeeId, eventId, data, userId)`
+- `delete(attendeeId, eventId, userId)`
+
+**Business rules:**
+- All operations require event membership (any role)
+- `qrToken` is auto-generated as UUID on create; unique across the workspace
+- CSV import body: `{ csv: "<csv string>" }` — parsed with `csv-parse/sync`
+
+### Table Module (`apps/api/src/tables/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/tables` | JWT + member | List tables with seats |
+| `POST` | `/api/events/:eventId/tables` | JWT + member | Create table; auto-generates seats if capacity provided |
+| `GET` | `/api/events/:eventId/tables/:tableId` | JWT + member | Get table with seats |
+| `PATCH` | `/api/events/:eventId/tables/:tableId` | JWT + member | Update table metadata |
+| `DELETE` | `/api/events/:eventId/tables/:tableId` | JWT + member | Delete table (cascades seats) |
+
+**Service contract (`ITableService`):**
+- `listForEvent(eventId, userId)` → `TableWithSeats[]`
+- `create(eventId, data, userId)` — auto-generates `capacity` seats labelled "Seat 1" … "Seat N"
+- `update`, `delete` — member-only
+
+**Business rules:**
+- Seats are auto-generated when a table is created with `capacity > 0`
+- Table delete cascades to seats (via DB FK onDelete cascade)
+
+### Seat Module (`apps/api/src/seats/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `GET` | `/api/events/:eventId/seats` | JWT + member | List all seats for event |
+| `PATCH` | `/api/events/:eventId/seats/:seatId/assign` | JWT + member | Assign attendee to seat; body: `{ attendeeId }` |
+| `PATCH` | `/api/events/:eventId/seats/:seatId/unassign` | JWT + member | Remove attendee from seat |
+
+**Service contract (`ISeatService`):**
+- `assign(seatId, eventId, attendeeId, userId)` — throws `409` if seat occupied or attendee already seated; updates both `seats.attendeeId` and `attendees.tableId/seatId` (denormalized sync)
+- `unassign(seatId, eventId, userId)` — clears `seats.attendeeId` and the attendee's `tableId/seatId`
+
+### QR Module (`apps/api/src/qr/`)
+
+**Endpoints:**
+| Method | Path | Auth | Description |
+|---|---|---|---|
+| `POST` | `/api/events/:eventId/attendees/:attendeeId/qr` | JWT + member | Generate QR PNG for one attendee |
+| `GET` | `/api/events/:eventId/qr/bulk` | JWT + member | Generate print-ready HTML with all QR codes |
+| `GET` | `/api/events/:eventId/qr/event` | JWT + member | Generate QR PNG for event join URL |
+
+**URL format:**
+- Attendee QR encodes: `{APP_URL}/join/{attendee.qrToken}`
+- Event QR encodes: `{APP_URL}/join/event/{eventId}`
+- `APP_URL` env var (default: `http://localhost:3000`)
+
+**Implementation:**
+- Uses `qrcode` npm package (`toBuffer` for PNG, `toDataURL` for embedded HTML)
+- Bulk endpoint returns an HTML file with all QR codes as `<img>` data URLs in a grid — browser-printable to PDF
+- No ZIP dependency; HTML is lightweight and print-ready
+
+### New Service Interfaces
+
+| Interface | Token | Location |
+|---|---|---|
+| `IAttendeeService` | `ATTENDEE_SERVICE` | `apps/api/src/attendees/domain/IAttendeeService.ts` |
+| `ITableService` | `TABLE_SERVICE` | `apps/api/src/tables/domain/ITableService.ts` |
+| `ISeatService` | `SEAT_SERVICE` | `apps/api/src/seats/domain/ISeatService.ts` |
+| `IQrService` | `QR_SERVICE` | `apps/api/src/qr/domain/IQrService.ts` |
+
+### Shared Zod Schemas (`packages/shared/src/schemas/attendee.schema.ts`)
+
+- `CreateAttendeeSchema` / `CreateAttendeeInput`
+- `UpdateAttendeeSchema` / `UpdateAttendeeInput`
+- `AttendeeResponseSchema` / `AttendeeResponse`
+- `CreateTableSchema` / `CreateTableInput`
+- `UpdateTableSchema` / `UpdateTableInput`
+- `TableResponseSchema` / `TableResponse` (includes optional `seats` array)
+- `SeatResponseSchema` / `SeatResponse`
+- `AssignSeatSchema` / `AssignSeatInput`
+
+### Database Module
+
+`apps/api/src/database/database.module.ts` now registers `ATTENDEE_REPOSITORY`, `TABLE_REPOSITORY`, and `SEAT_REPOSITORY` providers (Drizzle implementations already existed).
+
+### Frontend Dashboard (Sprint 5)
+
+**Pages:**
+| Route | Component | Type | Description |
+|---|---|---|---|
+| `/dashboard/events/[id]/attendees` | `AttendeesPage` + `AttendeesPanel` | Server + Client | Attendee list with add/edit/delete + CSV import |
+| `/dashboard/events/[id]/seating` | `SeatingPage` + `SeatingPanel` | Server + Client | Table grid with seat assignment per-seat |
+| `/dashboard/events/[id]/seating/qr` | `QrPage` + `QrPanel` | Server + Client | Per-attendee QR download + bulk HTML download |
+
+**API client hooks (`apps/web/src/lib/api/`):**
+- `attendees.ts` — `useAttendees`, `useCreateAttendee`, `useImportAttendees`, `useUpdateAttendee`, `useDeleteAttendee`
+- `tables.ts` — `useTables`, `useCreateTable`, `useUpdateTable`, `useDeleteTable`, `useSeats`, `useAssignSeat`, `useUnassignSeat`
+
+**Seating plan (no drag-drop):**
+The seating panel renders each table as a card with its seats listed. Each seat shows an "Assign" or "Remove" button. Assigning opens a dialog to select from unassigned attendees.
+
+### Build Fixes (pre-existing issues resolved)
+
+- `next.config.ts`: added `webpack.resolve.extensionAlias` to resolve `.js` imports to `.ts` for the shared package
+- `next.config.ts`: moved `typedRoutes` from `experimental` to top-level (Next.js 15 breaking change)
+- `src/app/globals.css`: migrated from Tailwind CSS v3 `@apply` pattern to Tailwind CSS v4 `@theme inline` token registration
+- `src/components/ui/button.tsx`: added `asChild` support via `React.cloneElement`
+- `src/auth.ts`: fixed `NextAuthResult` export type portability issue (next-auth v5 quirk)
+- `middleware.ts`: typed `auth` callback parameter to avoid implicit `any`
+- `src/app/dashboard/events/[id]/team/team-panel.tsx`: fixed zod v3/v4 form resolver type mismatch
