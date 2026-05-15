@@ -12,6 +12,7 @@ export interface IPhotoRepository {
   findByAttendeeId(attendeeId: string): Promise<Photo[]>;
   create(data: NewPhoto): Promise<Photo>;
   updateStatus(id: string, status: PhotoStatus): Promise<Photo>;
+  updateThumbnailKey(id: string, thumbnailKey: string): Promise<Photo | null>;
   delete(id: string): Promise<void>;
 }
 

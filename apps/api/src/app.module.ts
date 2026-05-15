@@ -13,6 +13,7 @@ import { SeatsModule } from "./seats/seats.module";
 import { QrModule } from "./qr/qr.module";
 import { AttendeeSessionsModule } from "./attendee-sessions/attendee-sessions.module";
 import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
+import { PhotosModule } from "./photos/photos.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
     QrModule,
     AttendeeSessionsModule,
     ScheduleItemsModule,
+    PhotosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

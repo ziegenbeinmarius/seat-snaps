@@ -1,9 +1,11 @@
 "use client";
 
+import type React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Users, MapPin } from "lucide-react";
+import { Home, Calendar, Users, MapPin, Camera } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Route } from "next";
 
 interface Props {
   eventId: string;
@@ -13,11 +15,12 @@ export function AttendeeNav({ eventId }: Props) {
   const pathname = usePathname();
   const base = `/event/${eventId}`;
 
-  const links = [
-    { href: base, icon: Home, label: "Home" },
-    { href: `${base}/schedule`, icon: Calendar, label: "Schedule" },
-    { href: `${base}/attendees`, icon: Users, label: "Guests" },
-    { href: `${base}/seating`, icon: MapPin, label: "Seating" },
+  const links: { href: Route; icon: React.ElementType; label: string }[] = [
+    { href: base as Route, icon: Home, label: "Home" },
+    { href: `${base}/schedule` as Route, icon: Calendar, label: "Schedule" },
+    { href: `${base}/attendees` as Route, icon: Users, label: "Guests" },
+    { href: `${base}/seating` as Route, icon: MapPin, label: "Seating" },
+    { href: `${base}/photos` as Route, icon: Camera, label: "Photos" },
   ];
 
   return (

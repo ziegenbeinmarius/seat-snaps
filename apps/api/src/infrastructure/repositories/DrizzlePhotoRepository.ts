@@ -40,6 +40,15 @@ export class DrizzlePhotoRepository implements IPhotoRepository {
     return result[0];
   }
 
+  async updateThumbnailKey(id: string, thumbnailKey: string): Promise<Photo | null> {
+    const result = await this.db
+      .update(photos)
+      .set({ thumbnailKey })
+      .where(eq(photos.id, id))
+      .returning();
+    return result[0] ?? null;
+  }
+
   async delete(id: string): Promise<void> {
     await this.db.delete(photos).where(eq(photos.id, id));
   }
