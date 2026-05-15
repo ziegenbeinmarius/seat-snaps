@@ -1,4 +1,6 @@
-import { IsString, IsNotEmpty, IsOptional, IsInt, IsPositive, IsNumber } from "class-validator";
+import { IsString, IsNotEmpty, IsOptional, IsInt, IsPositive, IsNumber, IsIn } from "class-validator";
+
+const TABLE_SHAPES = ["round", "rectangular", "long"] as const;
 
 export class CreateTableDto {
   @IsString()
@@ -21,4 +23,21 @@ export class CreateTableDto {
   @IsNumber()
   @IsOptional()
   positionY?: number;
+
+  @IsString()
+  @IsIn(TABLE_SHAPES)
+  @IsOptional()
+  shape?: "round" | "rectangular" | "long";
+
+  @IsNumber()
+  @IsOptional()
+  rotation?: number;
+
+  @IsNumber()
+  @IsOptional()
+  width?: number;
+
+  @IsNumber()
+  @IsOptional()
+  height?: number;
 }

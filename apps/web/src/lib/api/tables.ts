@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { TableResponse, CreateTableInput, UpdateTableInput, SeatResponse } from "@seat-snaps/shared";
+import type { TableResponse, CreateTableInput, UpdateTableInput, SeatResponse, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL
   ?? (typeof window !== "undefined"
@@ -63,6 +63,18 @@ export function useDeleteTable(eventId: string) {
       qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
       qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
     },
+  });
+}
+
+export function useBulkUpdatePositions(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<void, Error, BulkUpdateTablePositionsInput>({
+    mutationFn: (positions) =>
+      fetchApi(`/events/${eventId}/tables/positions`, {
+        method: "PATCH",
+        body: JSON.stringify({ positions }),
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] }),
   });
 }
 
