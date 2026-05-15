@@ -53,7 +53,7 @@ export class QrController {
   ) {
     const buffer = await this.qrService.generateBulkZip(eventId, user.id);
     reply.header("Content-Type", "text/html; charset=utf-8");
-    reply.header("Content-Disposition", `attachment; filename="qr-bulk-${eventId}.html"`);
+    reply.header("Content-Disposition", "inline");
     return reply.send(buffer);
   }
 
