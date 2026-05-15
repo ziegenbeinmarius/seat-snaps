@@ -4,6 +4,8 @@ import type { ITableRepository } from "../domain/repositories/ITableRepository";
 import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
 import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
 import { SEAT_REPOSITORY } from "../domain/repositories/ISeatRepository";
+import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
+import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
@@ -18,6 +20,8 @@ export class TablesService implements ITableService {
     private readonly tableRepository: ITableRepository,
     @Inject(SEAT_REPOSITORY)
     private readonly seatRepository: ISeatRepository,
+    @Inject(ATTENDEE_REPOSITORY)
+    private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
@@ -118,6 +122,15 @@ export class TablesService implements ITableService {
     await this.requireMember(eventId, userId);
     const existing = await this.tableRepository.findById(tableId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Table not found");
+
+    // Clear denormalized tableId/seatId on any attendees assigned to this table's seats
+    const seats = await this.seatRepository.findByTableId(tableId);
+    await Promise.all(
+      seats
+        .filter((s) => s.attendeeId)
+        .map((s) => this.attendeeRepository.update(s.attendeeId!, { tableId: null, seatId: null })),
+    );
+
     await this.tableRepository.delete(tableId);
   }
 

@@ -2,6 +2,7 @@
 
 import { useState, useRef, type ChangeEvent } from "react";
 import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees } from "@/lib/api/attendees";
+import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -15,6 +16,8 @@ interface Props {
 
 export function AttendeesPanel({ eventId }: Props) {
   const { data: attendees = [], isLoading } = useAttendees(eventId);
+  const { data: tables = [] } = useTables(eventId);
+  const tableMap = new Map(tables.map((t) => [t.id, t.name]));
   const createMutation = useCreateAttendee(eventId);
   const updateMutation = useUpdateAttendee(eventId);
   const deleteMutation = useDeleteAttendee(eventId);
@@ -112,7 +115,7 @@ export function AttendeesPanel({ eventId }: Props) {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
-                <TableHead>Seat</TableHead>
+                <TableHead>Table</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
             </TableHeader>
@@ -123,7 +126,9 @@ export function AttendeesPanel({ eventId }: Props) {
                   <TableCell className="text-muted-foreground">{a.email ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{a.groupLabel ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {a.seatId ? "Assigned" : "Unassigned"}
+                    {a.tableId
+                      ? tableMap.get(a.tableId) ?? "Assigned (table deleted)"
+                      : "—"}
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1 justify-end">
