@@ -48,7 +48,10 @@ const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
 
   if (isProtected && !session) {
     const loginUrl = new URL("/login", nextUrl);
-    loginUrl.searchParams.set("callbackUrl", nextUrl.pathname);
+    const callback = nextUrl.pathname;
+    if (callback.startsWith("/") && !callback.startsWith("//")) {
+      loginUrl.searchParams.set("callbackUrl", callback);
+    }
     return NextResponse.redirect(loginUrl);
   }
 
