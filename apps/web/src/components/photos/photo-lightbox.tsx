@@ -106,6 +106,16 @@ export function PhotoLightbox({
               <Star className={`h-5 w-5 ${photo.isHighlight ? "fill-yellow-400" : ""}`} />
             </Button>
           )}
+          {onDelete && (
+            <Button
+              onClick={onDelete}
+              variant="ghost"
+              className="rounded-2xl px-4 py-3.5 text-sm font-semibold text-white/70"
+              style={{ background: "rgba(255,255,255,0.08)" }}
+            >
+              <Trash2 className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </div>
     );

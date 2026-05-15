@@ -1,7 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { QrCode } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { SeatingPanel } from "./seating-panel";
 
 export const metadata: Metadata = { title: "Seating Plan" };

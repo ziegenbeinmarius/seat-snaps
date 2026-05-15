@@ -1,6 +1,6 @@
 "use client";
 
-import type React from "react";
+import React from "react";
 import Link from "next/link";
 import { useAttendees } from "@/lib/api/attendees";
 import { useOrganizerPhotos } from "@/lib/api/photos";
@@ -108,7 +108,7 @@ export function EventDashboardPanel({ eventId }: Props) {
           Quick Actions
         </p>
         {quickActions.map(({ href, icon: Icon, label, description, color, bg, badge }) => (
-          <Link key={href} href={href} className="block">
+          <Link key={href} href={{ pathname: href }} className="block">
             <div
               className="flex items-center gap-4 rounded-2xl p-4"
               style={{

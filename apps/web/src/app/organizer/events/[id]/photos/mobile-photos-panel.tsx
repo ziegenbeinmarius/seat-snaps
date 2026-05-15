@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { Check, X, Star, Loader2 } from "lucide-react";
+import { Check, X, Star, Loader2, Trash2 } from "lucide-react";
 import { usePhotoModeration } from "@/lib/api/use-photo-moderation";
 import { PhotoLightbox } from "@/components/photos/photo-lightbox";
 import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
@@ -31,9 +31,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
   const [filter, setFilter] = useState<MobileFilter>("pending");
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
-
-  const touchStartX = useRef<number>(0);
-  const touchStartY = useRef<number>(0);
+  const [mutationError, setMutationError] = useState<string | null>(null);
 
   const filtered = photos.filter((p) => {
     if (filter === "pending") return p.status === "pending";
@@ -47,34 +45,26 @@ export function MobilePhotosPanel({ eventId }: Props) {
     all: photos.filter((p) => p.status !== "deleted").length,
   };
 
+  const onError = (err: Error) => setMutationError(err.message);
+
   const handleApprove = (photo: PhotoResponse) => {
+    setMutationError(null);
     approve(photo);
     if (lightbox?.id === photo.id) setLightbox(null);
   };
 
   const handleReject = (photo: PhotoResponse) => {
+    setMutationError(null);
     reject(photo);
     if (lightbox?.id === photo.id) setLightbox(null);
   };
 
   const confirmDelete = () => {
     if (!deleteTarget) return;
+    setMutationError(null);
     remove(deleteTarget.id);
     setDeleteTarget(null);
     if (lightbox?.id === deleteTarget.id) setLightbox(null);
-  };
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-  };
-
-  const onTouchEnd = (e: React.TouchEvent, photo: PhotoResponse) => {
-    const dx = e.changedTouches[0].clientX - touchStartX.current;
-    const dy = Math.abs(e.changedTouches[0].clientY - touchStartY.current);
-    if (dy > 40) return;
-    if (dx > 70) handleApprove(photo);
-    else if (dx < -70) handleReject(photo);
   };
 
   const filterTabs: { key: MobileFilter; label: string; count: number }[] = [
@@ -127,10 +117,8 @@ export function MobilePhotosPanel({ eventId }: Props) {
         ))}
       </div>
 
-      {filter === "pending" && filtered.length > 0 && (
-        <p className="text-center text-xs" style={{ color: "hsl(28 8% 55%)" }}>
-          Swipe right to approve · swipe left to reject
-        </p>
+      {mutationError && (
+        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">{mutationError}</p>
       )}
 
       {filtered.length === 0 ? (
@@ -145,14 +133,11 @@ export function MobilePhotosPanel({ eventId }: Props) {
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((photo) => (
-            <div
-              key={photo.id}
-              className="relative overflow-hidden rounded-2xl"
-              onTouchStart={onTouchStart}
-              onTouchEnd={(e) => onTouchEnd(e, photo)}
-              onClick={() => setLightbox(photo)}
-            >
-              <div className="relative aspect-square">
+            <div key={photo.id} className="overflow-hidden rounded-2xl">
+              <div
+                className="relative aspect-square cursor-pointer"
+                onClick={() => setLightbox(photo)}
+              >
                 <Image
                   src={photo.thumbnailUrl ?? photo.url}
                   alt={`Photo by ${photo.attendeeName}`}
@@ -161,32 +146,60 @@ export function MobilePhotosPanel({ eventId }: Props) {
                   className="object-cover"
                 />
               </div>
-              <div
-                className="absolute bottom-0 left-0 right-0 flex items-center justify-between px-2 py-1.5"
-                style={{ background: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
-              >
-                <span className="truncate text-xs text-white/80">{photo.attendeeName}</span>
-                {photo.status === "approved" && (
-                  <Check className="h-3.5 w-3.5 shrink-0 text-green-400" />
-                )}
-                {photo.status === "rejected" && (
-                  <X className="h-3.5 w-3.5 shrink-0 text-red-400" />
-                )}
-                {photo.isHighlight && (
-                  <Star className="h-3.5 w-3.5 shrink-0 fill-yellow-400 text-yellow-400" />
-                )}
-              </div>
 
-              {photo.status === "pending" && (
-                <div className="absolute inset-0 flex items-center justify-between px-3 opacity-0 transition-opacity active:opacity-100">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/80">
-                    <Check className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/80">
-                    <X className="h-6 w-6 text-white" />
-                  </div>
+              <div
+                className="flex items-center justify-between gap-1 px-2 py-1.5"
+                style={{ background: "rgba(0,0,0,0.7)" }}
+              >
+                <span className="min-w-0 flex-1 truncate text-xs text-white/80">
+                  {photo.attendeeName}
+                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  {photo.status !== "approved" && (
+                    <button
+                      onClick={() => handleApprove(photo)}
+                      disabled={updateStatus.isPending}
+                      aria-label="Approve"
+                      className="disabled:opacity-40"
+                    >
+                      <Check className="h-4 w-4 text-green-400" />
+                    </button>
+                  )}
+                  {photo.status !== "rejected" && (
+                    <button
+                      onClick={() => handleReject(photo)}
+                      disabled={updateStatus.isPending}
+                      aria-label="Reject"
+                      className="disabled:opacity-40"
+                    >
+                      <X className="h-4 w-4 text-red-400" />
+                    </button>
+                  )}
+                  {photo.status === "approved" && (
+                    <button
+                      onClick={() => {
+                        setMutationError(null);
+                        toggleHighlightPhoto(photo);
+                      }}
+                      disabled={toggleHighlight.isPending}
+                      aria-label={photo.isHighlight ? "Remove highlight" : "Highlight"}
+                      className="disabled:opacity-40"
+                    >
+                      <Star
+                        className={`h-4 w-4 ${photo.isHighlight ? "fill-yellow-400 text-yellow-400" : "text-white/50"}`}
+                      />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDeleteTarget(photo)}
+                    disabled={deletePhoto.isPending}
+                    aria-label="Delete"
+                    className="disabled:opacity-40"
+                  >
+                    <Trash2 className="h-4 w-4 text-white/50 hover:text-red-400" />
+                  </button>
                 </div>
-              )}
+              </div>
             </div>
           ))}
         </div>
@@ -202,6 +215,10 @@ export function MobilePhotosPanel({ eventId }: Props) {
           onApprove={() => handleApprove(lightbox)}
           onReject={() => handleReject(lightbox)}
           onToggleHighlight={() => toggleHighlightPhoto(lightbox)}
+          onDelete={() => {
+            setDeleteTarget(lightbox);
+            setLightbox(null);
+          }}
         />
       )}
 

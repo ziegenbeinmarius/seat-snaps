@@ -3,6 +3,7 @@ CREATE TYPE "public"."membership_role" AS ENUM('owner', 'organizer');--> stateme
 CREATE TYPE "public"."membership_status" AS ENUM('active', 'invited', 'removed');--> statement-breakpoint
 CREATE TYPE "public"."event_type" AS ENUM('wedding', 'birthday', 'corporate', 'other');--> statement-breakpoint
 CREATE TYPE "public"."invite_status" AS ENUM('pending', 'accepted', 'expired');--> statement-breakpoint
+CREATE TYPE "public"."table_shape" AS ENUM('round', 'rectangular', 'long');--> statement-breakpoint
 CREATE TYPE "public"."photo_status" AS ENUM('pending', 'approved', 'rejected', 'deleted');--> statement-breakpoint
 CREATE TABLE "attendee_sessions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -26,6 +27,7 @@ CREATE TABLE "attendees" (
 	"seat_id" uuid,
 	"qr_token" text NOT NULL,
 	"photo_limit" integer DEFAULT 10 NOT NULL,
+	"checked_in_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
 	CONSTRAINT "attendees_qr_token_unique" UNIQUE("qr_token")
@@ -108,6 +110,10 @@ CREATE TABLE "tables" (
 	"capacity" integer,
 	"position_x" real,
 	"position_y" real,
+	"shape" "table_shape" DEFAULT 'rectangular',
+	"rotation" real DEFAULT 0,
+	"width" real,
+	"height" real,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -129,7 +135,21 @@ CREATE TABLE "photos" (
 	"thumbnail_key" text,
 	"caption" text,
 	"status" "photo_status" DEFAULT 'pending' NOT NULL,
+	"is_highlight" boolean DEFAULT false NOT NULL,
+	"highlight_order" integer,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "schedule_items" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"event_id" uuid NOT NULL,
+	"title" text NOT NULL,
+	"description" text,
+	"start_time" timestamp with time zone NOT NULL,
+	"end_time" timestamp with time zone,
+	"position" integer DEFAULT 0 NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"updated_at" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
 ALTER TABLE "attendee_sessions" ADD CONSTRAINT "attendee_sessions_attendee_id_attendees_id_fk" FOREIGN KEY ("attendee_id") REFERENCES "public"."attendees"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -147,6 +167,7 @@ ALTER TABLE "seats" ADD CONSTRAINT "seats_event_id_events_id_fk" FOREIGN KEY ("e
 ALTER TABLE "seats" ADD CONSTRAINT "seats_attendee_id_attendees_id_fk" FOREIGN KEY ("attendee_id") REFERENCES "public"."attendees"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "photos" ADD CONSTRAINT "photos_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "public"."events"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "photos" ADD CONSTRAINT "photos_attendee_id_attendees_id_fk" FOREIGN KEY ("attendee_id") REFERENCES "public"."attendees"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedule_items" ADD CONSTRAINT "schedule_items_event_id_events_id_fk" FOREIGN KEY ("event_id") REFERENCES "public"."events"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "attendee_sessions_attendee_id_idx" ON "attendee_sessions" USING btree ("attendee_id");--> statement-breakpoint
 CREATE INDEX "attendee_sessions_event_id_idx" ON "attendee_sessions" USING btree ("event_id");--> statement-breakpoint
 CREATE INDEX "attendees_event_id_idx" ON "attendees" USING btree ("event_id");--> statement-breakpoint
@@ -159,4 +180,5 @@ CREATE INDEX "tables_event_id_idx" ON "tables" USING btree ("event_id");--> stat
 CREATE INDEX "seats_event_id_idx" ON "seats" USING btree ("event_id");--> statement-breakpoint
 CREATE INDEX "seats_table_id_idx" ON "seats" USING btree ("table_id");--> statement-breakpoint
 CREATE INDEX "photos_event_id_idx" ON "photos" USING btree ("event_id");--> statement-breakpoint
-CREATE INDEX "photos_attendee_id_idx" ON "photos" USING btree ("attendee_id");
+CREATE INDEX "photos_attendee_id_idx" ON "photos" USING btree ("attendee_id");--> statement-breakpoint
+CREATE INDEX "schedule_items_event_id_idx" ON "schedule_items" USING btree ("event_id");

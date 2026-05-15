@@ -20,7 +20,7 @@ interface Props {
   mySeatId: string | null;
 }
 
-export function RoomLayout({ tables, attendeesMap, myAttendeeId, myTableId, mySeatId }: Props) {
+export function RoomLayout({ tables, attendeesMap, myAttendeeId: _myAttendeeId, myTableId, mySeatId }: Props) {
   const [activeTable, setActiveTable] = useState<TableResponse | null>(null);
 
   // Auto-zoom: compute bounding box of all tables so content fills the view
