@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { AttendeeResponse, CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "attendees", init);
 
@@ -19,7 +20,10 @@ export function useCreateAttendee(eventId: string) {
   return useMutation<AttendeeResponse, Error, CreateAttendeeInput>({
     mutationFn: (data) =>
       fetchApi(`/events/${eventId}/attendees`, { method: "POST", body: JSON.stringify(data) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success("Attendee added");
+    },
   });
 }
 
@@ -31,7 +35,10 @@ export function useImportAttendees(eventId: string) {
         method: "POST",
         body: JSON.stringify({ csv }),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+    onSuccess: (data) => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success(`${data.length} attendees imported`);
+    },
   });
 }
 
@@ -43,7 +50,10 @@ export function useUpdateAttendee(eventId: string) {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success("Attendee updated");
+    },
   });
 }
 
@@ -52,7 +62,10 @@ export function useDeleteAttendee(eventId: string) {
   return useMutation<void, Error, string>({
     mutationFn: (attendeeId) =>
       fetchApi(`/events/${eventId}/attendees/${attendeeId}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success("Attendee removed");
+    },
   });
 }
 
@@ -64,7 +77,10 @@ export function useCheckinByQrToken(eventId: string) {
         method: "POST",
         body: JSON.stringify({ qrToken }),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] }),
+    onSuccess: (data) => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success(`${data.name} checked in`);
+    },
   });
 }
 
@@ -74,8 +90,9 @@ export function useUnassignAttendee(eventId: string) {
     mutationFn: (attendeeId) =>
       fetchApi(`/events/${eventId}/attendees/${attendeeId}/unassign`, { method: "PATCH" }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      toast.success("Attendee unassigned");
     },
   });
 }

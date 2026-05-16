@@ -1,10 +1,17 @@
+"use client";
+
+import Link from "next/link";
 import { UserRound } from "lucide-react";
+import type { Route } from "next";
 
 interface Props {
   name: string;
+  eventId: string;
 }
 
-export function AttendeeHeader({ name }: Props) {
+export function AttendeeHeader({ name, eventId }: Props) {
+  const profileHref = `/event/${eventId}/profile` as Route;
+
   return (
     <header
       className="sticky top-0 z-20 flex items-center gap-2 px-4 py-2"
@@ -15,16 +22,14 @@ export function AttendeeHeader({ name }: Props) {
         borderBottom: "1px solid rgba(255,255,255,0.3)",
       }}
     >
-      <UserRound
-        className="h-4 w-4 shrink-0"
-        style={{ color: "var(--event-active-color, #a07850)" }}
-      />
-      <span
-        className="text-sm font-medium truncate"
+      <Link
+        href={profileHref}
+        className="flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
         style={{ color: "var(--event-active-color, #a07850)" }}
       >
-        {name}
-      </span>
+        <UserRound className="h-4 w-4 shrink-0" />
+        <span className="text-sm font-medium truncate">{name}</span>
+      </Link>
     </header>
   );
 }

@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ThemeResponse, UpdateThemeInput } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "themes", init);
 
@@ -22,6 +23,9 @@ export function useUpdateTheme(eventId: string) {
         method: "PUT",
         body: JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "theme"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "theme"] });
+      toast.success("Theme saved");
+    },
   });
 }
