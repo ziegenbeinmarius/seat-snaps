@@ -8,6 +8,8 @@ const logger = new Logger("PushSubscriptionsService");
 
 @Injectable()
 export class PushSubscriptionsService implements IPushSubscriptionService {
+  private readonly hasVapidConfig: boolean;
+
   constructor(
     @Inject(PUSH_SUBSCRIPTION_REPOSITORY)
     private readonly repository: IPushSubscriptionRepository,
@@ -16,10 +18,19 @@ export class PushSubscriptionsService implements IPushSubscriptionService {
     const privateKey = process.env.VAPID_PRIVATE_KEY;
     const subject = process.env.VAPID_SUBJECT;
 
-    if (publicKey && privateKey && subject) {
-      webpush.setVapidDetails(subject, publicKey, privateKey);
+    this.hasVapidConfig = Boolean(publicKey && privateKey && subject);
+
+    if (this.hasVapidConfig) {
+      webpush.setVapidDetails(subject!, publicKey!, privateKey!);
     } else {
-      logger.warn("VAPID keys not configured — push notifications will not be sent");
+      const missing = [
+        !publicKey ? "VAPID_PUBLIC_KEY" : null,
+        !privateKey ? "VAPID_PRIVATE_KEY" : null,
+        !subject ? "VAPID_SUBJECT" : null,
+      ]
+        .filter(Boolean)
+        .join(", ");
+      logger.warn(`VAPID config incomplete (${missing}) — push notifications will not be sent`);
     }
   }
 
@@ -58,10 +69,18 @@ export class PushSubscriptionsService implements IPushSubscriptionService {
     eventId: string,
     payload: { title: string; body: string; url?: string },
   ): Promise<void> {
-    if (!process.env.VAPID_PUBLIC_KEY) return;
+    if (!this.hasVapidConfig) {
+      logger.warn(`Skipping push send for event ${eventId}: VAPID config is incomplete`);
+      return;
+    }
 
     const subscriptions = await this.repository.findByEventId(eventId);
-    if (subscriptions.length === 0) return;
+    if (subscriptions.length === 0) {
+      logger.log(`No push subscriptions found for event ${eventId}`);
+      return;
+    }
+
+    logger.log(`Sending push broadcast to ${subscriptions.length} subscription(s) for event ${eventId}`);
 
     const json = JSON.stringify(payload);
     const results = await Promise.allSettled(
@@ -74,16 +93,26 @@ export class PushSubscriptionsService implements IPushSubscriptionService {
     );
 
     const expiredEndpoints: string[] = [];
+    let successCount = 0;
+
     results.forEach((result, i) => {
-      if (result.status === "rejected") {
-        const err = result.reason as { statusCode?: number };
+      if (result.status === "fulfilled") {
+        successCount += 1;
+      } else {
+        const err = result.reason as { statusCode?: number; body?: string; message?: string };
         if (err.statusCode === 410 || err.statusCode === 404) {
           expiredEndpoints.push(subscriptions[i].endpoint);
         } else {
-          logger.warn("Failed to send push notification", err);
+          logger.warn(
+            `Failed push delivery for endpoint ${subscriptions[i].endpoint} (status: ${err.statusCode ?? "unknown"}) - ${err.message ?? "no message"} - ${err.body ?? "no body"}`,
+          );
         }
       }
     });
+
+    logger.log(
+      `Push send result for event ${eventId}: ${successCount} success, ${expiredEndpoints.length} expired, ${subscriptions.length - successCount - expiredEndpoints.length} failed`,
+    );
 
     await Promise.all(expiredEndpoints.map((ep) => this.repository.deleteByEndpoint(ep)));
   }
