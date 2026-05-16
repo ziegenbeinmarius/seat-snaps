@@ -47,18 +47,21 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-              "font-src 'self' https://fonts.gstatic.com",
-              "img-src 'self' data: blob: https://t3.storageapi.dev",
-              "connect-src 'self' https://t3.storageapi.dev " +
-                (process.env.NEXT_PUBLIC_API_URL ?? ""),
-              "frame-ancestors 'none'",
-              "base-uri 'self'",
-              "form-action 'self'",
-            ].join("; "),
+            value: (() => {
+              const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "";
+              const wsUrl = apiUrl.replace(/^https:\/\//, "wss://").replace(/^http:\/\//, "ws://");
+              return [
+                "default-src 'self'",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+                "font-src 'self' https://fonts.gstatic.com",
+                "img-src 'self' data: blob: https://t3.storageapi.dev",
+                `connect-src 'self' https://t3.storageapi.dev ${apiUrl} ${wsUrl}`.trimEnd(),
+                "frame-ancestors 'none'",
+                "base-uri 'self'",
+                "form-action 'self'",
+              ].join("; ");
+            })(),
           },
         ],
       },
