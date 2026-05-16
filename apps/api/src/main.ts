@@ -6,6 +6,7 @@ import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import fastifyCookie from "@fastify/cookie";
 import helmet from "@fastify/helmet";
+import { IoAdapter } from "@nestjs/platform-socket.io";
 import { AppModule } from "./app.module";
 
 const envCandidates = [
@@ -32,6 +33,8 @@ async function bootstrap() {
 
   await app.register(fastifyCookie as never);
   await app.register(helmet as never);
+
+  app.useWebSocketAdapter(new IoAdapter(app));
 
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"],
