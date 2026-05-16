@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { Route } from "next";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventHeroStrip } from "@/components/events/event-hero-strip";
 import { EventTabNav, type TabLink } from "@/components/events/event-tab-nav";
@@ -46,6 +46,15 @@ export default async function EventLayout({ children, params }: EventLayoutProps
           </Button>
         }
       />
+
+      <div className="flex justify-end">
+        <Button asChild variant="outline" size="sm" className="gap-1.5">
+          <Link href={`/organizer/events/${id}` as Route}>
+            <ExternalLink className="h-3.5 w-3.5" />
+            Organizer View
+          </Link>
+        </Button>
+      </div>
 
       <EventTabNav links={links} variant="desktop" />
 

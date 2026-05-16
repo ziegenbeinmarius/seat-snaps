@@ -27,6 +27,7 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
   const requestUrl = useRequestUploadUrl(eventId);
   const confirmUpload = useConfirmUpload(eventId);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<string>("");
@@ -103,28 +104,39 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
             <span className="text-sm">{uploadProgress || "Uploading…"}</span>
           </div>
         ) : remaining > 0 ? (
-          <label className="flex cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-6 transition-colors hover:border-blue-300 hover:bg-blue-50">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <Camera className="h-8 w-8 text-gray-400" />
-            <div className="text-center">
-              <p className="text-sm font-medium text-gray-700">Take or upload a photo</p>
-              <p className="text-xs text-gray-400 mt-0.5">{remaining} remaining</p>
-            </div>
-            <div className="flex gap-2 mt-1">
-              <span className="flex items-center gap-1 rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-700">
-                <Camera className="h-3 w-3" /> Camera
-              </span>
-              <span className="flex items-center gap-1 rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600">
-                <Upload className="h-3 w-3" /> Gallery
-              </span>
-            </div>
-          </label>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => cameraInputRef.current?.click()}
+              className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+            >
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <Camera className="h-7 w-7 text-blue-500" />
+              <p className="text-xs font-medium text-gray-700">Take Photo</p>
+            </button>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <Upload className="h-7 w-7 text-gray-400" />
+              <p className="text-xs font-medium text-gray-700">Gallery</p>
+            </button>
+          </div>
         ) : (
           <div className="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">
             You've used all {photoLimit} photo slots

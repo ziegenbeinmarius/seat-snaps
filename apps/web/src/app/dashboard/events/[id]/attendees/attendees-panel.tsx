@@ -6,6 +6,8 @@ import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, 
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -36,34 +38,51 @@ export function AttendeesPanel({ eventId }: Props) {
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingAttendee, setEditingAttendee] = useState<AttendeeResponse | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", groupLabel: "" });
+  const [form, setForm] = useState({ name: "", email: "", groupLabel: "", relationInfo: "", conversationStarters: "" });
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function openAdd() {
-    setForm({ name: "", email: "", groupLabel: "" });
+    setForm({ name: "", email: "", groupLabel: "", relationInfo: "", conversationStarters: "" });
     setError(null);
     setShowAddDialog(true);
   }
 
   function openEdit(a: AttendeeResponse) {
-    setForm({ name: a.name, email: a.email ?? "", groupLabel: a.groupLabel ?? "" });
+    setForm({
+      name: a.name,
+      email: a.email ?? "",
+      groupLabel: a.groupLabel ?? "",
+      relationInfo: a.relationInfo ?? "",
+      conversationStarters: a.conversationStarters?.join(", ") ?? "",
+    });
     setError(null);
     setEditingAttendee(a);
+  }
+
+  function buildPayload() {
+    const starters = form.conversationStarters
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+    return {
+      name: form.name,
+      email: form.email || undefined,
+      groupLabel: form.groupLabel || undefined,
+      relationInfo: form.relationInfo || undefined,
+      conversationStarters: starters.length > 0 ? starters : undefined,
+    };
   }
 
   async function handleSubmit() {
     setError(null);
     try {
       if (editingAttendee) {
-        await updateMutation.mutateAsync({
-          attendeeId: editingAttendee.id,
-          data: { name: form.name, email: form.email || undefined, groupLabel: form.groupLabel || undefined },
-        });
+        await updateMutation.mutateAsync({ attendeeId: editingAttendee.id, data: buildPayload() });
         setEditingAttendee(null);
       } else {
-        await createMutation.mutateAsync({ name: form.name, email: form.email || undefined, groupLabel: form.groupLabel || undefined });
+        await createMutation.mutateAsync(buildPayload());
         setShowAddDialog(false);
       }
     } catch (e) {
@@ -240,22 +259,48 @@ export function AttendeesPanel({ eventId }: Props) {
             <DialogTitle>{editingAttendee ? "Edit Attendee" : "Add Attendee"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <Input
-              placeholder="Name *"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-            />
-            <Input
-              placeholder="Email"
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-            />
-            <Input
-              placeholder="Group"
-              value={form.groupLabel}
-              onChange={(e) => setForm({ ...form, groupLabel: e.target.value })}
-            />
+            <div className="space-y-1">
+              <Label>Name *</Label>
+              <Input
+                placeholder="Name *"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Email</Label>
+              <Input
+                placeholder="Email"
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Group</Label>
+              <Input
+                placeholder="Group"
+                value={form.groupLabel}
+                onChange={(e) => setForm({ ...form, groupLabel: e.target.value })}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Description</Label>
+              <Textarea
+                placeholder="e.g. Easy to talk with, loves hiking…"
+                value={form.relationInfo}
+                onChange={(e) => setForm({ ...form, relationInfo: e.target.value })}
+                rows={2}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label>Conversation starters (comma-separated)</Label>
+              <Input
+                placeholder="e.g. Travel, Coffee, Music"
+                value={form.conversationStarters}
+                onChange={(e) => setForm({ ...form, conversationStarters: e.target.value })}
+              />
+            </div>
             {error && <p className="text-sm text-destructive">{error}</p>}
           </div>
           <DialogFooter>

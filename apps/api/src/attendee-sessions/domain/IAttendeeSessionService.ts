@@ -11,6 +11,10 @@ export interface IAttendeeSessionService {
     deviceFingerprint?: string,
   ): Promise<AttendeeSessionWithAttendee>;
   getByToken(token: string): Promise<AttendeeSessionWithAttendee>;
+  updateSelf(
+    attendeeId: string,
+    data: { relationInfo?: string; conversationStarters?: string[] },
+  ): Promise<Attendee>;
 }
 
 export const ATTENDEE_SESSION_SERVICE = Symbol("IAttendeeSessionService");

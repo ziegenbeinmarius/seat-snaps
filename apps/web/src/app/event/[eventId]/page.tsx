@@ -56,11 +56,14 @@ export default async function AttendeeHomePage({ params }: Props) {
   const { eventId } = await params;
   const attendee = await getCurrentAttendee();
 
-  const [event, scheduleItems, tables] = await Promise.all([
+  const [event, scheduleItems, tables, attendeesList] = await Promise.all([
     fetchPublic<EventResponse>(`/events/${eventId}/info`),
     fetchPublic<ScheduleItemResponse[]>(`/events/${eventId}/schedule`),
     fetchPublic<TableResponse[]>(`/events/${eventId}/tables/public`),
+    fetchPublic<Array<{ id: string; name: string }>>(`/events/${eventId}/attendees/public`),
   ]);
+
+  const attendeesMap = new Map((attendeesList ?? []).map((a) => [a.id, a.name]));
 
   const myTable = tables?.find((t) => t.id === attendee?.tableId);
   const mySeat = myTable?.seats?.find((s) => s.attendeeId === attendee?.id);
@@ -193,7 +196,7 @@ export default async function AttendeeHomePage({ params }: Props) {
                       className="event-body rounded-full px-2.5 py-0.5 text-xs event-card-desc"
                       style={{ background: "var(--event-card-chip-bg)" }}
                     >
-                      {s.attendeeId}
+                      {attendeesMap.get(s.attendeeId ?? "") ?? "Guest"}
                     </span>
                   ))}
                 </div>
