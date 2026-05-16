@@ -1,5 +1,6 @@
 import { Injectable, Inject, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { randomBytes } from "crypto";
+import type { Attendee } from "@seat-snaps/db";
 import type { IAttendeeSessionRepository } from "../domain/repositories/IAttendeeSessionRepository";
 import { ATTENDEE_SESSION_REPOSITORY } from "../domain/repositories/IAttendeeSessionRepository";
 import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
@@ -27,6 +28,26 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
     const attendee = await this.attendeeRepository.findByQrToken(qrToken);
     if (!attendee) throw new NotFoundException("Invalid QR token");
 
+    return this.issueSession(attendee, deviceFingerprint);
+  }
+
+  async createFromAttendeeId(
+    attendeeId: string,
+    eventId: string,
+    deviceFingerprint?: string,
+  ): Promise<AttendeeSessionWithAttendee> {
+    const attendee = await this.attendeeRepository.findById(attendeeId);
+    if (!attendee || attendee.eventId !== eventId) {
+      throw new NotFoundException("Attendee not found for this event");
+    }
+
+    return this.issueSession(attendee, deviceFingerprint);
+  }
+
+  private async issueSession(
+    attendee: Attendee,
+    deviceFingerprint?: string,
+  ): Promise<AttendeeSessionWithAttendee> {
     const token = randomBytes(32).toString("hex");
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + SESSION_TTL_DAYS);
@@ -39,7 +60,7 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
       expiresAt,
     });
 
-    // Auto check-in on first QR scan; preserve the original timestamp on subsequent scans
+    // Auto check-in on first join; preserve the original timestamp afterwards
     if (!attendee.checkedInAt) {
       await this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
     }

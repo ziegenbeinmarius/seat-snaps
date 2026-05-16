@@ -8,12 +8,14 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
+  BadRequestException,
 } from "@nestjs/common";
 import { randomBytes } from "node:crypto";
 import { Throttle } from "@nestjs/throttler";
 import type { FastifyReply } from "fastify";
 import type { Attendee } from "@seat-snaps/db";
 import { AttendeeSessionsService } from "./attendee-sessions.service";
+import type { AttendeeSessionWithAttendee } from "./domain/IAttendeeSessionService";
 import { CreateAttendeeSessionDto } from "./dto/create-attendee-session.dto";
 import { UpdateAttendeeSelfDto } from "./dto/update-attendee-self.dto";
 import { AttendeeSessionGuard, ATTENDEE_SESSION_COOKIE } from "./guards/attendee-session.guard";
@@ -32,7 +34,18 @@ export class AttendeeSessionsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateAttendeeSessionDto, @Res() reply: FastifyReply) {
-    const result = await this.service.createFromQrToken(dto.qrToken, dto.deviceFingerprint);
+    let result: AttendeeSessionWithAttendee;
+    if (dto.qrToken) {
+      result = await this.service.createFromQrToken(dto.qrToken, dto.deviceFingerprint);
+    } else if (dto.attendeeId && dto.eventId) {
+      result = await this.service.createFromAttendeeId(
+        dto.attendeeId,
+        dto.eventId,
+        dto.deviceFingerprint,
+      );
+    } else {
+      throw new BadRequestException("Provide either qrToken or attendeeId with eventId");
+    }
 
     reply.setCookie(ATTENDEE_SESSION_COOKIE, result.session.token, {
       httpOnly: true,
