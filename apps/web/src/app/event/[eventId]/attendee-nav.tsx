@@ -34,7 +34,7 @@ export function AttendeeNav({ eventId }: Props) {
         borderColor: "rgba(255,255,255,0.3)",
       }}
     >
-      <div className="flex">
+      <div className="mx-auto flex max-w-lg">
         {links.map(({ href, icon: Icon, label }) => {
           const active = href === base ? pathname === base : pathname.startsWith(href);
           return (
