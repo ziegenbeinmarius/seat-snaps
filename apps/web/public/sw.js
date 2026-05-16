@@ -41,11 +41,16 @@ self.addEventListener("push", (event) => {
   } catch {}
 
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: "/favicon.svg",
-      badge: "/favicon.svg",
-      data: { url: data.url },
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      // When the app is visible the socket connection shows the in-app banner,
+      // so skip the OS notification to avoid a duplicate.
+      if (clients.some((c) => c.visibilityState === "visible")) return;
+      return self.registration.showNotification(data.title, {
+        body: data.body,
+        icon: "/favicon.svg",
+        badge: "/favicon.svg",
+        data: { url: data.url },
+      });
     }),
   );
 });
