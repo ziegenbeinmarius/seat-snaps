@@ -33,11 +33,13 @@ declare module "next-auth" {
     user: {
       id: string;
       role?: string | null;
+      isAdmin?: boolean;
     } & DefaultSession["user"];
   }
   interface User {
     id: string;
     role?: string | null;
+    isAdmin?: boolean;
     tokenVersion?: number;
   }
 }
@@ -46,6 +48,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role?: string | null;
+    isAdmin?: boolean;
     tokenVersion?: number;
     checkedAt?: number;
   }
@@ -109,6 +112,7 @@ const nextAuth: NextAuthResult = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role ?? null;
+        token.isAdmin = user.isAdmin ?? false;
         token.tokenVersion = user.tokenVersion ?? 0;
         token.checkedAt = Math.floor(Date.now() / 1000);
         return token;
@@ -124,11 +128,16 @@ const nextAuth: NextAuthResult = NextAuth({
             headers: { Authorization: `Bearer ${bearer}` },
           });
           if (res.ok) {
-            const body = (await res.json()) as { exists: boolean; tokenVersion: number | null };
+            const body = (await res.json()) as {
+              exists: boolean;
+              tokenVersion: number | null;
+              isAdmin?: boolean;
+            };
             if (!body.exists) return null;
             if (body.tokenVersion !== null && (token.tokenVersion ?? 0) < body.tokenVersion) {
               return null;
             }
+            token.isAdmin = body.isAdmin ?? token.isAdmin ?? false;
           }
         } catch {
           // Network error — keep session valid rather than logging everyone out
@@ -141,6 +150,7 @@ const nextAuth: NextAuthResult = NextAuth({
     session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
+      session.user.isAdmin = token.isAdmin ?? false;
       return session;
     },
   },

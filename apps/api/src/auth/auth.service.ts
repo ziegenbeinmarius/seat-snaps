@@ -23,7 +23,7 @@ export class AuthService implements IAuthService {
       passwordHash,
     });
 
-    return { id: user.id, email: user.email, name: user.name, role: null, tokenVersion: user.tokenVersion };
+    return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
   }
 
   async validateCredentials(email: string, password: string): Promise<SessionUser | null> {
@@ -33,7 +33,7 @@ export class AuthService implements IAuthService {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return null;
 
-    return { id: user.id, email: user.email, name: user.name, role: null, tokenVersion: user.tokenVersion };
+    return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
   }
 
   async userExists(userId: string): Promise<boolean> {
@@ -59,5 +59,18 @@ export class AuthService implements IAuthService {
     const user = await this.userRepository.findById(userId);
     if (!user) return null;
     return user.tokenVersion ?? 0;
+  }
+
+  async getSessionState(userId: string): Promise<{ exists: boolean; tokenVersion: number | null; isAdmin: boolean }> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return { exists: false, tokenVersion: null, isAdmin: false };
+    }
+
+    return {
+      exists: true,
+      tokenVersion: user.tokenVersion ?? 0,
+      isAdmin: user.isAdmin ?? false,
+    };
   }
 }

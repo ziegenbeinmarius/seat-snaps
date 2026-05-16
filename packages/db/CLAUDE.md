@@ -56,3 +56,10 @@ npm run db:push       # Push schema directly (dev only)
 npm run db:studio     # Visual DB browser
 npm run db:seed       # Seed data (from packages/db dir)
 ```
+
+## Agent Migration Workflow
+
+- Do not hand-write migration SQL in `drizzle/*.sql`.
+- For schema changes, edit `src/schema/*` and run `npm run db:generate`.
+- Do not run `npm run db:migrate` automatically; leave migration application as a manual human step unless explicitly requested.
+- If migration history/hash drift exists, report it and stop instead of editing old applied migration files.

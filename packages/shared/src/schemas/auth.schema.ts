@@ -8,6 +8,7 @@ export const SessionUserSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   role: MembershipRoleSchema.nullable().optional(),
+  isAdmin: z.boolean().optional(),
   tokenVersion: z.number().int().optional(),
 });
 export type SessionUser = z.infer<typeof SessionUserSchema>;
