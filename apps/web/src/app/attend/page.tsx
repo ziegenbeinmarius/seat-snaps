@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { QrCode } from "lucide-react";
+import { AttendScanner } from "./attend-scanner";
 
 export const metadata: Metadata = {
   title: "SeatSnaps",
@@ -21,7 +22,7 @@ export default async function AttendPage() {
       style={{ background: "linear-gradient(160deg, #f5ede0 0%, #ede0cc 100%)" }}
     >
       <div
-        className="w-full max-w-sm rounded-3xl px-8 py-12 text-center"
+        className="w-full max-w-sm rounded-3xl px-6 py-8 text-center sm:px-8 sm:py-12"
         style={{
           background: "rgba(255, 252, 247, 0.75)",
           backdropFilter: "blur(12px)",
@@ -50,6 +51,8 @@ export default async function AttendPage() {
           Scan the QR code from your invitation to join your event and access your schedule,
           seating plan, and more.
         </p>
+
+        <AttendScanner />
       </div>
     </main>
   );

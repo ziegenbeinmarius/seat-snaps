@@ -11,14 +11,22 @@ import { ConnectionStatus } from "@/components/broadcast/connection-status";
 import { PushPermissionPrompt } from "@/components/push-notifications/push-permission-prompt";
 import { IosInstallPrompt } from "@/components/push-notifications/ios-install-prompt";
 
-export const metadata: Metadata = {
-  manifest: "/manifest-attendee.json",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "SeatSnaps",
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ eventId: string }>;
+}): Promise<Metadata> {
+  const { eventId } = await params;
+
+  return {
+    manifest: `/manifest-attendee?eventId=${eventId}`,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "SeatSnaps",
+    },
+  };
+}
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 

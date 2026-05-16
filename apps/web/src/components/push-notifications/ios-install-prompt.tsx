@@ -56,33 +56,37 @@ export function IosInstallPrompt() {
           <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
             On iPhone, push notifications require the app to be installed. It only takes a second:
           </p>
-          <ol className="mt-2 space-y-1 text-xs text-gray-600">
-            <li className="flex items-center gap-1.5">
+          <ol className="mt-2 space-y-1.5 text-xs text-gray-600">
+            <li className="flex items-start gap-1.5 text-left leading-relaxed">
               <span
                 className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
                 style={{ background: "var(--event-primary, #6366f1)" }}
               >
                 1
               </span>
-              Tap the Share button{" "}
-              <span aria-label="share icon" className="text-base leading-none">
+              <span className="min-w-0">
+                Tap the Share button
+              </span>
+              <span aria-label="share icon" className="shrink-0 text-base leading-none">
                 ⎋
-              </span>{" "}
-              in Safari&apos;s toolbar
+              </span>
+              <span className="min-w-0">in Safari&apos;s toolbar</span>
             </li>
-            <li className="flex items-center gap-1.5">
+            <li className="flex items-start gap-1.5 text-left leading-relaxed">
               <span
                 className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
                 style={{ background: "var(--event-primary, #6366f1)" }}
               >
                 2
               </span>
-              Choose <strong>&quot;Add to Home Screen&quot;</strong>{" "}
-              <span aria-label="plus icon" className="text-base leading-none">
+              <span className="min-w-0">
+                Choose <strong>&quot;Add to Home Screen&quot;</strong>
+              </span>
+              <span aria-label="plus icon" className="shrink-0 text-base leading-none">
                 ➕
               </span>
             </li>
-            <li className="flex items-center gap-1.5">
+            <li className="flex items-start gap-1.5 text-left leading-relaxed">
               <span
                 className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
                 style={{ background: "var(--event-primary, #6366f1)" }}

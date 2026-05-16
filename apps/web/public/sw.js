@@ -54,11 +54,15 @@ self.addEventListener("push", (event) => {
       return self.registration
         .showNotification(title, {
           body,
+          icon: "/icons/icon-192.png",
+          badge: "/icons/badge-96.png",
           data: { url },
         })
         .catch(() =>
           self.registration.showNotification("SeatSnaps", {
             body: "You have a new update.",
+            icon: "/icons/icon-192.png",
+            badge: "/icons/badge-96.png",
             data: { url: "/" },
           }),
         );
