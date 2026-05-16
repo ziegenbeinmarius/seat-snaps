@@ -11,7 +11,7 @@ export default async function OrganizerLayout({ children }: { children: React.Re
       className="min-h-screen"
       style={{ background: APP_BACKGROUND }}
     >
-      <main className="pb-20">{children}</main>
+      <main className="mx-auto max-w-md pb-20">{children}</main>
       <OrganizerNav />
     </div>
   );
