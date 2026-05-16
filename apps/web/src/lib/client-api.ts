@@ -1,24 +1,6 @@
 "use client";
 
-// 30s in-memory cache so we don't hit /api/token on every request
-let tokenCache: { value: string; expiresAt: number } | null = null;
-
-async function getToken(): Promise<string | null> {
-  if (tokenCache && Date.now() < tokenCache.expiresAt) return tokenCache.value;
-  try {
-    const res = await fetch("/api/token");
-    if (!res.ok) return null;
-    const data = (await res.json()) as { token?: string } | null;
-    const token = data?.token ?? null;
-    if (token) tokenCache = { value: token, expiresAt: Date.now() + 30_000 };
-    return token;
-  } catch {
-    return null;
-  }
-}
-
 export async function clientFetch<T>(path: string, label: string, init?: RequestInit): Promise<T> {
-  const token = await getToken();
   const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
@@ -26,9 +8,8 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
     "Content-Type": "application/json",
     ...(init?.headers as Record<string, string>),
   };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(url, { ...init, headers, credentials: "include" }).catch(
+  const res = await fetch(url, { ...init, headers }).catch(
     (error: unknown) => {
       console.error(`[${label} api] network failure`, { method, path, url, error });
       throw new Error(`Could not reach API for ${method} ${path}. Please try again later.`);

@@ -38,6 +38,7 @@ declare module "next-auth" {
   interface User {
     id: string;
     role?: string | null;
+    tokenVersion?: number;
   }
 }
 
@@ -45,6 +46,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role?: string | null;
+    tokenVersion?: number;
     checkedAt?: number;
   }
 }
@@ -74,7 +76,6 @@ const nextAuth: NextAuthResult = NextAuth({
     }),
   ],
   jwt: {
-    // Use standard JWS so the NestJS API can verify Auth.js tokens directly
     async encode({ secret, token, maxAge }) {
       if (!token) return "";
       const signingSecret = Array.isArray(secret) ? secret[0] : (secret as string);
@@ -108,23 +109,26 @@ const nextAuth: NextAuthResult = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role ?? null;
+        token.tokenVersion = user.tokenVersion ?? 0;
         token.checkedAt = Math.floor(Date.now() / 1000);
         return token;
       }
 
-      // Re-check user existence every 5 minutes so deleted accounts are evicted
       const now = Math.floor(Date.now() / 1000);
       const lastChecked = typeof token.checkedAt === "number" ? token.checkedAt : 0;
       if (now - lastChecked > 5 * 60) {
         const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
         try {
           const bearer = jwt.sign({ id: token.id }, authSecret!, { algorithm: "HS256", expiresIn: 30 });
-          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/exists`, {
+          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/token-version`, {
             headers: { Authorization: `Bearer ${bearer}` },
           });
           if (res.ok) {
-            const body = (await res.json()) as { exists: boolean };
+            const body = (await res.json()) as { exists: boolean; tokenVersion: number | null };
             if (!body.exists) return null;
+            if (body.tokenVersion !== null && (token.tokenVersion ?? 0) < body.tokenVersion) {
+              return null;
+            }
           }
         } catch {
           // Network error — keep session valid rather than logging everyone out
