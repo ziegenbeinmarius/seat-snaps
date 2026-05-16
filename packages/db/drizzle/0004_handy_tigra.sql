@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "attendees_event_email_uidx" ON "attendees" USING btree ("event_id","email");

@@ -1,4 +1,4 @@
-import { pgTable, uuid, text, timestamp, integer, index } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { events } from "./events.js";
 
 export const attendees = pgTable(
@@ -22,7 +22,10 @@ export const attendees = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("attendees_event_id_idx").on(t.eventId)],
+  (t) => [
+    index("attendees_event_id_idx").on(t.eventId),
+    uniqueIndex("attendees_event_email_uidx").on(t.eventId, t.email),
+  ],
 );
 
 export type Attendee = typeof attendees.$inferSelect;
