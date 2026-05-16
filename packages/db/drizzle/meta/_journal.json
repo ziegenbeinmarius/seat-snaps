@@ -12,15 +12,8 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1747353600000,
-      "tag": "0001_unique_session_token",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1778973600000,
-      "tag": "0002_add_token_version",
+      "when": 1778918543590,
+      "tag": "0001_complete_maggott",
       "breakpoints": true
     }
   ]

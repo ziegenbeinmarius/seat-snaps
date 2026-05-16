@@ -1,4 +1,4 @@
-import { CalendarDays } from "lucide-react";
+import { AlertTriangle, CalendarDays } from "lucide-react";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
 import { NewEventDialog } from "@/components/events/new-event-dialog";
@@ -9,11 +9,14 @@ interface EventListPageProps {
   eventHrefPrefix: string;
 }
 
-async function fetchEvents(): Promise<EventResponse[]> {
+async function fetchEvents(): Promise<{ events: EventResponse[]; error: string | null }> {
   try {
-    return await apiRequest<EventResponse[]>("/events");
-  } catch {
-    return [];
+    return { events: await apiRequest<EventResponse[]>("/events"), error: null };
+  } catch (error) {
+    return {
+      events: [],
+      error: error instanceof Error ? error.message : "Could not load events.",
+    };
   }
 }
 
@@ -78,6 +81,26 @@ function EmptyState({ variant }: { variant: "desktop" | "mobile" }) {
   );
 }
 
+function ErrorState({ message, variant }: { message: string; variant: "desktop" | "mobile" }) {
+  return (
+    <div className="dashboard-glass rounded-2xl px-6 py-12 text-center">
+      <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-destructive" />
+      <h2 className={variant === "desktop" ? "mb-2 text-lg font-semibold" : "mb-2 text-base font-semibold"}>
+        Could not load events
+      </h2>
+      <p className="mx-auto mb-5 max-w-md text-sm text-muted-foreground">
+        {message}
+      </p>
+      <a
+        href={variant === "desktop" ? "/dashboard" : "/organizer"}
+        className="inline-flex items-center justify-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
+      >
+        Try again
+      </a>
+    </div>
+  );
+}
+
 function EventGrid({
   events,
   hrefPrefix,
@@ -108,14 +131,16 @@ function EventGrid({
 }
 
 export async function EventListPage({ variant, eventHrefPrefix }: EventListPageProps) {
-  const events = await fetchEvents();
+  const { events, error } = await fetchEvents();
   const isDesktop = variant === "desktop";
 
   return (
     <div className={isDesktop ? "space-y-8" : "px-4 py-6"}>
       {isDesktop ? <DesktopHeader /> : <MobileHeader />}
 
-      {events.length === 0 ? (
+      {error ? (
+        <ErrorState message={error} variant={variant} />
+      ) : events.length === 0 ? (
         <EmptyState variant={variant} />
       ) : (
         <EventGrid events={events} hrefPrefix={eventHrefPrefix} variant={variant} />
