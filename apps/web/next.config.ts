@@ -56,7 +56,7 @@ const nextConfig: NextConfig = {
                 "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
                 "font-src 'self' https://fonts.gstatic.com",
                 "img-src 'self' data: blob: https://t3.storageapi.dev",
-                `connect-src 'self' https://t3.storageapi.dev ${apiUrl} ${wsUrl}`.trimEnd(),
+                `connect-src 'self' ws: wss: https://t3.storageapi.dev ${apiUrl} ${wsUrl}`.trimEnd(),
                 "frame-ancestors 'none'",
                 "base-uri 'self'",
                 "form-action 'self'",
