@@ -9,6 +9,7 @@ import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IBroadcastService } from "./domain/IBroadcastService";
 import { EventGateway } from "./event.gateway";
+import { PushSubscriptionsService } from "../push-subscriptions/push-subscriptions.service";
 
 @Injectable()
 export class BroadcastsService implements IBroadcastService {
@@ -20,6 +21,7 @@ export class BroadcastsService implements IBroadcastService {
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
     private readonly gateway: EventGateway,
+    private readonly pushService: PushSubscriptionsService,
   ) {}
 
   async create(eventId: string, data: CreateBroadcastInput, userId: string): Promise<Broadcast> {
@@ -39,6 +41,11 @@ export class BroadcastsService implements IBroadcastService {
     });
 
     this.emitBroadcast(broadcast);
+    void this.pushService.sendToEvent(eventId, {
+      title: data.title,
+      body: data.content,
+      url: `/event/${eventId}/announcements`,
+    });
 
     return broadcast;
   }

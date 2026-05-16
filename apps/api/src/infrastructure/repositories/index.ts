@@ -10,3 +10,4 @@ export * from "./DrizzleBroadcastRepository";
 export * from "./DrizzleAttendeeSessionRepository";
 export * from "./DrizzleScheduleItemRepository";
 export * from "./DrizzleEventThemeRepository";
+export * from "./DrizzlePushSubscriptionRepository";

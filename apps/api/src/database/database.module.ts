@@ -13,6 +13,7 @@ import {
   DrizzleScheduleItemRepository,
   DrizzleEventThemeRepository,
   DrizzleBroadcastRepository,
+  DrizzlePushSubscriptionRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
@@ -27,6 +28,7 @@ import {
   SCHEDULE_ITEM_REPOSITORY,
   EVENT_THEME_REPOSITORY,
   BROADCAST_REPOSITORY,
+  PUSH_SUBSCRIPTION_REPOSITORY,
 } from "../domain/repositories";
 
 export const DB_PROVIDER = Symbol("DATABASE");
@@ -103,6 +105,11 @@ export const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleBroadcastRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: PUSH_SUBSCRIPTION_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzlePushSubscriptionRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
   exports: [
     DB_PROVIDER,
@@ -118,6 +125,7 @@ export const DB_PROVIDER = Symbol("DATABASE");
     SCHEDULE_ITEM_REPOSITORY,
     EVENT_THEME_REPOSITORY,
     BROADCAST_REPOSITORY,
+    PUSH_SUBSCRIPTION_REPOSITORY,
   ],
 })
 export class DatabaseModule {}
