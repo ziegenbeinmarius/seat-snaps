@@ -1,11 +1,10 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import * as QRCode from "qrcode";
 import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
 import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
-import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { ITableRepository } from "../domain/repositories/ITableRepository";
 import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
 import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
@@ -15,38 +14,36 @@ import type { AttendeeQrResult } from "./domain/IQrService";
 
 @Injectable()
 export class QrService implements IQrService {
+  private readonly appUrl: string;
+
   constructor(
+    private readonly config: ConfigService,
     @Inject(ATTENDEE_REPOSITORY)
     private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
-    @Inject(EVENT_MEMBERSHIP_REPOSITORY)
-    private readonly membershipRepository: IEventMembershipRepository,
     @Inject(TABLE_REPOSITORY)
     private readonly tableRepository: ITableRepository,
     @Inject(SEAT_REPOSITORY)
     private readonly seatRepository: ISeatRepository,
-  ) {}
+  ) {
+    this.appUrl = this.config.getOrThrow<string>("app.appUrl");
+  }
 
   async generateForAttendee(
     attendeeId: string,
     eventId: string,
-    userId: string,
   ): Promise<AttendeeQrResult> {
-    await this.requireMember(eventId, userId);
-
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = this.appUrl;
     const url = `${appUrl}/join/${attendee.qrToken}`;
     const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
     return { buffer, attendeeName: attendee.name };
   }
 
-  async generateBulkZip(eventId: string, userId: string): Promise<Buffer> {
-    await this.requireMember(eventId, userId);
-
+  async generateBulkZip(eventId: string): Promise<Buffer> {
     const [attendees, tables, seats] = await Promise.all([
       this.attendeeRepository.findByEventId(eventId),
       this.tableRepository.findByEventId(eventId),
@@ -56,7 +53,7 @@ export class QrService implements IQrService {
     const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
     const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = this.appUrl;
 
     const items = await Promise.all(
       attendees.map(async (a) => {
@@ -76,13 +73,11 @@ export class QrService implements IQrService {
     return Buffer.from(html, "utf-8");
   }
 
-  async generateEventQr(eventId: string, userId: string): Promise<Buffer> {
-    await this.requireMember(eventId, userId);
-
+  async generateEventQr(eventId: string): Promise<Buffer> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = this.appUrl;
     const url = `${appUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
@@ -133,10 +128,4 @@ export class QrService implements IQrService {
 </html>`;
   }
 
-  private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
-    if (!membership) throw new ForbiddenException("Access denied");
-  }
 }

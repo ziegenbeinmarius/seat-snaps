@@ -1,12 +1,10 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import type { ScheduleItem } from "@seat-snaps/db";
 import type { CreateScheduleItemInput, UpdateScheduleItemInput } from "@seat-snaps/shared";
 import type { IScheduleItemRepository } from "../domain/repositories/IScheduleItemRepository";
 import { SCHEDULE_ITEM_REPOSITORY } from "../domain/repositories/IScheduleItemRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
-import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IScheduleItemService } from "./domain/IScheduleItemService";
 
 @Injectable()
@@ -16,8 +14,6 @@ export class ScheduleItemsService implements IScheduleItemService {
     private readonly scheduleItemRepository: IScheduleItemRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
-    @Inject(EVENT_MEMBERSHIP_REPOSITORY)
-    private readonly membershipRepository: IEventMembershipRepository,
   ) {}
 
   async listForEvent(eventId: string): Promise<ScheduleItem[]> {
@@ -35,9 +31,7 @@ export class ScheduleItemsService implements IScheduleItemService {
   async create(
     eventId: string,
     data: CreateScheduleItemInput,
-    userId: string,
   ): Promise<ScheduleItem> {
-    await this.requireMember(eventId, userId);
     return this.scheduleItemRepository.create({
       eventId,
       title: data.title,
@@ -52,9 +46,7 @@ export class ScheduleItemsService implements IScheduleItemService {
     id: string,
     eventId: string,
     data: UpdateScheduleItemInput,
-    userId: string,
   ): Promise<ScheduleItem> {
-    await this.requireMember(eventId, userId);
     const item = await this.scheduleItemRepository.findById(id);
     if (!item || item.eventId !== eventId) throw new NotFoundException("Schedule item not found");
 
@@ -67,17 +59,9 @@ export class ScheduleItemsService implements IScheduleItemService {
     });
   }
 
-  async delete(id: string, eventId: string, userId: string): Promise<void> {
-    await this.requireMember(eventId, userId);
+  async delete(id: string, eventId: string): Promise<void> {
     const item = await this.scheduleItemRepository.findById(id);
     if (!item || item.eventId !== eventId) throw new NotFoundException("Schedule item not found");
     await this.scheduleItemRepository.delete(id);
-  }
-
-  private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
-    if (!membership) throw new ForbiddenException("Access denied");
   }
 }

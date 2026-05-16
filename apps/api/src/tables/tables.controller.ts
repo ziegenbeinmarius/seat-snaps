@@ -6,17 +6,20 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import { TablesService } from "./tables.service";
 import { CreateTableDto } from "./dto/create-table.dto";
 import { UpdateTableDto } from "./dto/update-table.dto";
 import { BulkUpdatePositionsDto } from "./dto/bulk-update-positions.dto";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { Public } from "../auth/decorators/public.decorator";
-import type { SessionUser } from "@seat-snaps/shared";
+import { EventMemberGuard } from "../auth/guards/event-member.guard";
 
+@UseGuards(EventMemberGuard)
 @Controller("events/:eventId/tables")
 export class TablesController {
   constructor(private readonly tablesService: TablesService) {}
@@ -28,8 +31,8 @@ export class TablesController {
   }
 
   @Get()
-  list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {
-    return this.tablesService.listForEvent(eventId, user.id);
+  list(@Param("eventId") eventId: string, @Query() query: PaginationQueryDto) {
+    return this.tablesService.listForEventPaginated(eventId, query.page!, query.limit!);
   }
 
   @Patch("positions")
@@ -37,27 +40,24 @@ export class TablesController {
   bulkUpdatePositions(
     @Param("eventId") eventId: string,
     @Body() dto: BulkUpdatePositionsDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.tablesService.bulkUpdatePositions(eventId, dto.positions, user.id);
+    return this.tablesService.bulkUpdatePositions(eventId, dto.positions);
   }
 
   @Post()
   create(
     @Param("eventId") eventId: string,
     @Body() dto: CreateTableDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.tablesService.create(eventId, dto, user.id);
+    return this.tablesService.create(eventId, dto);
   }
 
   @Get(":tableId")
   getOne(
     @Param("eventId") eventId: string,
     @Param("tableId") tableId: string,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.tablesService.getById(tableId, eventId, user.id);
+    return this.tablesService.getById(tableId, eventId);
   }
 
   @Patch(":tableId")
@@ -65,9 +65,8 @@ export class TablesController {
     @Param("eventId") eventId: string,
     @Param("tableId") tableId: string,
     @Body() dto: UpdateTableDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.tablesService.update(tableId, eventId, dto, user.id);
+    return this.tablesService.update(tableId, eventId, dto);
   }
 
   @Delete(":tableId")
@@ -75,8 +74,7 @@ export class TablesController {
   delete(
     @Param("eventId") eventId: string,
     @Param("tableId") tableId: string,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.tablesService.delete(tableId, eventId, user.id);
+    return this.tablesService.delete(tableId, eventId);
   }
 }

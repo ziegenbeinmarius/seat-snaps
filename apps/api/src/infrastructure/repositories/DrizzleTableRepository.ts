@@ -1,4 +1,4 @@
-import { eq } from "@seat-snaps/db";
+import { eq, sql } from "@seat-snaps/db";
 import type { Database, Table, NewTable } from "@seat-snaps/db";
 import { tables } from "@seat-snaps/db";
 import type { ITableRepository, UpdateTableData } from "../../domain/repositories/ITableRepository";
@@ -13,6 +13,23 @@ export class DrizzleTableRepository implements ITableRepository {
 
   async findByEventId(eventId: string): Promise<Table[]> {
     return this.db.select().from(tables).where(eq(tables.eventId, eventId));
+  }
+
+  async findByEventIdPaginated(eventId: string, limit: number, offset: number): Promise<Table[]> {
+    return this.db
+      .select()
+      .from(tables)
+      .where(eq(tables.eventId, eventId))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async countByEventId(eventId: string): Promise<number> {
+    const result = await this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(tables)
+      .where(eq(tables.eventId, eventId));
+    return Number(result[0]?.count ?? 0);
   }
 
   async create(data: NewTable): Promise<Table> {

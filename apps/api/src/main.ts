@@ -1,6 +1,7 @@
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter, type NestFastifyApplication } from "@nestjs/platform-fastify";
-import { ValidationPipe } from "@nestjs/common";
+import { ValidationPipe, Logger } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { config as loadEnv } from "dotenv";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
@@ -23,12 +24,15 @@ async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter({ logger: true }),
+    { logger: new Logger() },
   );
+
+  const config = app.get(ConfigService);
 
   await app.register(fastifyCookie as never);
 
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"],
+    origin: config.getOrThrow<string[]>("app.allowedOrigins"),
     credentials: true,
   });
 
@@ -42,9 +46,9 @@ async function bootstrap() {
 
   app.setGlobalPrefix("api");
 
-  const port = process.env.API_PORT ? Number(process.env.API_PORT) : 3001;
+  const port = config.getOrThrow<number>("app.apiPort");
   await app.listen(port, "0.0.0.0");
-  console.log(`API running on http://0.0.0.0:${port}/api`);
+  new Logger("Bootstrap").log(`API running on http://0.0.0.0:${port}/api`);
 }
 
 bootstrap();

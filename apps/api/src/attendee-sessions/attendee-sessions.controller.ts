@@ -9,6 +9,7 @@ import {
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import type { FastifyReply } from "fastify";
 import type { Attendee } from "@seat-snaps/db";
 import { AttendeeSessionsService } from "./attendee-sessions.service";
@@ -21,7 +22,10 @@ const SESSION_TTL_SECONDS = 90 * 24 * 60 * 60;
 
 @Controller("attendee-sessions")
 export class AttendeeSessionsController {
-  constructor(private readonly service: AttendeeSessionsService) {}
+  constructor(
+    private readonly service: AttendeeSessionsService,
+    private readonly config: ConfigService,
+  ) {}
 
   @Public()
   @Post()
@@ -41,7 +45,7 @@ export class AttendeeSessionsController {
 
     reply.setCookie(ATTENDEE_SESSION_COOKIE, result.session.token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: this.config.get<string>("NODE_ENV") === "production",
       sameSite: "lax",
       path: "/",
       maxAge: SESSION_TTL_SECONDS,

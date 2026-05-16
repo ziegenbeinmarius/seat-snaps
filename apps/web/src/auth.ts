@@ -24,9 +24,7 @@ const authSecret =
   ?? process.env.NEXTAUTH_SECRET
   ?? process.env.auth_secret;
 
-const trustHost = process.env.AUTH_TRUST_HOST
-  ? process.env.AUTH_TRUST_HOST === "true"
-  : true;
+const trustHost = process.env.AUTH_TRUST_HOST === "true";
 
 declare module "next-auth" {
   interface Session {

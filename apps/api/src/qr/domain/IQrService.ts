@@ -4,9 +4,9 @@ export interface AttendeeQrResult {
 }
 
 export interface IQrService {
-  generateForAttendee(attendeeId: string, eventId: string, userId: string): Promise<AttendeeQrResult>;
-  generateBulkZip(eventId: string, userId: string): Promise<Buffer>;
-  generateEventQr(eventId: string, userId: string): Promise<Buffer>;
+  generateForAttendee(attendeeId: string, eventId: string): Promise<AttendeeQrResult>;
+  generateBulkZip(eventId: string): Promise<Buffer>;
+  generateEventQr(eventId: string): Promise<Buffer>;
 }
 
 export const QR_SERVICE = Symbol("IQrService");

@@ -19,6 +19,8 @@ export interface IAttendeeRepository {
   findById(id: string): Promise<Attendee | null>;
   findByQrToken(token: string): Promise<Attendee | null>;
   findByEventId(eventId: string): Promise<Attendee[]>;
+  findByEventIdPaginated(eventId: string, limit: number, offset: number): Promise<Attendee[]>;
+  countByEventId(eventId: string): Promise<number>;
   create(data: NewAttendee): Promise<Attendee>;
   update(id: string, data: UpdateAttendeeData): Promise<Attendee>;
   delete(id: string): Promise<void>;

@@ -1,4 +1,4 @@
-import { eq, and, asc } from "@seat-snaps/db";
+import { eq, and, asc, sql } from "@seat-snaps/db";
 import type { Database, Photo, NewPhoto } from "@seat-snaps/db";
 import { photos } from "@seat-snaps/db";
 import type { IPhotoRepository, PhotoFilters, PhotoStatus } from "../../domain/repositories/IPhotoRepository";
@@ -21,6 +21,24 @@ export class DrizzlePhotoRepository implements IPhotoRepository {
       return query.orderBy(asc(photos.highlightOrder), asc(photos.createdAt));
     }
     return query;
+  }
+
+  async findByEventIdPaginated(eventId: string, filters: PhotoFilters | undefined, limit: number, offset: number): Promise<Photo[]> {
+    const conditions = [eq(photos.eventId, eventId)];
+    if (filters?.status) conditions.push(eq(photos.status, filters.status));
+    if (filters?.isHighlight !== undefined) conditions.push(eq(photos.isHighlight, filters.isHighlight));
+    return this.db.select().from(photos).where(and(...conditions)).limit(limit).offset(offset);
+  }
+
+  async countByEventId(eventId: string, filters?: PhotoFilters): Promise<number> {
+    const conditions = [eq(photos.eventId, eventId)];
+    if (filters?.status) conditions.push(eq(photos.status, filters.status));
+    if (filters?.isHighlight !== undefined) conditions.push(eq(photos.isHighlight, filters.isHighlight));
+    const result = await this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(photos)
+      .where(and(...conditions));
+    return Number(result[0]?.count ?? 0);
   }
 
   async findByAttendeeId(attendeeId: string): Promise<Photo[]> {

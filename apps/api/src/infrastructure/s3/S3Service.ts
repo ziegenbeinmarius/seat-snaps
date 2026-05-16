@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import {
   S3Client,
   DeleteObjectCommand,
@@ -13,12 +14,12 @@ export class S3Service implements IS3Service {
   private readonly client: S3Client;
   private readonly bucket: string;
 
-  constructor() {
-    const endpoint = process.env.STORAGE_ENDPOINT;
-    const region = process.env.STORAGE_REGION ?? "auto";
-    const accessKeyId = process.env.STORAGE_ACCESS_KEY_ID ?? "";
-    const secretAccessKey = process.env.STORAGE_SECRET_ACCESS_KEY ?? "";
-    this.bucket = process.env.STORAGE_BUCKET_NAME ?? "";
+  constructor(private readonly config: ConfigService) {
+    const endpoint = config.get<string>("app.storageEndpoint");
+    const region = config.getOrThrow<string>("app.storageRegion");
+    const accessKeyId = config.getOrThrow<string>("app.storageAccessKeyId");
+    const secretAccessKey = config.getOrThrow<string>("app.storageSecretAccessKey");
+    this.bucket = config.getOrThrow<string>("app.storageBucketName");
 
     this.client = new S3Client({
       region,

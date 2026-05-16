@@ -2,7 +2,6 @@ import {
   Injectable,
   Inject,
   NotFoundException,
-  ForbiddenException,
   BadRequestException,
 } from "@nestjs/common";
 import { randomUUID } from "crypto";
@@ -14,8 +13,6 @@ import type { IAttendeeRepository } from "../domain/repositories/IAttendeeReposi
 import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
-import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IS3Service } from "../infrastructure/s3/IS3Service";
 import { S3_SERVICE } from "../infrastructure/s3/IS3Service";
 import type { IPhotoService, UploadUrlResult, PhotoWithUrl } from "./domain/IPhotoService";
@@ -28,8 +25,6 @@ export class PhotosService implements IPhotoService {
     @Inject(PHOTO_REPOSITORY) private readonly photoRepository: IPhotoRepository,
     @Inject(ATTENDEE_REPOSITORY) private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_REPOSITORY) private readonly eventRepository: IEventRepository,
-    @Inject(EVENT_MEMBERSHIP_REPOSITORY)
-    private readonly membershipRepository: IEventMembershipRepository,
     @Inject(S3_SERVICE) private readonly s3: IS3Service,
   ) {}
 
@@ -127,7 +122,6 @@ export class PhotosService implements IPhotoService {
       photos = await this.photoRepository.findByEventId(eventId, { status: "approved" });
     }
 
-    // Build attendee name map in one query
     const attendees = await this.attendeeRepository.findByEventId(eventId);
     const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
 
@@ -136,13 +130,34 @@ export class PhotosService implements IPhotoService {
     );
   }
 
+  async listPhotosPaginated(
+    eventId: string,
+    requesterType: "attendee" | "organizer",
+    page: number,
+    limit: number,
+  ) {
+    const filters = requesterType === "attendee" ? { status: "approved" as const } : undefined;
+    const offset = (page - 1) * limit;
+    const [photos, total] = await Promise.all([
+      this.photoRepository.findByEventIdPaginated(eventId, filters, limit, offset),
+      this.photoRepository.countByEventId(eventId, filters),
+    ]);
+
+    const attendees = await this.attendeeRepository.findByEventId(eventId);
+    const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
+
+    const data = await Promise.all(
+      photos.map((p) => this.attachUrls(p, nameMap.get(p.attendeeId) ?? "Unknown")),
+    );
+
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
+  }
+
   async updateStatus(
     eventId: string,
     photoId: string,
     status: PhotoStatus,
-    userId: string,
   ): Promise<PhotoWithUrl> {
-    await this.requireOrganizer(eventId, userId);
     const photo = await this.photoRepository.findById(photoId);
     if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
     const attendee = await this.attendeeRepository.findById(photo.attendeeId);
@@ -154,9 +169,7 @@ export class PhotosService implements IPhotoService {
     eventId: string,
     photoId: string,
     isHighlight: boolean,
-    userId: string,
   ): Promise<PhotoWithUrl> {
-    await this.requireOrganizer(eventId, userId);
     const photo = await this.photoRepository.findById(photoId);
     if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
     if (photo.status !== "approved") {
@@ -188,8 +201,7 @@ export class PhotosService implements IPhotoService {
     );
   }
 
-  async deletePhoto(eventId: string, photoId: string, userId: string): Promise<void> {
-    await this.requireOrganizer(eventId, userId);
+  async deletePhoto(eventId: string, photoId: string): Promise<void> {
     const photo = await this.photoRepository.findById(photoId);
     if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
 
@@ -198,13 +210,6 @@ export class PhotosService implements IPhotoService {
       await this.s3.deleteObject(photo.thumbnailKey).catch(() => undefined);
     }
     await this.photoRepository.delete(photoId);
-  }
-
-  private async requireOrganizer(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
-    if (!membership) throw new ForbiddenException("Access denied");
   }
 
   private async attachUrls(photo: Photo, attendeeName: string): Promise<PhotoWithUrl> {

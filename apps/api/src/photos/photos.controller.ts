@@ -6,22 +6,23 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   HttpCode,
   HttpStatus,
   UseGuards,
-  Inject,
 } from "@nestjs/common";
 import { PhotosService } from "./photos.service";
 import { RequestUploadUrlDto } from "./dto/request-upload-url.dto";
 import { ConfirmUploadDto } from "./dto/confirm-upload.dto";
 import { UpdatePhotoStatusDto } from "./dto/update-photo-status.dto";
+import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { AttendeeSessionGuard } from "../attendee-sessions/guards/attendee-session.guard";
 import { CurrentAttendee } from "../attendee-sessions/decorators/current-attendee.decorator";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
+import { EventMemberGuard } from "../auth/guards/event-member.guard";
 import type { Attendee } from "@seat-snaps/db";
-import type { SessionUser } from "@seat-snaps/shared";
 
+@UseGuards(EventMemberGuard)
 @Controller("events/:eventId/photos")
 export class PhotosController {
   constructor(private readonly photosService: PhotosService) {}
@@ -49,8 +50,8 @@ export class PhotosController {
   }
 
   @Get()
-  listForOrganizer(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {
-    return this.photosService.listPhotos(eventId, user.id, "organizer");
+  listForOrganizer(@Param("eventId") eventId: string, @Query() query: PaginationQueryDto) {
+    return this.photosService.listPhotosPaginated(eventId, "organizer", query.page!, query.limit!);
   }
 
   @Public()
@@ -59,8 +60,9 @@ export class PhotosController {
   listForAttendee(
     @Param("eventId") eventId: string,
     @CurrentAttendee() attendee: Attendee,
+    @Query() query: PaginationQueryDto,
   ) {
-    return this.photosService.listPhotos(eventId, attendee.id, "attendee");
+    return this.photosService.listPhotosPaginated(eventId, "attendee", query.page!, query.limit!);
   }
 
   @Patch(":photoId")
@@ -68,9 +70,8 @@ export class PhotosController {
     @Param("eventId") eventId: string,
     @Param("photoId") photoId: string,
     @Body() dto: UpdatePhotoStatusDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.photosService.updateStatus(eventId, photoId, dto.status, user.id);
+    return this.photosService.updateStatus(eventId, photoId, dto.status);
   }
 
   @Public()
@@ -84,9 +85,8 @@ export class PhotosController {
     @Param("eventId") eventId: string,
     @Param("photoId") photoId: string,
     @Body() body: { isHighlight: boolean },
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.photosService.toggleHighlight(eventId, photoId, body.isHighlight, user.id);
+    return this.photosService.toggleHighlight(eventId, photoId, body.isHighlight);
   }
 
   @Delete(":photoId")
@@ -94,8 +94,7 @@ export class PhotosController {
   deletePhoto(
     @Param("eventId") eventId: string,
     @Param("photoId") photoId: string,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.photosService.deletePhoto(eventId, photoId, user.id);
+    return this.photosService.deletePhoto(eventId, photoId);
   }
 }

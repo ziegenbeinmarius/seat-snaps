@@ -10,6 +10,8 @@ export interface PhotoFilters {
 export interface IPhotoRepository {
   findById(id: string): Promise<Photo | null>;
   findByEventId(eventId: string, filters?: PhotoFilters): Promise<Photo[]>;
+  findByEventIdPaginated(eventId: string, filters: PhotoFilters | undefined, limit: number, offset: number): Promise<Photo[]>;
+  countByEventId(eventId: string, filters?: PhotoFilters): Promise<number>;
   findByAttendeeId(attendeeId: string): Promise<Photo[]>;
   create(data: NewPhoto): Promise<Photo>;
   updateStatus(id: string, status: PhotoStatus): Promise<Photo>;

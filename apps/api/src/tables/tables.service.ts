@@ -1,5 +1,5 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from "@nestjs/common";
-import type { Table } from "@seat-snaps/db";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
+import { type Database, type Table, seats, attendees, tables, eq, inArray } from "@seat-snaps/db";
 import type { ITableRepository } from "../domain/repositories/ITableRepository";
 import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
 import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
@@ -8,14 +8,16 @@ import type { IAttendeeRepository } from "../domain/repositories/IAttendeeReposi
 import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
-import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
+import { DATABASE } from "../database/database.module";
 import type { ITableService, TableWithSeats } from "./domain/ITableService";
 import type { CreateTableInput, UpdateTableInput, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
+import type { PaginatedResult } from "../common/dto/pagination-query.dto";
 
 @Injectable()
 export class TablesService implements ITableService {
   constructor(
+    @Inject(DATABASE)
+    private readonly db: Database,
     @Inject(TABLE_REPOSITORY)
     private readonly tableRepository: ITableRepository,
     @Inject(SEAT_REPOSITORY)
@@ -24,14 +26,21 @@ export class TablesService implements ITableService {
     private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
-    @Inject(EVENT_MEMBERSHIP_REPOSITORY)
-    private readonly membershipRepository: IEventMembershipRepository,
   ) {}
 
-  async listForEvent(eventId: string, userId: string): Promise<TableWithSeats[]> {
-    await this.requireMember(eventId, userId);
+  async listForEvent(eventId: string): Promise<TableWithSeats[]> {
     const tables = await this.tableRepository.findByEventId(eventId);
     return Promise.all(tables.map((t) => this.withSeats(t)));
+  }
+
+  async listForEventPaginated(eventId: string, page: number, limit: number): Promise<PaginatedResult<TableWithSeats>> {
+    const offset = (page - 1) * limit;
+    const [rawTables, total] = await Promise.all([
+      this.tableRepository.findByEventIdPaginated(eventId, limit, offset),
+      this.tableRepository.countByEventId(eventId),
+    ]);
+    const data = await Promise.all(rawTables.map((t) => this.withSeats(t)));
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async listPublic(eventId: string): Promise<TableWithSeats[]> {
@@ -41,15 +50,13 @@ export class TablesService implements ITableService {
     return Promise.all(tables.map((t) => this.withSeats(t)));
   }
 
-  async getById(tableId: string, eventId: string, userId: string): Promise<TableWithSeats> {
-    await this.requireMember(eventId, userId);
+  async getById(tableId: string, eventId: string): Promise<TableWithSeats> {
     const table = await this.tableRepository.findById(tableId);
     if (!table || table.eventId !== eventId) throw new NotFoundException("Table not found");
     return this.withSeats(table);
   }
 
-  async create(eventId: string, data: CreateTableInput, userId: string): Promise<TableWithSeats> {
-    await this.requireMember(eventId, userId);
+  async create(eventId: string, data: CreateTableInput): Promise<TableWithSeats> {
     const table = await this.tableRepository.create({
       eventId,
       name: data.name,
@@ -64,15 +71,14 @@ export class TablesService implements ITableService {
     });
 
     if (data.capacity && data.capacity > 0) {
-      for (let i = 1; i <= data.capacity; i++) {
-        await this.seatRepository.create({
-          tableId: table.id,
-          eventId,
-          label: `Seat ${i}`,
-          position: i,
-          attendeeId: null,
-        });
-      }
+      const seatValues = Array.from({ length: data.capacity }, (_, i) => ({
+        tableId: table.id,
+        eventId,
+        label: `Seat ${i + 1}`,
+        position: i + 1,
+        attendeeId: null,
+      }));
+      await this.db.insert(seats).values(seatValues);
     }
 
     return this.withSeats(table);
@@ -82,9 +88,7 @@ export class TablesService implements ITableService {
     tableId: string,
     eventId: string,
     data: UpdateTableInput,
-    userId: string,
   ): Promise<Table> {
-    await this.requireMember(eventId, userId);
     const existing = await this.tableRepository.findById(tableId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Table not found");
 
@@ -104,9 +108,7 @@ export class TablesService implements ITableService {
   async bulkUpdatePositions(
     eventId: string,
     positions: BulkUpdateTablePositionsInput,
-    userId: string,
   ): Promise<void> {
-    await this.requireMember(eventId, userId);
     await Promise.all(
       positions.map((item) =>
         this.tableRepository.update(item.tableId, {
@@ -118,31 +120,28 @@ export class TablesService implements ITableService {
     );
   }
 
-  async delete(tableId: string, eventId: string, userId: string): Promise<void> {
-    await this.requireMember(eventId, userId);
+  async delete(tableId: string, eventId: string): Promise<void> {
     const existing = await this.tableRepository.findById(tableId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Table not found");
 
-    // Clear denormalized tableId/seatId on any attendees assigned to this table's seats
-    const seats = await this.seatRepository.findByTableId(tableId);
-    await Promise.all(
-      seats
-        .filter((s) => s.attendeeId)
-        .map((s) => this.attendeeRepository.update(s.attendeeId!, { tableId: null, seatId: null })),
-    );
+    const tableSeats = await this.seatRepository.findByTableId(tableId);
+    const assignedAttendeeIds = tableSeats
+      .filter((s) => s.attendeeId)
+      .map((s) => s.attendeeId!);
 
-    await this.tableRepository.delete(tableId);
+    await this.db.transaction(async (tx) => {
+      if (assignedAttendeeIds.length > 0) {
+        await tx
+          .update(attendees)
+          .set({ tableId: null, seatId: null })
+          .where(inArray(attendees.id, assignedAttendeeIds));
+      }
+      await tx.delete(tables).where(eq(tables.id, tableId));
+    });
   }
 
   private async withSeats(table: Table): Promise<TableWithSeats> {
     const seats = await this.seatRepository.findByTableId(table.id);
     return { ...table, seats };
-  }
-
-  private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
-    if (!membership) throw new ForbiddenException("Access denied");
   }
 }

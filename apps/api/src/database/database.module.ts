@@ -1,4 +1,5 @@
 import { Module, Global } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { createDb } from "@seat-snaps/db";
 import {
   DrizzleUserRepository,
@@ -27,77 +28,77 @@ import {
   EVENT_THEME_REPOSITORY,
 } from "../domain/repositories";
 
-const DB_PROVIDER = Symbol("DATABASE");
+export const DATABASE = Symbol("DATABASE");
 
 @Global()
 @Module({
   providers: [
     {
-      provide: DB_PROVIDER,
-      useFactory: () => {
-        const url = process.env.DATABASE_URL;
-        if (!url) throw new Error("DATABASE_URL is not set");
-        return createDb(url);
+      provide: DATABASE,
+      useFactory: (config: ConfigService) => {
+        return createDb(config.getOrThrow<string>("app.databaseUrl"));
       },
+      inject: [ConfigService],
     },
     {
       provide: USER_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleUserRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: EVENT_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: EVENT_MEMBERSHIP_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventMembershipRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: ORGANIZER_INVITE_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleOrganizerInviteRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: ATTENDEE_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleAttendeeRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: TABLE_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleTableRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: SEAT_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleSeatRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: PHOTO_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzlePhotoRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: ATTENDEE_SESSION_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) =>
         new DrizzleAttendeeSessionRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: SCHEDULE_ITEM_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleScheduleItemRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
     {
       provide: EVENT_THEME_REPOSITORY,
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventThemeRepository(db),
-      inject: [DB_PROVIDER],
+      inject: [DATABASE],
     },
   ],
   exports: [
+    DATABASE,
     USER_REPOSITORY,
     EVENT_REPOSITORY,
     EVENT_MEMBERSHIP_REPOSITORY,

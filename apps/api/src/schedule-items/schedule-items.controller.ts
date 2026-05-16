@@ -8,14 +8,15 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import { ScheduleItemsService } from "./schedule-items.service";
 import { CreateScheduleItemDto } from "./dto/create-schedule-item.dto";
 import { UpdateScheduleItemDto } from "./dto/update-schedule-item.dto";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
-import type { SessionUser } from "@seat-snaps/shared";
+import { EventMemberGuard } from "../auth/guards/event-member.guard";
 
+@UseGuards(EventMemberGuard)
 @Controller("events/:eventId/schedule")
 export class ScheduleItemsController {
   constructor(private readonly service: ScheduleItemsService) {}
@@ -36,9 +37,8 @@ export class ScheduleItemsController {
   create(
     @Param("eventId") eventId: string,
     @Body() dto: CreateScheduleItemDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.service.create(eventId, dto as never, user.id);
+    return this.service.create(eventId, dto as never);
   }
 
   @Patch(":id")
@@ -46,9 +46,8 @@ export class ScheduleItemsController {
     @Param("eventId") eventId: string,
     @Param("id") id: string,
     @Body() dto: UpdateScheduleItemDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.service.update(id, eventId, dto as never, user.id);
+    return this.service.update(id, eventId, dto as never);
   }
 
   @Delete(":id")
@@ -56,8 +55,7 @@ export class ScheduleItemsController {
   delete(
     @Param("eventId") eventId: string,
     @Param("id") id: string,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.service.delete(id, eventId, user.id);
+    return this.service.delete(id, eventId);
   }
 }

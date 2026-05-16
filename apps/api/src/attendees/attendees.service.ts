@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { parse } from "csv-parse/sync";
 import type { Attendee } from "@seat-snaps/db";
@@ -8,10 +8,9 @@ import type { ISeatRepository } from "../domain/repositories/ISeatRepository";
 import { SEAT_REPOSITORY } from "../domain/repositories/ISeatRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
-import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IAttendeeService } from "./domain/IAttendeeService";
 import type { CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/shared";
+import type { PaginatedResult } from "../common/dto/pagination-query.dto";
 
 @Injectable()
 export class AttendeesService implements IAttendeeService {
@@ -22,13 +21,19 @@ export class AttendeesService implements IAttendeeService {
     private readonly seatRepository: ISeatRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
-    @Inject(EVENT_MEMBERSHIP_REPOSITORY)
-    private readonly membershipRepository: IEventMembershipRepository,
   ) {}
 
-  async listForEvent(eventId: string, userId: string): Promise<Attendee[]> {
-    await this.requireMember(eventId, userId);
+  async listForEvent(eventId: string): Promise<Attendee[]> {
     return this.attendeeRepository.findByEventId(eventId);
+  }
+
+  async listForEventPaginated(eventId: string, page: number, limit: number): Promise<PaginatedResult<Attendee>> {
+    const offset = (page - 1) * limit;
+    const [data, total] = await Promise.all([
+      this.attendeeRepository.findByEventIdPaginated(eventId, limit, offset),
+      this.attendeeRepository.countByEventId(eventId),
+    ]);
+    return { data, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
 
   async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId">[]> {
@@ -38,15 +43,13 @@ export class AttendeesService implements IAttendeeService {
     return attendees.map(({ id, name, groupLabel, tableId }) => ({ id, name, groupLabel, tableId }));
   }
 
-  async getById(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {
-    await this.requireMember(eventId, userId);
+  async getById(attendeeId: string, eventId: string): Promise<Attendee> {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
     return attendee;
   }
 
-  async create(eventId: string, data: CreateAttendeeInput, userId: string): Promise<Attendee> {
-    await this.requireMember(eventId, userId);
+  async create(eventId: string, data: CreateAttendeeInput): Promise<Attendee> {
     return this.attendeeRepository.create({
       eventId,
       name: data.name,
@@ -59,9 +62,7 @@ export class AttendeesService implements IAttendeeService {
     });
   }
 
-  async bulkImport(eventId: string, csv: string, userId: string): Promise<Attendee[]> {
-    await this.requireMember(eventId, userId);
-
+  async bulkImport(eventId: string, csv: string): Promise<Attendee[]> {
     const rows = parse(csv, { columns: true, skip_empty_lines: true, trim: true }) as {
       name?: string;
       email?: string;
@@ -90,9 +91,7 @@ export class AttendeesService implements IAttendeeService {
     attendeeId: string,
     eventId: string,
     data: UpdateAttendeeInput,
-    userId: string,
   ): Promise<Attendee> {
-    await this.requireMember(eventId, userId);
     const existing = await this.attendeeRepository.findById(attendeeId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
@@ -108,8 +107,7 @@ export class AttendeesService implements IAttendeeService {
     });
   }
 
-  async clearSeatAssignment(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {
-    await this.requireMember(eventId, userId);
+  async clearSeatAssignment(attendeeId: string, eventId: string): Promise<Attendee> {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
     if (attendee.seatId) {
@@ -118,24 +116,15 @@ export class AttendeesService implements IAttendeeService {
     return this.attendeeRepository.update(attendeeId, { tableId: null, seatId: null });
   }
 
-  async delete(attendeeId: string, eventId: string, userId: string): Promise<void> {
-    await this.requireMember(eventId, userId);
+  async delete(attendeeId: string, eventId: string): Promise<void> {
     const existing = await this.attendeeRepository.findById(attendeeId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Attendee not found");
     await this.attendeeRepository.delete(attendeeId);
   }
 
-  async checkIn(eventId: string, qrToken: string, userId: string): Promise<Attendee> {
-    await this.requireMember(eventId, userId);
+  async checkIn(eventId: string, qrToken: string): Promise<Attendee> {
     const attendee = await this.attendeeRepository.findByQrToken(qrToken);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
     return this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
-  }
-
-  private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
-    if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
-    if (!membership) throw new ForbiddenException("Access denied");
   }
 }

@@ -7,6 +7,8 @@ export type UpdateTableData = Partial<
 export interface ITableRepository {
   findById(id: string): Promise<Table | null>;
   findByEventId(eventId: string): Promise<Table[]>;
+  findByEventIdPaginated(eventId: string, limit: number, offset: number): Promise<Table[]>;
+  countByEventId(eventId: string): Promise<number>;
   create(data: NewTable): Promise<Table>;
   update(id: string, data: UpdateTableData): Promise<Table>;
   delete(id: string): Promise<void>;

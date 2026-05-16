@@ -6,19 +6,20 @@ import {
   Param,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from "@nestjs/common";
 import { SeatsService } from "./seats.service";
 import { AssignSeatDto } from "./dto/assign-seat.dto";
-import { CurrentUser } from "../auth/decorators/current-user.decorator";
-import type { SessionUser } from "@seat-snaps/shared";
+import { EventMemberGuard } from "../auth/guards/event-member.guard";
 
+@UseGuards(EventMemberGuard)
 @Controller("events/:eventId/seats")
 export class SeatsController {
   constructor(private readonly seatsService: SeatsService) {}
 
   @Get()
-  list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {
-    return this.seatsService.listForEvent(eventId, user.id);
+  list(@Param("eventId") eventId: string) {
+    return this.seatsService.listForEvent(eventId);
   }
 
   @Patch(":seatId/assign")
@@ -26,9 +27,8 @@ export class SeatsController {
     @Param("eventId") eventId: string,
     @Param("seatId") seatId: string,
     @Body() dto: AssignSeatDto,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.seatsService.assign(seatId, eventId, dto.attendeeId, user.id);
+    return this.seatsService.assign(seatId, eventId, dto.attendeeId);
   }
 
   @Patch(":seatId/unassign")
@@ -36,8 +36,7 @@ export class SeatsController {
   unassign(
     @Param("eventId") eventId: string,
     @Param("seatId") seatId: string,
-    @CurrentUser() user: SessionUser,
   ) {
-    return this.seatsService.unassign(seatId, eventId, user.id);
+    return this.seatsService.unassign(seatId, eventId);
   }
 }
