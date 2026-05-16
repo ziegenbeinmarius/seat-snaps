@@ -40,12 +40,28 @@ self.addEventListener("push", (event) => {
     data = Object.assign(data, event.data?.json());
   } catch {}
 
+  const title = typeof data.title === "string" && data.title.trim() ? data.title : "SeatSnaps";
+  const body = typeof data.body === "string" && data.body.trim()
+    ? data.body
+    : "You have a new notification.";
+  const url = typeof data.url === "string" && data.url.trim() ? data.url : "/";
+
   event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body,
-      icon: "/favicon.svg",
-      badge: "/favicon.svg",
-      data: { url: data.url },
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      // Skip duplicates only when the app is actively focused in foreground.
+      if (clients.some((c) => c.visibilityState === "visible" && c.focused)) return;
+
+      return self.registration
+        .showNotification(title, {
+          body,
+          data: { url },
+        })
+        .catch(() =>
+          self.registration.showNotification("SeatSnaps", {
+            body: "You have a new update.",
+            data: { url: "/" },
+          }),
+        );
     }),
   );
 });

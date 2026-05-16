@@ -9,6 +9,7 @@ import { SocketProvider } from "@/components/broadcast/socket-provider";
 import { BroadcastBanner } from "@/components/broadcast/broadcast-banner";
 import { ConnectionStatus } from "@/components/broadcast/connection-status";
 import { PushPermissionPrompt } from "@/components/push-notifications/push-permission-prompt";
+import { IosInstallPrompt } from "@/components/push-notifications/ios-install-prompt";
 
 export const metadata: Metadata = {
   manifest: "/manifest-attendee.json",
@@ -104,6 +105,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
           <ConnectionStatus />
           <main className="flex-1 pb-20">{children}</main>
         </div>
+        <IosInstallPrompt />
         <PushPermissionPrompt eventId={eventId} />
         <AttendeeNav eventId={eventId} />
       </div>
