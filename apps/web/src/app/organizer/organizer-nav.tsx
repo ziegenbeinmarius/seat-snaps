@@ -72,7 +72,7 @@ export function OrganizerNav() {
         WebkitBackdropFilter: "blur(20px)",
       }}
     >
-      <div className="mx-auto flex max-w-md">
+      <div className="mx-auto flex max-w-lg">
         {links.map(({ href, icon: Icon, label, active }) => (
           <Link
             key={label}
