@@ -10,16 +10,23 @@ import {
   HttpCode,
   HttpStatus,
 } from "@nestjs/common";
-import type { Attendee } from "@seat-snaps/db";
+import type { AttendeeSession } from "@seat-snaps/db";
 import type { IPushSubscriptionService } from "./domain/IPushSubscriptionService";
 import { PUSH_SUBSCRIPTION_SERVICE } from "./domain/IPushSubscriptionService";
 import { SavePushSubscriptionDto } from "./dto/save-push-subscription.dto";
 import { AttendeeSessionGuard } from "../attendee-sessions/guards/attendee-session.guard";
 import { CsrfGuard } from "../attendee-sessions/guards/csrf.guard";
-import { CurrentAttendee } from "../attendee-sessions/decorators/current-attendee.decorator";
 import { Public } from "../auth/decorators/public.decorator";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
+import { createParamDecorator, ExecutionContext } from "@nestjs/common";
+
+const CurrentAttendeeSession = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext): AttendeeSession => {
+    const request = ctx.switchToHttp().getRequest<{ attendeeSession: AttendeeSession }>();
+    return request.attendeeSession;
+  },
+);
 
 @Controller("push-subscriptions")
 export class PushSubscriptionsController {
@@ -41,14 +48,14 @@ export class PushSubscriptionsController {
   async subscribeAttendee(
     @Param("eventId") eventId: string,
     @Body() dto: SavePushSubscriptionDto,
-    @CurrentAttendee() attendee: Attendee,
+    @CurrentAttendeeSession() attendeeSession: AttendeeSession,
   ) {
     await this.service.save({
       eventId,
       endpoint: dto.endpoint,
       p256dh: dto.keys.p256dh,
       auth: dto.keys.auth,
-      attendeeSessionId: undefined,
+      attendeeSessionId: attendeeSession.id,
     });
   }
 

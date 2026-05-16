@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:https": "npm run dev:https --workspace=@seat-snaps/web",
     "build": "turbo run build",
     "build:api": "npm run build --workspace=@seat-snaps/api",
     "build:web": "npm run build --workspace=@seat-snaps/web",

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, BellOff, X } from "lucide-react";
-import { useSubscribeToPush } from "@/lib/api/push-subscriptions";
+import { Bell, X } from "lucide-react";
+import { syncPushSubscription, useSubscribeToPush } from "@/lib/api/push-subscriptions";
 
 interface Props {
   eventId: string;
@@ -20,19 +20,60 @@ export function PushPermissionPrompt({ eventId }: Props) {
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
-    if (Notification.permission === "granted") {
-      setSubscribed(true);
-      return;
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    async function syncIfGranted() {
+      if (Notification.permission !== "granted") return;
+
+      try {
+        const didSync = await syncPushSubscription(eventId);
+        if (!cancelled && didSync) {
+          setSubscribed(true);
+          setVisible(false);
+        }
+      } catch {
+        if (!cancelled) {
+          setSubscribed(false);
+        }
+      }
     }
-    if (Notification.permission === "denied") return;
 
-    const dismissed = localStorage.getItem(STORAGE_KEY) as DismissState;
-    if (dismissed === "dismissed") return;
+    function updatePromptState() {
+      if (Notification.permission === "granted") {
+        void syncIfGranted();
+        return;
+      }
 
-    // Delay prompt so it doesn't show immediately on page load
-    const timer = setTimeout(() => setVisible(true), 3000);
-    return () => clearTimeout(timer);
-  }, []);
+      if (Notification.permission === "denied") {
+        setVisible(false);
+        return;
+      }
+
+      const dismissed = localStorage.getItem(STORAGE_KEY) as DismissState;
+      if (dismissed === "dismissed") return;
+
+      timer = setTimeout(() => setVisible(true), 3000);
+    }
+
+    function retrySyncOnResume() {
+      if (document.visibilityState === "visible") {
+        void syncIfGranted();
+      }
+    }
+
+    updatePromptState();
+    window.addEventListener("focus", retrySyncOnResume);
+    document.addEventListener("visibilitychange", retrySyncOnResume);
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+      window.removeEventListener("focus", retrySyncOnResume);
+      document.removeEventListener("visibilitychange", retrySyncOnResume);
+    };
+  }, [eventId]);
 
   if (!visible || subscribed) return null;
 

@@ -3,8 +3,14 @@ const STATIC_ASSETS = [
   "/manifest.json",
   "/manifest-attendee.json",
 ];
+const IS_DEV = new URL(self.location.href).searchParams.get("dev") === "1";
 
 self.addEventListener("install", (event) => {
+  if (IS_DEV) {
+    self.skipWaiting();
+    return;
+  }
+
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS)),
   );
@@ -12,6 +18,14 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  if (IS_DEV) {
+    event.waitUntil(
+      caches.keys().then((keys) => Promise.all(keys.map((key) => caches.delete(key)))),
+    );
+    self.clients.claim();
+    return;
+  }
+
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))),
@@ -54,6 +68,10 @@ self.addEventListener("notificationclick", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (IS_DEV) {
+    return;
+  }
+
   const url = new URL(event.request.url);
 
   // Network-first for API, auth, and navigation requests

@@ -24,6 +24,18 @@ export class PushSubscriptionsService implements IPushSubscriptionService {
   }
 
   async save(data: SavePushSubscriptionInput): Promise<void> {
+    if (data.attendeeSessionId) {
+      await this.repository.deleteOthersForAttendeeSession(
+        data.eventId,
+        data.attendeeSessionId,
+        data.endpoint,
+      );
+    }
+
+    if (data.userId) {
+      await this.repository.deleteOthersForUser(data.eventId, data.userId, data.endpoint);
+    }
+
     await this.repository.upsert({
       eventId: data.eventId,
       endpoint: data.endpoint,

@@ -1,4 +1,4 @@
-import { eq } from "@seat-snaps/db";
+import { and, eq, ne } from "@seat-snaps/db";
 import type { Database, PushSubscription, NewPushSubscription } from "@seat-snaps/db";
 import { pushSubscriptions } from "@seat-snaps/db";
 import type { IPushSubscriptionRepository } from "../../domain/repositories/IPushSubscriptionRepository";
@@ -35,6 +35,30 @@ export class DrizzlePushSubscriptionRepository implements IPushSubscriptionRepos
       })
       .returning();
     return result[0];
+  }
+
+  async deleteOthersForAttendeeSession(
+    eventId: string,
+    attendeeSessionId: string,
+    endpoint: string,
+  ): Promise<void> {
+    await this.db.delete(pushSubscriptions).where(
+      and(
+        eq(pushSubscriptions.eventId, eventId),
+        eq(pushSubscriptions.attendeeSessionId, attendeeSessionId),
+        ne(pushSubscriptions.endpoint, endpoint),
+      ),
+    );
+  }
+
+  async deleteOthersForUser(eventId: string, userId: string, endpoint: string): Promise<void> {
+    await this.db.delete(pushSubscriptions).where(
+      and(
+        eq(pushSubscriptions.eventId, eventId),
+        eq(pushSubscriptions.userId, userId),
+        ne(pushSubscriptions.endpoint, endpoint),
+      ),
+    );
   }
 
   async deleteByEndpoint(endpoint: string): Promise<void> {
