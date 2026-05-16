@@ -7,6 +7,7 @@ import type {
   UpdatePhotoStatusInput,
 } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "photos", init);
 
@@ -39,6 +40,7 @@ export function useConfirmUpload(eventId: string) {
       }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["events", eventId, "photos"] });
+      toast.success("Photo uploaded");
     },
   });
 }
@@ -73,6 +75,7 @@ export function useDeletePhoto(eventId: string) {
       fetchApi(`/events/${eventId}/photos/${photoId}`, { method: "DELETE" }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["events", eventId, "photos"] });
+      toast.success("Photo deleted");
     },
   });
 }
@@ -93,8 +96,9 @@ export function useToggleHighlight(eventId: string) {
         method: "PATCH",
         body: JSON.stringify({ isHighlight }),
       }),
-    onSuccess: () => {
+    onSuccess: (_data, variables) => {
       void qc.invalidateQueries({ queryKey: ["events", eventId, "photos"] });
+      toast.success(variables.isHighlight ? "Added to highlights" : "Removed from highlights");
     },
   });
 }

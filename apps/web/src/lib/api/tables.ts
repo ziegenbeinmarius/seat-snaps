@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { TableResponse, CreateTableInput, UpdateTableInput, SeatResponse, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "tables", init);
 
@@ -34,8 +35,9 @@ export function useCreateTable(eventId: string) {
     mutationFn: (data) =>
       fetchApi(`/events/${eventId}/tables`, { method: "POST", body: JSON.stringify(data) }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      toast.success("Table created");
     },
   });
 }
@@ -48,7 +50,10 @@ export function useUpdateTable(eventId: string) {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      toast.success("Table updated");
+    },
   });
 }
 
@@ -58,8 +63,9 @@ export function useDeleteTable(eventId: string) {
     mutationFn: (tableId) =>
       fetchApi(`/events/${eventId}/tables/${tableId}`, { method: "DELETE" }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      toast.success("Table deleted");
     },
   });
 }
@@ -93,9 +99,10 @@ export function useAssignSeat(eventId: string) {
         body: JSON.stringify({ attendeeId }),
       }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success("Seat assigned");
     },
   });
 }
@@ -106,9 +113,10 @@ export function useUnassignSeat(eventId: string) {
     mutationFn: (seatId) =>
       fetchApi(`/events/${eventId}/seats/${seatId}/unassign`, { method: "PATCH" }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
-      qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "seats"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "tables"] });
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success("Seat unassigned");
     },
   });
 }

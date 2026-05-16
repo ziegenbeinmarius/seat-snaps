@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useCurrentAttendee, useUpdateCurrentAttendee } from "@/lib/api/attendee-session";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const { data: attendee, isLoading } = useCurrentAttendee();
@@ -9,8 +10,6 @@ export default function ProfilePage() {
 
   const [relationInfo, setRelationInfo] = useState("");
   const [conversationStarters, setConversationStarters] = useState("");
-  const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (attendee) {
@@ -20,8 +19,6 @@ export default function ProfilePage() {
   }, [attendee]);
 
   async function handleSave() {
-    setError(null);
-    setSaved(false);
     const starters = conversationStarters
       .split(",")
       .map((s) => s.trim())
@@ -31,9 +28,8 @@ export default function ProfilePage() {
         relationInfo: relationInfo || undefined,
         conversationStarters: starters.length > 0 ? starters : [],
       });
-      setSaved(true);
     } catch (e) {
-      setError((e as Error).message);
+      toast.error((e as Error).message);
     }
   }
 
@@ -72,7 +68,7 @@ export default function ProfilePage() {
             rows={3}
             placeholder="e.g. Easy to talk with, loves hiking…"
             value={relationInfo}
-            onChange={(e) => { setRelationInfo(e.target.value); setSaved(false); }}
+            onChange={(e) => { setRelationInfo(e.target.value); }}
           />
         </div>
 
@@ -91,17 +87,9 @@ export default function ProfilePage() {
             }}
             placeholder="e.g. Travel, Coffee, Music"
             value={conversationStarters}
-            onChange={(e) => { setConversationStarters(e.target.value); setSaved(false); }}
+            onChange={(e) => { setConversationStarters(e.target.value); }}
           />
         </div>
-
-        {error && (
-          <p className="text-sm" style={{ color: "var(--event-primary)" }}>{error}</p>
-        )}
-
-        {saved && (
-          <p className="text-sm text-green-600">Profile updated!</p>
-        )}
 
         <button
           onClick={handleSave}

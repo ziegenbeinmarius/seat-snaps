@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { EventResponse, CreateEventInput, UpdateEventInput, EventMember } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "events", init);
 
@@ -26,7 +27,10 @@ export function useCreateEvent() {
   return useMutation<EventResponse, Error, CreateEventInput>({
     mutationFn: (data) =>
       fetchApi("/events", { method: "POST", body: JSON.stringify(data) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Event created");
+    },
   });
 }
 
@@ -37,7 +41,8 @@ export function useUpdateEvent(id: string) {
       fetchApi(`/events/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
     onSuccess: (updatedEvent) => {
       qc.setQueryData(["events", id], updatedEvent);
-      qc.invalidateQueries({ queryKey: ["events"] });
+      void qc.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Event updated");
     },
   });
 }
@@ -46,7 +51,10 @@ export function useDeleteEvent() {
   const qc = useQueryClient();
   return useMutation<void, Error, string>({
     mutationFn: (id) => fetchApi(`/events/${id}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Event deleted");
+    },
   });
 }
 
@@ -63,6 +71,9 @@ export function useRemoveMember(eventId: string) {
   return useMutation<void, Error, string>({
     mutationFn: (userId) =>
       fetchApi(`/events/${eventId}/members/${userId}`, { method: "DELETE" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "members"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "members"] });
+      toast.success("Member removed");
+    },
   });
 }

@@ -6,6 +6,7 @@ import type {
   CreateAttendeeSessionInput,
   ScheduleItemResponse,
 } from "@seat-snaps/shared";
+import { toast } from "sonner";
 
 function getXsrfToken(): string | null {
   if (typeof document === "undefined") return null;
@@ -95,7 +96,10 @@ export function useUpdateCurrentAttendee() {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["attendee-session", "me"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["attendee-session", "me"] });
+      toast.success("Profile saved");
+    },
   });
 }
 

@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { InviteResponse, InviteDetail, CreateInviteInput } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
+import { toast } from "sonner";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "invites", init);
 
@@ -19,7 +20,10 @@ export function useCreateInvite(eventId: string) {
   return useMutation<InviteResponse, Error, CreateInviteInput>({
     mutationFn: (data) =>
       fetchApi(`/events/${eventId}/invites`, { method: "POST", body: JSON.stringify(data) }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events", eventId, "invites"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "invites"] });
+      toast.success("Invite sent");
+    },
   });
 }
 
@@ -36,6 +40,9 @@ export function useAcceptInvite() {
   return useMutation<void, Error, string>({
     mutationFn: (token) =>
       fetchApi(`/invites/${token}/accept`, { method: "POST" }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["events"] }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["events"] });
+      toast.success("Invite accepted");
+    },
   });
 }
