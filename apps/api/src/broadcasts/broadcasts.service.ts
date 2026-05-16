@@ -7,7 +7,9 @@ import type { IEventMembershipRepository } from "../domain/repositories/IEventMe
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
-import type { IBroadcastService } from "./domain/IBroadcastService";
+import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
+import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
+import type { IBroadcastService, BroadcastWithCount } from "./domain/IBroadcastService";
 import { EventGateway } from "./event.gateway";
 import { PushSubscriptionsService } from "../push-subscriptions/push-subscriptions.service";
 
@@ -20,11 +22,13 @@ export class BroadcastsService implements IBroadcastService {
     private readonly membershipRepository: IEventMembershipRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
+    @Inject(ATTENDEE_REPOSITORY)
+    private readonly attendeeRepository: IAttendeeRepository,
     private readonly gateway: EventGateway,
     private readonly pushService: PushSubscriptionsService,
   ) {}
 
-  async create(eventId: string, data: CreateBroadcastInput, userId: string): Promise<Broadcast> {
+  async create(eventId: string, data: CreateBroadcastInput, userId: string): Promise<BroadcastWithCount> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
@@ -47,7 +51,13 @@ export class BroadcastsService implements IBroadcastService {
       url: `/event/${eventId}/announcements`,
     });
 
-    return broadcast;
+    const allAttendees = await this.attendeeRepository.findByEventId(eventId);
+    const recipientCount =
+      data.targetType === "table" && data.targetId
+        ? allAttendees.filter((a) => a.tableId === data.targetId).length
+        : allAttendees.length;
+
+    return { ...broadcast, recipientCount };
   }
 
   async listByEvent(
@@ -62,6 +72,17 @@ export class BroadcastsService implements IBroadcastService {
     // For attendees, the controller already verified attendee.eventId === eventId
 
     return this.broadcastRepository.findByEventId(eventId);
+  }
+
+  async delete(broadcastId: string, eventId: string, userId: string): Promise<void> {
+    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
+    if (!membership) throw new ForbiddenException("Not a member of this event");
+
+    const broadcast = await this.broadcastRepository.findById(broadcastId);
+    if (!broadcast) throw new NotFoundException("Broadcast not found");
+    if (broadcast.eventId !== eventId) throw new ForbiddenException("Broadcast does not belong to this event");
+
+    await this.broadcastRepository.delete(broadcastId);
   }
 
   private emitBroadcast(broadcast: Broadcast) {

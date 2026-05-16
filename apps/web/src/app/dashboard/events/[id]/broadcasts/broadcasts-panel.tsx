@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Megaphone, Send } from "lucide-react";
-import { useBroadcasts, useCreateBroadcast } from "@/lib/api/broadcasts";
+import { Megaphone, Send, Trash2 } from "lucide-react";
+import { useBroadcasts, useCreateBroadcast, useDeleteBroadcast } from "@/lib/api/broadcasts";
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,7 +21,15 @@ interface Props {
   eventId: string;
 }
 
-function BroadcastItem({ broadcast }: { broadcast: BroadcastResponse }) {
+function BroadcastItem({
+  broadcast,
+  onDelete,
+  isDeleting,
+}: {
+  broadcast: BroadcastResponse;
+  onDelete: (id: string) => void;
+  isDeleting: boolean;
+}) {
   return (
     <div className="flex items-start gap-3 py-3 border-b last:border-0">
       <Megaphone className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
@@ -33,6 +41,16 @@ function BroadcastItem({ broadcast }: { broadcast: BroadcastResponse }) {
           · {new Date(broadcast.createdAt).toLocaleString()}
         </p>
       </div>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
+        disabled={isDeleting}
+        onClick={() => onDelete(broadcast.id)}
+        aria-label="Delete broadcast"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </Button>
     </div>
   );
 }
@@ -41,6 +59,7 @@ export function BroadcastsPanel({ eventId }: Props) {
   const { data: broadcasts = [], isLoading } = useBroadcasts(eventId);
   const { data: tables = [] } = useTables(eventId);
   const createMutation = useCreateBroadcast(eventId);
+  const deleteMutation = useDeleteBroadcast(eventId);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -170,7 +189,12 @@ export function BroadcastsPanel({ eventId }: Props) {
             <p className="text-sm text-muted-foreground">No announcements sent yet.</p>
           )}
           {broadcasts.map((b) => (
-            <BroadcastItem key={b.id} broadcast={b} />
+            <BroadcastItem
+              key={b.id}
+              broadcast={b}
+              onDelete={(id) => deleteMutation.mutate(id)}
+              isDeleting={deleteMutation.isPending && deleteMutation.variables === b.id}
+            />
           ))}
         </CardContent>
       </Card>

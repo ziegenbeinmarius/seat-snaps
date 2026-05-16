@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAdminEvents, useForceDeleteEvent } from "@/lib/api/admin";
 import {
   Table,
@@ -83,13 +84,18 @@ export function AdminEventsPanel() {
                   <TableCell className="text-center">{event.attendeeCount}</TableCell>
                   <TableCell className="text-center">{event.photoCount}</TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
-                    >
-                      Delete
-                    </Button>
+                    <div className="flex items-center justify-end gap-2">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link href={`/dashboard/events/${event.id}`}>View</Link>
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => setConfirmDelete({ id: event.id, title: event.title })}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

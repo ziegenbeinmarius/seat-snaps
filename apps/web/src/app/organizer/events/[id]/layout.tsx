@@ -3,7 +3,8 @@ import type { Route } from "next";
 import Link from "next/link";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { EventHeroStrip } from "@/components/events/event-hero-strip";
-import { EventTabNav, type TabLink } from "@/components/events/event-tab-nav";
+import { EventTabNav } from "@/components/events/event-tab-nav";
+import type { TabLink } from "@/components/events/event-tab-nav";
 import { loadEvent } from "@/lib/load-event";
 
 interface Props {
@@ -50,6 +51,7 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
         }
       />
 
+      <EventTabNav links={links} variant="mobile" />
 
       <div className="px-4 py-4">{children}</div>
     </div>

@@ -2,11 +2,14 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   Body,
   Param,
   UseGuards,
   ForbiddenException,
   Inject,
+  HttpCode,
+  HttpStatus,
 } from "@nestjs/common";
 import type { Attendee } from "@seat-snaps/db";
 import { BroadcastsService } from "./broadcasts.service";
@@ -55,5 +58,15 @@ export class BroadcastsController {
   listFeed(@Param("id") eventId: string, @CurrentAttendee() attendee: Attendee) {
     if (attendee.eventId !== eventId) throw new ForbiddenException("Access denied");
     return this.broadcastsService.listByEvent(eventId, attendee.id, "attendee");
+  }
+
+  @Delete(":broadcastId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteBroadcast(
+    @Param("id") eventId: string,
+    @Param("broadcastId") broadcastId: string,
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.broadcastsService.delete(broadcastId, eventId, user.id);
   }
 }

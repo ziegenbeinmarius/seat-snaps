@@ -32,9 +32,26 @@ export function useCreateBroadcast(eventId: string) {
         method: "POST",
         body: JSON.stringify(data),
       }),
+    onSuccess: (data) => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "broadcasts"] });
+      const count = data.recipientCount;
+      toast.success(
+        count !== undefined
+          ? `Broadcast sent to ${count} ${count === 1 ? "attendee" : "attendees"}`
+          : "Broadcast sent",
+      );
+    },
+  });
+}
+
+export function useDeleteBroadcast(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<void, Error, string>({
+    mutationFn: (broadcastId) =>
+      fetchApi(`/events/${eventId}/broadcasts/${broadcastId}`, { method: "DELETE" }),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["events", eventId, "broadcasts"] });
-      toast.success("Broadcast sent");
+      toast.success("Broadcast deleted");
     },
   });
 }
