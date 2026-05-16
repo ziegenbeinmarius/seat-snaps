@@ -3,8 +3,21 @@ import type { AttendeeSessionResponse } from "@seat-snaps/shared";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
+/**
+ * Redirect with a relative `Location` header. The browser resolves it against
+ * the address-bar URL (the public domain), so this works correctly behind
+ * Railway's proxy — unlike `request.url`, which the standalone Next.js server
+ * reconstructs from the internal socket and reports as `localhost`.
+ */
+function redirectTo(path: string) {
+  return new NextResponse(null, {
+    status: 307,
+    headers: { Location: path },
+  });
+}
+
 export async function GET(
-  request: Request,
+  _request: Request,
   context: { params: Promise<{ qrToken: string }> },
 ) {
   const { qrToken } = await context.params;
@@ -19,15 +32,15 @@ export async function GET(
     });
 
     if (!res.ok) {
-      return NextResponse.redirect(new URL("/join/invalid", request.url));
+      return redirectTo("/join/invalid");
     }
 
     session = (await res.json()) as AttendeeSessionResponse;
   } catch {
-    return NextResponse.redirect(new URL("/join/invalid", request.url));
+    return redirectTo("/join/invalid");
   }
 
-  const response = NextResponse.redirect(new URL(`/event/${session.eventId}`, request.url));
+  const response = redirectTo(`/event/${session.eventId}`);
   response.cookies.set("attendee-session", session.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
