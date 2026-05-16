@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Users, MapPin, Camera, UserRound } from "lucide-react";
+import { Home, Calendar, Users, MapPin, Camera, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
@@ -21,7 +21,7 @@ export function AttendeeNav({ eventId }: Props) {
     { href: `${base}/attendees` as Route, icon: Users, label: "Guests" },
     { href: `${base}/seating` as Route, icon: MapPin, label: "Seating" },
     { href: `${base}/photos` as Route, icon: Camera, label: "Photos" },
-    { href: `${base}/profile` as Route, icon: UserRound, label: "Profile" },
+    { href: `${base}/announcements` as Route, icon: Megaphone, label: "News" },
   ];
 
   return (

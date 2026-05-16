@@ -1,10 +1,13 @@
 import React from "react";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
-import { getCurrentAttendee } from "@/lib/attendee-session";
+import { getCurrentAttendee, getAttendeeSessionToken } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";
 import { AttendeeHeader } from "./attendee-header";
 import { ThemeSyncer } from "./theme-syncer";
+import { SocketProvider } from "@/components/broadcast/socket-provider";
+import { BroadcastBanner } from "@/components/broadcast/broadcast-banner";
+import { ConnectionStatus } from "@/components/broadcast/connection-status";
 
 export const metadata: Metadata = {
   manifest: "/manifest-attendee.json",
@@ -55,7 +58,10 @@ async function fetchEventAndTheme(eventId: string) {
 
 export default async function AttendeeLayout({ children, params }: Props) {
   const { eventId } = await params;
-  const attendee = await getCurrentAttendee();
+  const [attendee, sessionToken] = await Promise.all([
+    getCurrentAttendee(),
+    getAttendeeSessionToken(),
+  ]);
 
   if (!attendee) {
     redirect(`/join/event/${eventId}`);
@@ -77,24 +83,28 @@ export default async function AttendeeLayout({ children, params }: Props) {
   if (theme?.secondaryColor) themeVars["--event-secondary"] = theme.secondaryColor;
 
   return (
-    <div
-      className="flex min-h-screen flex-col"
-      data-event-theme={eventThemeType}
-      style={themeVars as React.CSSProperties}
-    >
-      {/* Full-page gradient background */}
+    <SocketProvider token={sessionToken ?? ""} eventId={eventId}>
       <div
-        className="fixed inset-0 -z-10"
-        style={{ background: "var(--event-gradient)" }}
-        aria-hidden="true"
-      />
-      {/* Re-syncs CSS vars whenever the attendee returns to this tab or navigates */}
-      <ThemeSyncer eventId={eventId} />
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
-        <AttendeeHeader name={attendee.name} />
-        <main className="flex-1 pb-20">{children}</main>
+        className="flex min-h-screen flex-col"
+        data-event-theme={eventThemeType}
+        style={themeVars as React.CSSProperties}
+      >
+        {/* Full-page gradient background */}
+        <div
+          className="fixed inset-0 -z-10"
+          style={{ background: "var(--event-gradient)" }}
+          aria-hidden="true"
+        />
+        {/* Re-syncs CSS vars whenever the attendee returns to this tab or navigates */}
+        <ThemeSyncer eventId={eventId} />
+        <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
+          <AttendeeHeader name={attendee.name} />
+          <BroadcastBanner />
+          <ConnectionStatus />
+          <main className="flex-1 pb-20">{children}</main>
+        </div>
+        <AttendeeNav eventId={eventId} />
       </div>
-      <AttendeeNav eventId={eventId} />
-    </div>
+    </SocketProvider>
   );
 }

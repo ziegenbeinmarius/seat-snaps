@@ -12,6 +12,7 @@ import type { IEventMembershipRepository } from "../domain/repositories/IEventMe
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { ITableService, TableWithSeats } from "./domain/ITableService";
 import type { CreateTableInput, UpdateTableInput, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
+import { EventGateway } from "../broadcasts/event.gateway";
 
 @Injectable()
 export class TablesService implements ITableService {
@@ -26,6 +27,7 @@ export class TablesService implements ITableService {
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: IEventMembershipRepository,
+    private readonly broadcastGateway: EventGateway,
   ) {}
 
   async listForEvent(eventId: string, userId: string): Promise<TableWithSeats[]> {
@@ -75,6 +77,7 @@ export class TablesService implements ITableService {
       }
     }
 
+    this.broadcastGateway.emitSeatingUpdate(eventId);
     return this.withSeats(table);
   }
 
@@ -88,7 +91,7 @@ export class TablesService implements ITableService {
     const existing = await this.tableRepository.findById(tableId);
     if (!existing || existing.eventId !== eventId) throw new NotFoundException("Table not found");
 
-    return this.tableRepository.update(tableId, {
+    const result = await this.tableRepository.update(tableId, {
       ...(data.name !== undefined && { name: data.name }),
       ...(data.label !== undefined && { label: data.label }),
       ...(data.capacity !== undefined && { capacity: data.capacity }),
@@ -99,6 +102,8 @@ export class TablesService implements ITableService {
       ...(data.width !== undefined && { width: data.width }),
       ...(data.height !== undefined && { height: data.height }),
     });
+    this.broadcastGateway.emitSeatingUpdate(eventId);
+    return result;
   }
 
   async bulkUpdatePositions(
@@ -124,6 +129,7 @@ export class TablesService implements ITableService {
         }),
       ),
     );
+    this.broadcastGateway.emitSeatingUpdate(eventId);
   }
 
   async delete(tableId: string, eventId: string, userId: string): Promise<void> {
@@ -140,6 +146,7 @@ export class TablesService implements ITableService {
     );
 
     await this.tableRepository.delete(tableId);
+    this.broadcastGateway.emitSeatingUpdate(eventId);
   }
 
   private async withSeats(table: Table): Promise<TableWithSeats> {
