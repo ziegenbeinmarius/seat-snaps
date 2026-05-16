@@ -29,6 +29,15 @@ export default async function DashboardLayout({ children }: { children: React.Re
             SeatSnaps
           </Link>
           <div className="flex items-center gap-3">
+            {session.user?.isAdmin && (
+              <Link
+                href="/dashboard/admin"
+                className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                style={{ color: "hsl(28 65% 44%)", border: "1px solid hsl(33 18% 82%)" }}
+              >
+                Admin
+              </Link>
+            )}
             <span className="text-sm" style={{ color: "hsl(28 8% 50%)" }}>
               {session.user?.name}
             </span>

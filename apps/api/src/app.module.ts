@@ -17,6 +17,7 @@ import { AttendeeSessionsModule } from "./attendee-sessions/attendee-sessions.mo
 import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
 import { PhotosModule } from "./photos/photos.module";
 import { ThemesModule } from "./themes/themes.module";
+import { AdminModule } from "./admin/admin.module";
 import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
 
 @Module({
@@ -39,6 +40,7 @@ import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
     ScheduleItemsModule,
     PhotosModule,
     ThemesModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [

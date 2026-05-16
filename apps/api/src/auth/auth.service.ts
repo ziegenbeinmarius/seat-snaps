@@ -23,7 +23,7 @@ export class AuthService implements IAuthService {
       passwordHash,
     });
 
-    return { id: user.id, email: user.email, name: user.name, role: null, tokenVersion: user.tokenVersion };
+    return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
   }
 
   async validateCredentials(email: string, password: string): Promise<SessionUser | null> {
@@ -33,7 +33,7 @@ export class AuthService implements IAuthService {
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return null;
 
-    return { id: user.id, email: user.email, name: user.name, role: null, tokenVersion: user.tokenVersion };
+    return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
   }
 
   async userExists(userId: string): Promise<boolean> {

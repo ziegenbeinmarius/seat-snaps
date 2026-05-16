@@ -27,7 +27,7 @@ import {
   EVENT_THEME_REPOSITORY,
 } from "../domain/repositories";
 
-const DB_PROVIDER = Symbol("DATABASE");
+export const DB_PROVIDER = Symbol("DATABASE");
 
 @Global()
 @Module({
@@ -98,6 +98,7 @@ const DB_PROVIDER = Symbol("DATABASE");
     },
   ],
   exports: [
+    DB_PROVIDER,
     USER_REPOSITORY,
     EVENT_REPOSITORY,
     EVENT_MEMBERSHIP_REPOSITORY,

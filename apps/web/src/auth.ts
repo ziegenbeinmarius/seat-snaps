@@ -33,11 +33,13 @@ declare module "next-auth" {
     user: {
       id: string;
       role?: string | null;
+      isAdmin?: boolean;
     } & DefaultSession["user"];
   }
   interface User {
     id: string;
     role?: string | null;
+    isAdmin?: boolean;
     tokenVersion?: number;
   }
 }
@@ -46,6 +48,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role?: string | null;
+    isAdmin?: boolean;
     tokenVersion?: number;
     checkedAt?: number;
   }
@@ -109,6 +112,7 @@ const nextAuth: NextAuthResult = NextAuth({
       if (user) {
         token.id = user.id;
         token.role = user.role ?? null;
+        token.isAdmin = user.isAdmin ?? false;
         token.tokenVersion = user.tokenVersion ?? 0;
         token.checkedAt = Math.floor(Date.now() / 1000);
         return token;
@@ -141,6 +145,7 @@ const nextAuth: NextAuthResult = NextAuth({
     session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
+      session.user.isAdmin = token.isAdmin ?? false;
       return session;
     },
   },
