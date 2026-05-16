@@ -1,0 +1,12 @@
+{
+  "name": "SeatSnaps",
+  "short_name": "SeatSnaps",
+  "description": "Your event companion — schedule, seating, and more",
+  "start_url": "/attend",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5ede0",
+  "theme_color": "#a07850",
+  "orientation": "portrait",
+  "categories": ["entertainment", "lifestyle"]
+}

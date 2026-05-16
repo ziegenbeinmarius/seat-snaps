@@ -1,9 +1,19 @@
 import React from "react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";
 import { AttendeeHeader } from "./attendee-header";
 import { ThemeSyncer } from "./theme-syncer";
+
+export const metadata: Metadata = {
+  manifest: "/manifest-attendee.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "SeatSnaps",
+  },
+};
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
