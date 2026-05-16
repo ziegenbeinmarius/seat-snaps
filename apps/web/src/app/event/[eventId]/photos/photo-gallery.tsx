@@ -17,8 +17,8 @@ interface Props {
 }
 
 const COMPRESSION_OPTIONS = {
-  maxSizeMB: 5,
-  maxWidthOrHeight: 2048,
+  maxSizeMB: 15,
+  maxWidthOrHeight: 4096,
   useWebWorker: true,
 };
 
@@ -154,6 +154,11 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
                 sizes="(max-width: 768px) 33vw, 20vw"
                 className="h-full w-full object-cover transition-transform group-hover:scale-105"
               />
+              {photo.status === "pending" && (
+                <div className="absolute inset-x-0 bottom-0 bg-black/50 px-1 py-0.5 text-center text-[10px] font-medium text-yellow-300">
+                  Pending approval
+                </div>
+              )}
               <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-black/20 transition-opacity">
                 <ZoomIn className="h-6 w-6 text-white" />
               </div>
@@ -174,7 +179,7 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
           onClick={() => setLightbox(null)}
         >
           <button
-            className="absolute right-4 top-4 rounded-full bg-black/60 p-2 text-white shadow-lg hover:bg-black/80"
+            className="absolute right-4 top-4 z-10 rounded-full bg-black/60 p-2 text-white shadow-lg hover:bg-black/80"
             onClick={() => setLightbox(null)}
           >
             <X className="h-6 w-6" />

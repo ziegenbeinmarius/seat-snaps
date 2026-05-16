@@ -32,19 +32,20 @@ export class QrService implements IQrService {
     attendeeId: string,
     eventId: string,
     userId: string,
+    appUrl?: string,
   ): Promise<AttendeeQrResult> {
     await this.requireMember(eventId, userId);
 
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
-    const url = `${appUrl}/join/${attendee.qrToken}`;
+    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const url = `${baseUrl}/join/${attendee.qrToken}`;
     const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
     return { buffer, attendeeName: attendee.name };
   }
 
-  async generateBulkZip(eventId: string, userId: string): Promise<Buffer> {
+  async generateBulkZip(eventId: string, userId: string, appUrl?: string): Promise<Buffer> {
     await this.requireMember(eventId, userId);
 
     const [attendees, tables, seats] = await Promise.all([
@@ -56,11 +57,11 @@ export class QrService implements IQrService {
     const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
     const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
 
-    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
 
     const items = await Promise.all(
       attendees.map(async (a) => {
-        const url = `${appUrl}/join/${a.qrToken}`;
+        const url = `${baseUrl}/join/${a.qrToken}`;
         const dataUrl = await QRCode.toDataURL(url, { width: 300, margin: 2 });
         return {
           id: a.id,
@@ -76,14 +77,14 @@ export class QrService implements IQrService {
     return Buffer.from(html, "utf-8");
   }
 
-  async generateEventQr(eventId: string, userId: string): Promise<Buffer> {
+  async generateEventQr(eventId: string, userId: string, appUrl?: string): Promise<Buffer> {
     await this.requireMember(eventId, userId);
 
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
-    const url = `${appUrl}/join/event/${eventId}`;
+    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const url = `${baseUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
 

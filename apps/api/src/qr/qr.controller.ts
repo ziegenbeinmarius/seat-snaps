@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Res } from "@nestjs/common";
+import { Controller, Get, Post, Param, Res, Query } from "@nestjs/common";
 import type { FastifyReply } from "fastify";
 import { QrService } from "./qr.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -23,8 +23,9 @@ export class QrController {
     @Param("attendeeId") attendeeId: string,
     @CurrentUser() user: SessionUser,
     @Res() reply: FastifyReply,
+    @Query("appUrl") appUrl?: string,
   ) {
-    const result = await this.qrService.generateForAttendee(attendeeId, eventId, user.id);
+    const result = await this.qrService.generateForAttendee(attendeeId, eventId, user.id, appUrl);
     const slug = toFilenameSlug(result.attendeeName);
     reply.header("Content-Type", "image/png");
     reply.header("Content-Disposition", `attachment; filename="qr-${slug}.png"`);
@@ -37,8 +38,9 @@ export class QrController {
     @Param("attendeeId") attendeeId: string,
     @CurrentUser() user: SessionUser,
     @Res() reply: FastifyReply,
+    @Query("appUrl") appUrl?: string,
   ) {
-    const result = await this.qrService.generateForAttendee(attendeeId, eventId, user.id);
+    const result = await this.qrService.generateForAttendee(attendeeId, eventId, user.id, appUrl);
     const slug = toFilenameSlug(result.attendeeName);
     reply.header("Content-Type", "image/png");
     reply.header("Content-Disposition", `attachment; filename="qr-${slug}.png"`);
@@ -50,8 +52,9 @@ export class QrController {
     @Param("eventId") eventId: string,
     @CurrentUser() user: SessionUser,
     @Res() reply: FastifyReply,
+    @Query("appUrl") appUrl?: string,
   ) {
-    const buffer = await this.qrService.generateBulkZip(eventId, user.id);
+    const buffer = await this.qrService.generateBulkZip(eventId, user.id, appUrl);
     reply.header("Content-Type", "text/html; charset=utf-8");
     reply.header("Content-Disposition", "inline");
     return reply.send(buffer);
@@ -62,8 +65,9 @@ export class QrController {
     @Param("eventId") eventId: string,
     @CurrentUser() user: SessionUser,
     @Res() reply: FastifyReply,
+    @Query("appUrl") appUrl?: string,
   ) {
-    const buffer = await this.qrService.generateEventQr(eventId, user.id);
+    const buffer = await this.qrService.generateEventQr(eventId, user.id, appUrl);
     reply.header("Content-Type", "image/png");
     reply.header("Content-Disposition", `attachment; filename="qr-event-${eventId}.png"`);
     return reply.send(buffer);

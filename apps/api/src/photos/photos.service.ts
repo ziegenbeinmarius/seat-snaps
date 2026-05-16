@@ -111,8 +111,8 @@ export class PhotosService implements IPhotoService {
       thumbnailKey = undefined;
     }
 
-    // Update photo to approved (auto-approve on confirm)
-    const updated = await this.photoRepository.updateStatus(photoId, "approved");
+    // Keep photo as pending — organizer must manually approve
+    const updated = await this.photoRepository.updateStatus(photoId, "pending");
     const withThumb = thumbnailKey
       ? await this.updateThumbnailKey(photoId, thumbnailKey, updated)
       : updated;
@@ -126,20 +126,21 @@ export class PhotosService implements IPhotoService {
     requesterId: string,
     requesterType: "attendee" | "organizer",
   ): Promise<PhotoWithUrl[]> {
-    let photos: Photo[];
     if (requesterType === "organizer") {
-      photos = await this.photoRepository.findByEventId(eventId);
-    } else {
-      photos = await this.photoRepository.findByEventId(eventId, { status: "approved" });
+      const photos = await this.photoRepository.findByEventId(eventId);
+      const attendees = await this.attendeeRepository.findByEventId(eventId);
+      const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
+      return Promise.all(
+        photos.map((p) => this.attachUrls(p, nameMap.get(p.attendeeId) ?? "Unknown")),
+      );
     }
 
-    // Build attendee name map in one query
-    const attendees = await this.attendeeRepository.findByEventId(eventId);
-    const nameMap = new Map(attendees.map((a) => [a.id, a.name]));
-
-    return Promise.all(
-      photos.map((p) => this.attachUrls(p, nameMap.get(p.attendeeId) ?? "Unknown")),
-    );
+    // Attendees only see their own photos (pending + approved, not rejected/deleted)
+    const attendee = await this.attendeeRepository.findById(requesterId);
+    const allPhotos = await this.photoRepository.findByAttendeeId(requesterId);
+    const photos = allPhotos.filter((p) => p.status !== "deleted" && p.status !== "rejected");
+    const attendeeName = attendee?.name ?? "Unknown";
+    return Promise.all(photos.map((p) => this.attachUrls(p, attendeeName)));
   }
 
   async updateStatus(

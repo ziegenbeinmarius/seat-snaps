@@ -27,7 +27,8 @@ export function AttendeeQrDialog({
 
   // Download QR PNG handler
   const handleDownloadQr = () => {
-    window.open(`/api/events/${eventId}/attendees/${attendeeId}/qr`, "_blank");
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    window.open(`/api/proxy/events/${eventId}/attendees/${attendeeId}/qr?appUrl=${encodeURIComponent(appUrl)}`, "_blank");
   };
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
