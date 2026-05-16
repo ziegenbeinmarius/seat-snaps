@@ -1,11 +1,5 @@
 "use client";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ??
-  (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:3001`
-    : "http://localhost:3001");
-
 // 30s in-memory cache so we don't hit /api/token on every request
 let tokenCache: { value: string; expiresAt: number } | null = null;
 
@@ -25,7 +19,7 @@ async function getToken(): Promise<string | null> {
 
 export async function clientFetch<T>(path: string, label: string, init?: RequestInit): Promise<T> {
   const token = await getToken();
-  const url = `${API_BASE}/api${path}`;
+  const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
   const headers: Record<string, string> = {
