@@ -4,6 +4,8 @@ import { cookies } from "next/headers";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 const ATTENDEE_SESSION_COOKIE = "attendee-session";
+const XSRF_COOKIE = "XSRF-TOKEN";
+const XSRF_HEADER = "x-xsrf-token";
 
 async function proxyRequest(
   request: NextRequest,
@@ -24,9 +26,15 @@ async function proxyRequest(
 
   const cookieStore = await cookies();
   const attendeeToken = cookieStore.get(ATTENDEE_SESSION_COOKIE)?.value;
-  if (attendeeToken) {
-    headers["Cookie"] = `${ATTENDEE_SESSION_COOKIE}=${attendeeToken}`;
-  }
+  const xsrfCookie = cookieStore.get(XSRF_COOKIE)?.value;
+
+  const cookieParts: string[] = [];
+  if (attendeeToken) cookieParts.push(`${ATTENDEE_SESSION_COOKIE}=${attendeeToken}`);
+  if (xsrfCookie) cookieParts.push(`${XSRF_COOKIE}=${xsrfCookie}`);
+  if (cookieParts.length > 0) headers["Cookie"] = cookieParts.join("; ");
+
+  const xsrfHeader = request.headers.get(XSRF_HEADER);
+  if (xsrfHeader) headers[XSRF_HEADER] = xsrfHeader;
 
   const body =
     request.method !== "GET" && request.method !== "HEAD"

@@ -35,5 +35,15 @@ export async function POST(request: NextRequest) {
     maxAge: SESSION_TTL,
   });
 
+  if (session.csrfToken) {
+    response.cookies.set("XSRF-TOKEN", session.csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_TTL,
+    });
+  }
+
   return response;
 }

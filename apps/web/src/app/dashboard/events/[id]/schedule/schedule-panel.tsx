@@ -15,6 +15,7 @@ import type { ScheduleItemResponse } from "@seat-snaps/shared";
 
 interface Props {
   eventId: string;
+  eventDate?: Date | string;
 }
 
 function formatTime(d: Date | string) {
@@ -32,9 +33,7 @@ function toDatetimeLocal(d: Date | string | null | undefined): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-const emptyForm = { title: "", description: "", startTime: "", endTime: "" };
-
-export function SchedulePanel({ eventId }: Props) {
+export function SchedulePanel({ eventId, eventDate }: Props) {
   const { data: items = [], isLoading } = useScheduleItems(eventId);
   const createMutation = useCreateScheduleItem(eventId);
   const updateMutation = useUpdateScheduleItem(eventId);
@@ -42,7 +41,7 @@ export function SchedulePanel({ eventId }: Props) {
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<ScheduleItemResponse | null>(null);
-  const [form, setForm] = useState(emptyForm);
+  const [form, setForm] = useState({ title: "", description: "", startTime: "", endTime: "" });
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
@@ -52,7 +51,8 @@ export function SchedulePanel({ eventId }: Props) {
   });
 
   function openAdd() {
-    setForm(emptyForm);
+    const defaultStartTime = eventDate ? toDatetimeLocal(eventDate) : "";
+    setForm({ title: "", description: "", startTime: defaultStartTime, endTime: "" });
     setError(null);
     setShowAddDialog(true);
   }

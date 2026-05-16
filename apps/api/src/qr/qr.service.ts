@@ -38,7 +38,7 @@ export class QrService implements IQrService {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/${attendee.qrToken}`;
     const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
     return { buffer, attendeeName: attendee.name };
@@ -56,7 +56,7 @@ export class QrService implements IQrService {
     const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
     const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
 
     const items = await Promise.all(
       attendees.map(async (a) => {
@@ -82,7 +82,7 @@ export class QrService implements IQrService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = process.env.APP_URL ?? "http://localhost:3005";
+    const appUrl = process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
     const url = `${appUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
