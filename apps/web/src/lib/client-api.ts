@@ -1,45 +1,18 @@
 "use client";
 
-const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL ??
-  (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:3001`
-    : "http://localhost:3001");
-
-// 30s in-memory cache so we don't hit /api/token on every request
-let tokenCache: { value: string; expiresAt: number } | null = null;
-
-async function getToken(): Promise<string | null> {
-  if (tokenCache && Date.now() < tokenCache.expiresAt) return tokenCache.value;
-  try {
-    const res = await fetch("/api/token");
-    if (!res.ok) return null;
-    const data = (await res.json()) as { token?: string } | null;
-    const token = data?.token ?? null;
-    if (token) tokenCache = { value: token, expiresAt: Date.now() + 30_000 };
-    return token;
-  } catch {
-    return null;
-  }
-}
-
 export async function clientFetch<T>(path: string, label: string, init?: RequestInit): Promise<T> {
-  const token = await getToken();
-  const url = `${API_BASE}/api${path}`;
+  const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(init?.headers as Record<string, string>),
   };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
 
-  const res = await fetch(url, { ...init, headers, credentials: "include" }).catch(
+  const res = await fetch(url, { ...init, headers }).catch(
     (error: unknown) => {
       console.error(`[${label} api] network failure`, { method, path, url, error });
-      throw new Error(
-        `Could not reach API for ${method} ${path}. Check NEXT_PUBLIC_API_URL (${API_BASE}) and API availability.`,
-      );
+      throw new Error(`Could not reach API for ${method} ${path}. Please try again later.`);
     },
   );
 

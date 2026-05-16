@@ -3,20 +3,25 @@ import {
   CanActivate,
   ExecutionContext,
   UnauthorizedException,
+  Inject,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { JwtService } from "@nestjs/jwt";
 import type { FastifyRequest } from "fastify";
 import { IS_PUBLIC_KEY } from "../decorators/public.decorator";
+import type { IUserRepository } from "../../domain/repositories/IUserRepository";
+import { USER_REPOSITORY } from "../../domain/repositories/IUserRepository";
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
     private readonly reflector: Reflector,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
       context.getClass(),
@@ -27,13 +32,26 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractToken(request);
     if (!token) throw new UnauthorizedException();
 
+    let payload: Record<string, unknown>;
     try {
-      const payload = this.jwtService.verify(token);
-      request.user = payload;
-      return true;
+      payload = this.jwtService.verify(token);
     } catch {
       throw new UnauthorizedException();
     }
+
+    const userId = payload.id as string | undefined;
+    if (userId) {
+      const user = await this.userRepository.findById(userId);
+      if (!user) throw new UnauthorizedException();
+
+      const jwtVersion = typeof payload.tokenVersion === "number" ? payload.tokenVersion : 0;
+      if (jwtVersion < (user.tokenVersion ?? 0)) {
+        throw new UnauthorizedException("Token revoked");
+      }
+    }
+
+    request.user = payload;
+    return true;
   }
 
   private extractToken(request: FastifyRequest): string | null {
@@ -62,7 +80,6 @@ export class JwtAuthGuard implements CanActivate {
       const direct = cookies[baseName];
       if (direct) return direct;
 
-      // NextAuth/Auth.js may chunk long cookie values as .0, .1, ...
       const chunks = Object.entries(cookies)
         .filter(([name]) => name.startsWith(`${baseName}.`))
         .map(([name, value]) => {

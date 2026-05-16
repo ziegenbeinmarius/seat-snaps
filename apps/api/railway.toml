@@ -4,7 +4,7 @@ dockerfilePath = "apps/api/Dockerfile"
 buildContext = "."
 
 [deploy]
-startCommand = "node dist/main"
+startCommand = "node ../../node_modules/.bin/drizzle-kit migrate --config=../../packages/db/drizzle.config.ts 2>/dev/null; node dist/main"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 100
 restartPolicyType = "ON_FAILURE"

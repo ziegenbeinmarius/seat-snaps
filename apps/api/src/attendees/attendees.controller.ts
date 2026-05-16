@@ -15,6 +15,7 @@ import {
 import { AttendeesService } from "./attendees.service";
 import { CreateAttendeeDto } from "./dto/create-attendee.dto";
 import { UpdateAttendeeDto } from "./dto/update-attendee.dto";
+import { CheckinDto } from "./dto/checkin.dto";
 import { PaginationQueryDto } from "../common/dto/pagination-query.dto";
 import { Public } from "../auth/decorators/public.decorator";
 import { EventMemberGuard } from "../auth/guards/event-member.guard";
@@ -46,9 +47,9 @@ export class AttendeesController {
   @Post("checkin")
   checkIn(
     @Param("eventId") eventId: string,
-    @Body() body: { qrToken: string },
+    @Body() dto: CheckinDto,
   ) {
-    return this.attendeesService.checkIn(eventId, body.qrToken);
+    return this.attendeesService.checkIn(eventId, dto.qrToken);
   }
 
   @Post("import")

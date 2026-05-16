@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException, UnauthorizedException } from "@nestjs/common";
-import { randomUUID } from "crypto";
+import { randomBytes } from "crypto";
 import type { IAttendeeSessionRepository } from "../domain/repositories/IAttendeeSessionRepository";
 import { ATTENDEE_SESSION_REPOSITORY } from "../domain/repositories/IAttendeeSessionRepository";
 import type { IAttendeeRepository } from "../domain/repositories/IAttendeeRepository";
@@ -27,7 +27,7 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
     const attendee = await this.attendeeRepository.findByQrToken(qrToken);
     if (!attendee) throw new NotFoundException("Invalid QR token");
 
-    const token = randomUUID();
+    const token = randomBytes(32).toString("hex");
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + SESSION_TTL_DAYS);
 
@@ -43,29 +43,6 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
     if (!attendee.checkedInAt) {
       await this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
     }
-
-    return { session, attendee };
-  }
-
-  async createFromManualSelection(
-    attendeeId: string,
-    eventId: string,
-    deviceFingerprint?: string,
-  ): Promise<AttendeeSessionWithAttendee> {
-    const attendee = await this.attendeeRepository.findById(attendeeId);
-    if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
-
-    const token = randomUUID();
-    const expiresAt = new Date();
-    expiresAt.setDate(expiresAt.getDate() + SESSION_TTL_DAYS);
-
-    const session = await this.sessionRepository.create({
-      attendeeId: attendee.id,
-      eventId: attendee.eventId,
-      token,
-      deviceFingerprint: deviceFingerprint ?? null,
-      expiresAt,
-    });
 
     return { session, attendee };
   }

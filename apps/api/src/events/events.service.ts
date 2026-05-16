@@ -9,7 +9,7 @@ import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
-import type { IEventService } from "./domain/IEventService";
+import type { IEventService, PublicEventInfo } from "./domain/IEventService";
 import type { CreateEventInput, UpdateEventInput } from "@seat-snaps/shared";
 
 @Injectable()
@@ -25,10 +25,18 @@ export class EventsService implements IEventService {
     return this.eventRepository.findByMemberId(userId);
   }
 
-  async getPublicInfo(id: string): Promise<Event> {
+  async getPublicInfo(id: string): Promise<PublicEventInfo> {
     const event = await this.eventRepository.findById(id);
     if (!event) throw new NotFoundException("Event not found");
-    return event;
+    return {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: event.date,
+      endDate: event.endDate,
+      location: event.location,
+      type: event.type,
+    };
   }
 
   async getById(id: string, userId: string): Promise<Event> {

@@ -25,8 +25,7 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
     if (!selected) return;
     try {
       const result = await createSession.mutateAsync({ attendeeId: selected, eventId });
-      document.cookie = `attendee-session=${result.token}; path=/; max-age=${90 * 24 * 60 * 60}; samesite=lax${window.location.protocol === "https:" ? "; secure" : ""}`;
-      router.push(`/event/${eventId}`);
+      router.push(`/event/${result.eventId}`);
     } catch {
       /* handled by mutation error state */
     }

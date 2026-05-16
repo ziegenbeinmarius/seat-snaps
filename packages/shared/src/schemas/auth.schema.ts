@@ -8,8 +8,15 @@ export const SessionUserSchema = z.object({
   email: z.string().email(),
   name: z.string(),
   role: MembershipRoleSchema.nullable().optional(),
+  tokenVersion: z.number().int().optional(),
 });
 export type SessionUser = z.infer<typeof SessionUserSchema>;
+
+export const ChangePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required"),
+  newPassword: z.string().min(8, "New password must be at least 8 characters"),
+});
+export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
 
 export const RegisterSchema = z.object({
   email: z.string().email("Invalid email address"),

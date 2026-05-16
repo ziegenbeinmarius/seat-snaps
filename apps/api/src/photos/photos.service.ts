@@ -16,6 +16,7 @@ import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IS3Service } from "../infrastructure/s3/IS3Service";
 import { S3_SERVICE } from "../infrastructure/s3/IS3Service";
 import type { IPhotoService, UploadUrlResult, PhotoWithUrl } from "./domain/IPhotoService";
+import { MAX_UPLOAD_SIZE } from "./dto/request-upload-url.dto";
 
 const ALLOWED_CONTENT_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
@@ -32,9 +33,14 @@ export class PhotosService implements IPhotoService {
     eventId: string,
     contentType: string,
     attendeeId: string,
+    contentLength?: number,
   ): Promise<UploadUrlResult> {
     if (!ALLOWED_CONTENT_TYPES.includes(contentType)) {
       throw new BadRequestException("Unsupported content type");
+    }
+
+    if (contentLength != null && contentLength > MAX_UPLOAD_SIZE) {
+      throw new BadRequestException(`File size exceeds maximum of ${MAX_UPLOAD_SIZE / (1024 * 1024)}MB`);
     }
 
     const attendee = await this.attendeeRepository.findById(attendeeId);
@@ -60,7 +66,7 @@ export class PhotosService implements IPhotoService {
       status: "pending",
     });
 
-    const uploadUrl = await this.s3.getSignedUploadUrl(key, contentType);
+    const uploadUrl = await this.s3.getSignedUploadUrl(key, contentType, undefined, contentLength);
     return { uploadUrl, key, photoId: photo.id };
   }
 

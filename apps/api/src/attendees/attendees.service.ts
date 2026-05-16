@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException, BadRequestException } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { parse } from "csv-parse/sync";
 import type { Attendee } from "@seat-snaps/db";
@@ -11,6 +11,8 @@ import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IAttendeeService } from "./domain/IAttendeeService";
 import type { CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/shared";
 import type { PaginatedResult } from "../common/dto/pagination-query.dto";
+
+const MAX_IMPORT_ROWS = 5000;
 
 @Injectable()
 export class AttendeesService implements IAttendeeService {
@@ -68,6 +70,10 @@ export class AttendeesService implements IAttendeeService {
       email?: string;
       group?: string;
     }[];
+
+    if (rows.length > MAX_IMPORT_ROWS) {
+      throw new BadRequestException(`CSV import limited to ${MAX_IMPORT_ROWS} rows, got ${rows.length}`);
+    }
 
     const created: Attendee[] = [];
     for (const row of rows) {

@@ -13,7 +13,7 @@ import { AUTH_SERVICE } from "./domain/IAuthService";
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         secret: config.getOrThrow<string>("app.authSecret"),
-        signOptions: { algorithm: "HS256" as const },
+        signOptions: { algorithm: "HS256" as const, expiresIn: "30d" },
         verifyOptions: { algorithms: ["HS256" as const] },
       }),
     }),

@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException, BadRequestException } from "@nestjs/common";
 import { type Database, type Table, seats, attendees, tables, eq, inArray } from "@seat-snaps/db";
 import type { ITableRepository } from "../domain/repositories/ITableRepository";
 import { TABLE_REPOSITORY } from "../domain/repositories/ITableRepository";
@@ -109,6 +109,13 @@ export class TablesService implements ITableService {
     eventId: string,
     positions: BulkUpdateTablePositionsInput,
   ): Promise<void> {
+    const eventTables = await this.tableRepository.findByEventId(eventId);
+    const eventTableIds = new Set(eventTables.map((t) => t.id));
+    const invalidIds = positions.filter((item) => !eventTableIds.has(item.tableId));
+    if (invalidIds.length > 0) {
+      throw new BadRequestException("One or more table IDs do not belong to this event");
+    }
+
     await Promise.all(
       positions.map((item) =>
         this.tableRepository.update(item.tableId, {

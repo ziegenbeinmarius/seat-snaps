@@ -2,11 +2,6 @@
 
 import { useAttendees } from "@/lib/api/attendees";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL
-  ?? (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:3001`
-    : "http://localhost:3001");
-
 interface Props {
   eventId: string;
 }
@@ -15,15 +10,15 @@ export function QrPanel({ eventId }: Props) {
   const { data: attendees = [], isLoading } = useAttendees(eventId);
 
   function downloadBulk() {
-    window.open(`${API_BASE}/api/events/${eventId}/qr/bulk`, "_blank");
+    window.open(`/api/proxy/events/${eventId}/qr/bulk`, "_blank");
   }
 
   function downloadEventQr() {
-    window.open(`${API_BASE}/api/events/${eventId}/qr/event`, "_blank");
+    window.open(`/api/proxy/events/${eventId}/qr/event`, "_blank");
   }
 
   function downloadAttendeeQr(attendeeId: string) {
-    window.open(`${API_BASE}/api/events/${eventId}/attendees/${attendeeId}/qr`, "_blank");
+    window.open(`/api/proxy/events/${eventId}/attendees/${attendeeId}/qr`, "_blank");
   }
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;

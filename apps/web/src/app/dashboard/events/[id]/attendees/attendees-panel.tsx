@@ -280,11 +280,7 @@ export function AttendeesPanel({ eventId }: Props) {
           size="sm"
           variant="default"
           onClick={() => {
-            const API_BASE = process.env.NEXT_PUBLIC_API_URL
-              ?? (typeof window !== "undefined"
-                ? `${window.location.protocol}//${window.location.hostname}:3001`
-                : "http://localhost:3001");
-            window.open(`${API_BASE}/api/events/${eventId}/qr/bulk`, "_blank");
+            window.open(`/api/proxy/events/${eventId}/qr/bulk`, "_blank");
           }}
         >
           Download All QR Codes (HTML)

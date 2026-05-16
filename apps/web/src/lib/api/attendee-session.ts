@@ -3,24 +3,17 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
   AttendeeResponse,
-  AttendeeSessionResponse,
   CreateAttendeeSessionInput,
   ScheduleItemResponse,
 } from "@seat-snaps/shared";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL
-  ?? (typeof window !== "undefined"
-    ? `${window.location.protocol}//${window.location.hostname}:3001`
-    : "http://localhost:3001");
-
 async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
-  const url = `${API_BASE}/api${path}`;
+  const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
   const res = await fetch(url, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
-    credentials: "include",
   }).catch((error: unknown) => {
     console.error("[attendee-session api] network failure", {
       method,
@@ -29,7 +22,7 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
       error,
     });
     throw new Error(
-      `Could not reach API for ${method} ${path}. Check NEXT_PUBLIC_API_URL (${API_BASE}) and API availability.`,
+      `Could not reach API for ${method} ${path}. Please try again later.`,
     );
   });
 
@@ -55,9 +48,20 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export function useCreateAttendeeSession() {
-  return useMutation<AttendeeSessionResponse, Error, CreateAttendeeSessionInput>({
-    mutationFn: (data) =>
-      fetchApi("/attendee-sessions", { method: "POST", body: JSON.stringify(data) }),
+  return useMutation<{ attendeeId: string; eventId: string; name: string }, Error, CreateAttendeeSessionInput>({
+    mutationFn: async (data) => {
+      const res = await fetch("/api/attendee-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const message = (err as { message?: string }).message;
+        throw new Error(message ?? `Request failed (${res.status})`);
+      }
+      return res.json();
+    },
   });
 }
 

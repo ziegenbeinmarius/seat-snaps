@@ -82,16 +82,28 @@ export class QrService implements IQrService {
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
 
+  private escapeHtml(str: string): string {
+    return str
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   private buildPrintHtml(
     items: { id: string; name: string; qrDataUrl: string; tableName: string | null; seatLabel: string | null }[],
   ): string {
     const cards = items
       .map((item) => {
-        const seatingLine = [item.tableName, item.seatLabel].filter(Boolean).join(" · ");
+        const safeName = this.escapeHtml(item.name);
+        const safeTable = item.tableName ? this.escapeHtml(item.tableName) : null;
+        const safeSeat = item.seatLabel ? this.escapeHtml(item.seatLabel) : null;
+        const seatingLine = [safeTable, safeSeat].filter(Boolean).join(" · ");
         return `
       <div class="card">
-        <img src="${item.qrDataUrl}" alt="QR for ${item.name}" />
-        <p class="name">${item.name}</p>
+        <img src="${item.qrDataUrl}" alt="QR for ${safeName}" />
+        <p class="name">${safeName}</p>
         ${seatingLine ? `<p class="seat">${seatingLine}</p>` : ""}
       </div>`;
       })
