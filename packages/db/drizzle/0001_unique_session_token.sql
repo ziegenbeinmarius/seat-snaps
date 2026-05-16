@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX "attendee_sessions_token_idx" ON "attendee_sessions" USING btree ("token");

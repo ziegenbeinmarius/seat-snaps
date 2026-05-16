@@ -58,6 +58,7 @@ export class AttendeeSessionsController {
       attendeeId: result.attendee.id,
       eventId: result.attendee.eventId,
       name: result.attendee.name,
+      csrfToken,
     });
   }
 

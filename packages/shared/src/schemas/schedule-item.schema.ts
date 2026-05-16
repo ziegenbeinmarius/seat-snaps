@@ -38,5 +38,6 @@ export const AttendeeSessionResponseSchema = z.object({
   attendeeId: z.string().uuid(),
   eventId: z.string().uuid(),
   name: z.string(),
+  csrfToken: z.string().optional(),
 });
 export type AttendeeSessionResponse = z.infer<typeof AttendeeSessionResponseSchema>;

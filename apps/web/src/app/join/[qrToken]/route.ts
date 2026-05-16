@@ -36,5 +36,15 @@ export async function GET(
     maxAge: 90 * 24 * 60 * 60,
   });
 
+  if (session.csrfToken) {
+    response.cookies.set("XSRF-TOKEN", session.csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 90 * 24 * 60 * 60,
+    });
+  }
+
   return response;
 }

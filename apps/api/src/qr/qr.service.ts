@@ -37,8 +37,7 @@ export class QrService implements IQrService {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const appUrl = this.appUrl;
-    const url = `${appUrl}/join/${attendee.qrToken}`;
+    const url = `${this.appUrl}/join/${attendee.qrToken}`;
     const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
     return { buffer, attendeeName: attendee.name };
   }
@@ -53,11 +52,9 @@ export class QrService implements IQrService {
     const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
     const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
 
-    const appUrl = this.appUrl;
-
     const items = await Promise.all(
       attendees.map(async (a) => {
-        const url = `${appUrl}/join/${a.qrToken}`;
+        const url = `${this.appUrl}/join/${a.qrToken}`;
         const dataUrl = await QRCode.toDataURL(url, { width: 300, margin: 2 });
         return {
           id: a.id,
@@ -77,8 +74,7 @@ export class QrService implements IQrService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const appUrl = this.appUrl;
-    const url = `${appUrl}/join/event/${eventId}`;
+    const url = `${this.appUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
 

@@ -2,6 +2,7 @@ import React from "react";
 import { redirect } from "next/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";
+import { AttendeeHeader } from "./attendee-header";
 import { ThemeSyncer } from "./theme-syncer";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
@@ -79,6 +80,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
       />
       {/* Re-syncs CSS vars whenever the attendee returns to this tab or navigates */}
       <ThemeSyncer eventId={eventId} />
+      <AttendeeHeader name={attendee.name} />
       <main className="flex-1 pb-20">{children}</main>
       <AttendeeNav eventId={eventId} />
     </div>

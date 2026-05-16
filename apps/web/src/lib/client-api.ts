@@ -1,5 +1,11 @@
 "use client";
 
+function getXsrfToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export async function clientFetch<T>(path: string, label: string, init?: RequestInit): Promise<T> {
   const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
@@ -8,6 +14,12 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
     "Content-Type": "application/json",
     ...(init?.headers as Record<string, string>),
   };
+
+  const safeMethods = new Set(["GET", "HEAD", "OPTIONS"]);
+  if (!safeMethods.has(method)) {
+    const xsrfToken = getXsrfToken();
+    if (xsrfToken) headers["x-xsrf-token"] = xsrfToken;
+  }
 
   const res = await fetch(url, { ...init, headers }).catch(
     (error: unknown) => {
