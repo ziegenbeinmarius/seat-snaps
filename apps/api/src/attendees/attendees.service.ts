@@ -1,4 +1,4 @@
-import { Injectable, Inject, NotFoundException, ForbiddenException, BadRequestException } from "@nestjs/common";
+import { Injectable, Inject, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { parse } from "csv-parse/sync";
 import type { Attendee } from "@seat-snaps/db";
@@ -47,6 +47,10 @@ export class AttendeesService implements IAttendeeService {
 
   async create(eventId: string, data: CreateAttendeeInput, userId: string): Promise<Attendee> {
     await this.requireMember(eventId, userId);
+    if (data.email) {
+      const existing = await this.attendeeRepository.findByEventAndEmail(eventId, data.email);
+      if (existing) throw new ConflictException("An attendee with this email already exists for this event");
+    }
     return this.attendeeRepository.create({
       eventId,
       name: data.name,
@@ -77,6 +81,10 @@ export class AttendeesService implements IAttendeeService {
     const created: Attendee[] = [];
     for (const row of rows) {
       if (!row.name) continue;
+      if (row.email) {
+        const existing = await this.attendeeRepository.findByEventAndEmail(eventId, row.email);
+        if (existing) continue;
+      }
       const attendee = await this.attendeeRepository.create({
         eventId,
         name: row.name,

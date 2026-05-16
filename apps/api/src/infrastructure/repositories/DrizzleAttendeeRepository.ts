@@ -1,4 +1,4 @@
-import { eq } from "@seat-snaps/db";
+import { eq, and } from "@seat-snaps/db";
 import type { Database, Attendee, NewAttendee } from "@seat-snaps/db";
 import { attendees } from "@seat-snaps/db";
 import type { IAttendeeRepository, UpdateAttendeeData } from "../../domain/repositories/IAttendeeRepository";
@@ -22,6 +22,15 @@ export class DrizzleAttendeeRepository implements IAttendeeRepository {
 
   async findByEventId(eventId: string): Promise<Attendee[]> {
     return this.db.select().from(attendees).where(eq(attendees.eventId, eventId));
+  }
+
+  async findByEventAndEmail(eventId: string, email: string): Promise<Attendee | null> {
+    const result = await this.db
+      .select()
+      .from(attendees)
+      .where(and(eq(attendees.eventId, eventId), eq(attendees.email, email)))
+      .limit(1);
+    return result[0] ?? null;
   }
 
   async create(data: NewAttendee): Promise<Attendee> {

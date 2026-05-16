@@ -19,6 +19,7 @@ export interface IAttendeeRepository {
   findById(id: string): Promise<Attendee | null>;
   findByQrToken(token: string): Promise<Attendee | null>;
   findByEventId(eventId: string): Promise<Attendee[]>;
+  findByEventAndEmail(eventId: string, email: string): Promise<Attendee | null>;
   create(data: NewAttendee): Promise<Attendee>;
   update(id: string, data: UpdateAttendeeData): Promise<Attendee>;
   delete(id: string): Promise<void>;

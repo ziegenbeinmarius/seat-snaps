@@ -13,12 +13,13 @@ export class AuthService implements IAuthService {
   ) {}
 
   async register(data: RegisterInput): Promise<SessionUser> {
-    const existing = await this.userRepository.findByEmail(data.email);
+    const email = data.email.toLowerCase().trim();
+    const existing = await this.userRepository.findByEmail(email);
     if (existing) throw new ConflictException("Email already in use");
 
     const passwordHash = await bcrypt.hash(data.password, 12);
     const user = await this.userRepository.create({
-      email: data.email,
+      email,
       name: data.name,
       passwordHash,
     });
@@ -27,7 +28,7 @@ export class AuthService implements IAuthService {
   }
 
   async validateCredentials(email: string, password: string): Promise<SessionUser | null> {
-    const user = await this.userRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email.toLowerCase().trim());
     if (!user) return null;
 
     const valid = await bcrypt.compare(password, user.passwordHash);
