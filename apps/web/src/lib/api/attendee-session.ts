@@ -22,7 +22,7 @@ async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
       error,
     });
     throw new Error(
-      `Could not reach API for ${method} ${path}.`,
+      `Could not reach API for ${method} ${path}. Please try again later.`,
     );
   });
 

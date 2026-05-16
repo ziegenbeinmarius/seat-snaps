@@ -12,9 +12,7 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
   const res = await fetch(url, { ...init, headers }).catch(
     (error: unknown) => {
       console.error(`[${label} api] network failure`, { method, path, url, error });
-      throw new Error(
-        `Could not reach API for ${method} ${path}.`,
-      );
+      throw new Error(`Could not reach API for ${method} ${path}. Please try again later.`);
     },
   );
 

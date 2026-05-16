@@ -27,11 +27,17 @@ export class S3Service implements IS3Service {
     });
   }
 
-  async getSignedUploadUrl(key: string, contentType: string, expiresIn = 300): Promise<string> {
+  async getSignedUploadUrl(
+    key: string,
+    contentType: string,
+    expiresIn = 300,
+    contentLength?: number,
+  ): Promise<string> {
     const command = new PutObjectCommand({
       Bucket: this.bucket,
       Key: key,
       ContentType: contentType,
+      ...(contentLength != null ? { ContentLength: contentLength } : {}),
     });
     return getSignedUrl(this.client, command, { expiresIn });
   }

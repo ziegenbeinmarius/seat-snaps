@@ -119,7 +119,10 @@ const nextAuth: NextAuthResult = NextAuth({
       if (now - lastChecked > 5 * 60) {
         const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
         try {
-          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/token-version`);
+          const bearer = jwt.sign({ id: token.id }, authSecret!, { algorithm: "HS256", expiresIn: 30 });
+          const res = await fetch(`${apiUrl}/api/auth/users/${token.id}/token-version`, {
+            headers: { Authorization: `Bearer ${bearer}` },
+          });
           if (res.ok) {
             const body = (await res.json()) as { exists: boolean; tokenVersion: number | null };
             if (!body.exists) return null;

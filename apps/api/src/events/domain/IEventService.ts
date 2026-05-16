@@ -1,9 +1,19 @@
 import type { Event } from "@seat-snaps/db";
 import type { CreateEventInput, UpdateEventInput } from "@seat-snaps/shared";
 
+export interface PublicEventInfo {
+  id: string;
+  title: string;
+  description: string | null;
+  date: Date;
+  endDate: Date | null;
+  location: string | null;
+  type: string;
+}
+
 export interface IEventService {
   listForUser(userId: string): Promise<Event[]>;
-  getPublicInfo(id: string): Promise<Event>;
+  getPublicInfo(id: string): Promise<PublicEventInfo>;
   getById(id: string, userId: string): Promise<Event>;
   create(data: CreateEventInput, userId: string): Promise<Event>;
   update(id: string, data: UpdateEventInput, userId: string): Promise<Event>;
