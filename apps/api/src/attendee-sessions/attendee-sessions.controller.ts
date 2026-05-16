@@ -2,6 +2,7 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
   Body,
   Res,
   UseGuards,
@@ -14,8 +15,9 @@ import type { FastifyReply } from "fastify";
 import type { Attendee } from "@seat-snaps/db";
 import { AttendeeSessionsService } from "./attendee-sessions.service";
 import { CreateAttendeeSessionDto } from "./dto/create-attendee-session.dto";
+import { UpdateAttendeeSelfDto } from "./dto/update-attendee-self.dto";
 import { AttendeeSessionGuard, ATTENDEE_SESSION_COOKIE } from "./guards/attendee-session.guard";
-import { CSRF_COOKIE } from "./guards/csrf.guard";
+import { CsrfGuard, CSRF_COOKIE } from "./guards/csrf.guard";
 import { CurrentAttendee } from "./decorators/current-attendee.decorator";
 import { Public } from "../auth/decorators/public.decorator";
 
@@ -63,5 +65,13 @@ export class AttendeeSessionsController {
   @Get("me")
   getMe(@CurrentAttendee() attendee: Attendee) {
     return attendee;
+  }
+
+  @UseGuards(CsrfGuard, AttendeeSessionGuard)
+  @Public()
+  @Patch("me")
+  @HttpCode(HttpStatus.OK)
+  updateMe(@CurrentAttendee() attendee: Attendee, @Body() dto: UpdateAttendeeSelfDto) {
+    return this.service.updateSelf(attendee.id, dto);
   }
 }

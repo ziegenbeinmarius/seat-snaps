@@ -57,4 +57,16 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
 
     return { session, attendee };
   }
+
+  async updateSelf(
+    attendeeId: string,
+    data: { relationInfo?: string; conversationStarters?: string[] },
+  ) {
+    return this.attendeeRepository.update(attendeeId, {
+      ...(data.relationInfo !== undefined && { relationInfo: data.relationInfo }),
+      ...(data.conversationStarters !== undefined && {
+        conversationStarters: data.conversationStarters,
+      }),
+    });
+  }
 }

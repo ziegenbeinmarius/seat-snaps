@@ -219,7 +219,15 @@ export function SchedulePanel({ eventId, eventDate }: Props) {
               <DateTimePicker
                 id="schedule-start"
                 value={form.startTime}
-                onChange={(e) => setForm({ ...form, startTime: e.target.value })}
+                onChange={(e) => {
+                  const startTime = e.target.value;
+                  const updates: Partial<typeof form> = { startTime };
+                  if (!form.endTime && startTime) {
+                    const end = new Date(new Date(startTime).getTime() + 60 * 60 * 1000);
+                    updates.endTime = toDatetimeLocal(end);
+                  }
+                  setForm({ ...form, ...updates });
+                }}
               />
             </div>
             <div className="space-y-1.5">

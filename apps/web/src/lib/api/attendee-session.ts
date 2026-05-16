@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   AttendeeResponse,
   CreateAttendeeSessionInput,
@@ -80,6 +80,22 @@ export function useCurrentAttendee() {
     queryKey: ["attendee-session", "me"],
     queryFn: () => fetchApi("/attendee-sessions/me"),
     retry: false,
+  });
+}
+
+export function useUpdateCurrentAttendee() {
+  const qc = useQueryClient();
+  return useMutation<
+    AttendeeResponse,
+    Error,
+    { relationInfo?: string; conversationStarters?: string[] }
+  >({
+    mutationFn: (data) =>
+      fetchApi("/attendee-sessions/me", {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["attendee-session", "me"] }),
   });
 }
 
