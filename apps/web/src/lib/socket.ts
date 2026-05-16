@@ -4,14 +4,14 @@ import { io, type Socket } from "socket.io-client";
 
 let socketInstance: Socket | null = null;
 
-const WS_URL = process.env.NEXT_PUBLIC_WS_URL ?? "http://localhost:3002";
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
 export function getSocket(token: string, eventId: string): Socket {
   if (socketInstance?.connected) return socketInstance;
 
   socketInstance?.disconnect();
 
-  socketInstance = io(WS_URL, {
+  socketInstance = io(API_URL, {
     auth: { token, eventId },
     reconnection: true,
     reconnectionAttempts: Infinity,

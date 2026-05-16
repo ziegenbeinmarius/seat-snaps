@@ -8,7 +8,7 @@ import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMember
 import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IBroadcastService } from "./domain/IBroadcastService";
-import { BroadcastGateway } from "./broadcasts.gateway";
+import { EventGateway } from "./event.gateway";
 
 @Injectable()
 export class BroadcastsService implements IBroadcastService {
@@ -19,7 +19,7 @@ export class BroadcastsService implements IBroadcastService {
     private readonly membershipRepository: IEventMembershipRepository,
     @Inject(EVENT_REPOSITORY)
     private readonly eventRepository: IEventRepository,
-    private readonly gateway: BroadcastGateway,
+    private readonly gateway: EventGateway,
   ) {}
 
   async create(eventId: string, data: CreateBroadcastInput, userId: string): Promise<Broadcast> {

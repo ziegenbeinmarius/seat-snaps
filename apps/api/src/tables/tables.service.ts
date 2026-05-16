@@ -12,7 +12,7 @@ import type { IEventMembershipRepository } from "../domain/repositories/IEventMe
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { ITableService, TableWithSeats } from "./domain/ITableService";
 import type { CreateTableInput, UpdateTableInput, BulkUpdateTablePositionsInput } from "@seat-snaps/shared";
-import { BroadcastGateway } from "../broadcasts/broadcasts.gateway";
+import { EventGateway } from "../broadcasts/event.gateway";
 
 @Injectable()
 export class TablesService implements ITableService {
@@ -27,7 +27,7 @@ export class TablesService implements ITableService {
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: IEventMembershipRepository,
-    private readonly broadcastGateway: BroadcastGateway,
+    private readonly broadcastGateway: EventGateway,
   ) {}
 
   async listForEvent(eventId: string, userId: string): Promise<TableWithSeats[]> {

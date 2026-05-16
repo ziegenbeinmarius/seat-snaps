@@ -14,14 +14,13 @@ import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository"
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 
-const socketPort = Number(process.env.SOCKET_PORT ?? "3002");
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"];
 
-@WebSocketGateway(socketPort, {
+@WebSocketGateway({
   cors: { origin: allowedOrigins, credentials: true },
 })
-export class BroadcastGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  private readonly logger = new Logger(BroadcastGateway.name);
+export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  private readonly logger = new Logger(EventGateway.name);
 
   @WebSocketServer()
   server!: Server;

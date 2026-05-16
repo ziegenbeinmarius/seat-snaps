@@ -9,7 +9,7 @@ import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { ISeatService } from "./domain/ISeatService";
-import { BroadcastGateway } from "../broadcasts/broadcasts.gateway";
+import { EventGateway } from "../broadcasts/event.gateway";
 
 @Injectable()
 export class SeatsService implements ISeatService {
@@ -22,7 +22,7 @@ export class SeatsService implements ISeatService {
     private readonly eventRepository: IEventRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: IEventMembershipRepository,
-    private readonly broadcastGateway: BroadcastGateway,
+    private readonly broadcastGateway: EventGateway,
   ) {}
 
   async listForEvent(eventId: string, userId: string): Promise<Seat[]> {
