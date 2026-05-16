@@ -18,6 +18,7 @@ interface SocketContextValue {
   broadcasts: BroadcastResponse[];
   dismissBanner: () => void;
   bannerVisible: boolean;
+  seatingUpdateAt: number | null;
 }
 
 const SocketContext = createContext<SocketContextValue>({
@@ -26,6 +27,7 @@ const SocketContext = createContext<SocketContextValue>({
   broadcasts: [],
   dismissBanner: () => {},
   bannerVisible: false,
+  seatingUpdateAt: null,
 });
 
 interface Props {
@@ -39,6 +41,7 @@ export function SocketProvider({ token, eventId, children }: Props) {
   const [broadcasts, setBroadcasts] = useState<BroadcastResponse[]>([]);
   const [latestBroadcast, setLatestBroadcast] = useState<BroadcastResponse | null>(null);
   const [bannerVisible, setBannerVisible] = useState(false);
+  const [seatingUpdateAt, setSeatingUpdateAt] = useState<number | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
   const dismissBanner = useCallback(() => setBannerVisible(false), []);
@@ -58,10 +61,12 @@ export function SocketProvider({ token, eventId, children }: Props) {
         new Notification(payload.title, { body: payload.content });
       }
     };
+    const onSeatingUpdate = () => setSeatingUpdateAt(Date.now());
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("broadcast", onBroadcast);
+    socket.on("seating_update", onSeatingUpdate);
 
     if (socket.connected) setConnected(true);
 
@@ -69,6 +74,7 @@ export function SocketProvider({ token, eventId, children }: Props) {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("broadcast", onBroadcast);
+      socket.off("seating_update", onSeatingUpdate);
     };
   }, [token, eventId]);
 
@@ -80,7 +86,7 @@ export function SocketProvider({ token, eventId, children }: Props) {
 
   return (
     <SocketContext.Provider
-      value={{ connected, latestBroadcast, broadcasts, dismissBanner, bannerVisible }}
+      value={{ connected, latestBroadcast, broadcasts, dismissBanner, bannerVisible, seatingUpdateAt }}
     >
       {children}
     </SocketContext.Provider>

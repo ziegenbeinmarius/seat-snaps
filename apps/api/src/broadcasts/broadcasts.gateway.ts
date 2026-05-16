@@ -71,6 +71,10 @@ export class BroadcastGateway implements OnGatewayConnection, OnGatewayDisconnec
     this.server.to(`event:${eventId}:table:${tableId}`).emit("broadcast", payload);
   }
 
+  emitSeatingUpdate(eventId: string) {
+    this.server.to(`event:${eventId}`).emit("seating_update", { eventId });
+  }
+
   private extractBearerToken(socket: Socket): string | null {
     const auth = socket.handshake.headers.authorization;
     return auth?.startsWith("Bearer ") ? auth.slice(7) : null;

@@ -6,6 +6,20 @@ import { clientFetch } from "@/lib/client-api";
 
 const fetchApi = <T>(path: string, init?: RequestInit) => clientFetch<T>(path, "tables", init);
 
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+
+export function usePublicTables(eventId: string) {
+  return useQuery<TableResponse[]>({
+    queryKey: ["events", eventId, "tables", "public"],
+    queryFn: async () => {
+      const res = await fetch(`${API_BASE}/api/events/${eventId}/tables/public`, { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch tables");
+      return res.json() as Promise<TableResponse[]>;
+    },
+    enabled: !!eventId,
+  });
+}
+
 export function useTables(eventId: string) {
   return useQuery<TableResponse[]>({
     queryKey: ["events", eventId, "tables"],
