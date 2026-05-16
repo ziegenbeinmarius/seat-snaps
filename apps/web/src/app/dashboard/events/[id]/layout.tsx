@@ -25,6 +25,7 @@ export default async function EventLayout({ children, params }: EventLayoutProps
     { href: `${base}/photos` as Route, label: "Photos" },
     { href: `${base}/theme` as Route, label: "Theme" },
     { href: `${base}/schedule` as Route, label: "Schedule" },
+    { href: `${base}/broadcasts` as Route, label: "Broadcasts" },
   ];
 
   return (

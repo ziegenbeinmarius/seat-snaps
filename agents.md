@@ -86,6 +86,63 @@ npm run db:seed       # Seed database (from packages/db)
 - Applying migrations (`npm run db:migrate`) is a manual step owned by a human unless explicitly requested in the prompt.
 - If migration drift is detected, agents should stop and report it instead of rewriting existing applied migrations.
 
+## Real-time Broadcasts (Socket.io)
+
+### Architecture
+
+- **DB schema**: `packages/db/src/schema/broadcasts.ts` — `broadcasts` table (already in migration 0000)
+- **Repository**: `IBroadcastRepository` / `DrizzleBroadcastRepository` — registered in `DatabaseModule`
+- **Gateway**: `apps/api/src/broadcasts/broadcasts.gateway.ts` — Socket.io WS gateway, runs on `SOCKET_PORT` (default 3002)
+- **Service**: `apps/api/src/broadcasts/broadcasts.service.ts` — creates broadcasts, emits via gateway
+- **Controller**: `apps/api/src/broadcasts/broadcasts.controller.ts` — REST under `/api/events/:id/broadcasts`
+- **Module**: `apps/api/src/broadcasts/broadcasts.module.ts`
+- **Shared types**: `packages/shared/src/schemas/broadcast.schema.ts` — `BroadcastResponse`, `CreateBroadcastInput`
+
+### Broadcast Module (Backend)
+
+REST endpoints:
+- `POST /api/events/:id/broadcasts` — organizer creates & sends broadcast (JWT auth)
+- `GET /api/events/:id/broadcasts` — organizer lists history (JWT auth)
+- `GET /api/events/:id/broadcasts/feed` — attendee reads history (AttendeeSessionGuard)
+
+Create → persist → emit flow:
+1. Organizer POSTs to `/api/events/:id/broadcasts`
+2. `BroadcastsService.create()` validates membership, saves to DB
+3. Service calls `BroadcastGateway.emitToEvent()` or `emitToTable()` depending on `targetType`
+4. Connected sockets in the appropriate room receive the `broadcast` event
+
+### WebSocket Setup (Gateway)
+
+Connection auth on handshake:
+- Client sends `auth: { token, eventId }` in the Socket.io handshake
+- If JWT (organizer): validates signature + event membership → joins `event:{eventId}`
+- If attendee session token: validates session → joins `event:{eventId}` and `event:{eventId}:table:{tableId}` (if assigned)
+
+Room structure:
+- `event:{eventId}` — all connected users for the event
+- `event:{eventId}:table:{tableId}` — attendees at a specific table
+
+### Frontend (Socket Provider + Banner + Pages)
+
+- **Socket factory**: `apps/web/src/lib/socket.ts` — `getSocket(token, eventId)` singleton
+- **SocketProvider**: `apps/web/src/components/broadcast/socket-provider.tsx` — React context; provides `connected`, `latestBroadcast`, `bannerVisible`, `dismissBanner`
+- **BroadcastBanner**: `apps/web/src/components/broadcast/broadcast-banner.tsx` — dismissible banner shown when a new broadcast arrives; rendered in the attendee layout above `<main>`
+- **ConnectionStatus**: `apps/web/src/components/broadcast/connection-status.tsx` — shows reconnecting indicator when socket is not connected
+- **Attendee layout**: `apps/web/src/app/event/[eventId]/layout.tsx` — wraps children in `<SocketProvider>`; renders `BroadcastBanner` and `ConnectionStatus`
+- **Announcements page**: `/event/[eventId]/announcements` — full history (live + historic from API feed endpoint)
+- **API hooks**: `apps/web/src/lib/api/broadcasts.ts` — `useBroadcasts`, `useAttendeeBroadcasts`, `useCreateBroadcast`
+- **Organizer page (desktop)**: `/dashboard/events/[id]/broadcasts` — compose form with quick templates + history
+- **Organizer page (mobile)**: `/organizer/events/[id]/broadcasts` — same panel
+
+### New Environment Variables
+
+| Variable | Description |
+|---|---|
+| `SOCKET_PORT` | Port for Socket.io gateway (default: 3002) |
+| `NEXT_PUBLIC_WS_URL` | Socket.io server URL for browser clients (default: `http://localhost:3002`) |
+
+---
+
 ## Event Theme System
 
 ### Architecture

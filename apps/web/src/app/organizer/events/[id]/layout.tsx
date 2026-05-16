@@ -21,6 +21,7 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
     { href: `${base}/checkin` as Route, label: "Check-In" },
     { href: `${base}/photos` as Route, label: "Photos" },
     { href: `${base}/schedule` as Route, label: "Schedule" },
+    { href: `${base}/broadcasts` as Route, label: "Broadcasts" },
   ];
 
   return (

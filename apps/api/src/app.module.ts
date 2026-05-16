@@ -18,6 +18,7 @@ import { ScheduleItemsModule } from "./schedule-items/schedule-items.module";
 import { PhotosModule } from "./photos/photos.module";
 import { ThemesModule } from "./themes/themes.module";
 import { AdminModule } from "./admin/admin.module";
+import { BroadcastsModule } from "./broadcasts/broadcasts.module";
 import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
 
 @Module({
@@ -41,6 +42,7 @@ import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
     PhotosModule,
     ThemesModule,
     AdminModule,
+    BroadcastsModule,
   ],
   controllers: [AppController],
   providers: [

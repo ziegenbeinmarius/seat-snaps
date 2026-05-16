@@ -7,3 +7,4 @@ export * from "./schedule-item.schema.js";
 export * from "./photo.schema.js";
 export * from "./theme.schema.js";
 export * from "./admin.schema.js";
+export * from "./broadcast.schema.js";
