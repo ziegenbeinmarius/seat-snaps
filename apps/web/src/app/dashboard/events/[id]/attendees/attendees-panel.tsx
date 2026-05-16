@@ -22,7 +22,7 @@ interface Props {
 export function AttendeesPanel({ eventId }: Props) {
     // Helper to build the join URL for an attendee
     const getJoinUrl = (qrToken: string) => {
-      const base = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3005");
+      const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
       return `${base}/join/${qrToken}`;
     };
   const { data: attendees = [], isLoading } = useAttendees(eventId);

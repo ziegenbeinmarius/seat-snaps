@@ -39,7 +39,7 @@ export class QrService implements IQrService {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const baseUrl = this.resolveBaseUrl(appUrl);
     const url = `${baseUrl}/join/${attendee.qrToken}`;
     const buffer = await QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
     return { buffer, attendeeName: attendee.name };
@@ -57,7 +57,7 @@ export class QrService implements IQrService {
     const tableMap = new Map(tables.map((t) => [t.id, t.label ?? t.name]));
     const seatMap = new Map(seats.map((s) => [s.id, s.label ?? (s.position != null ? `#${s.position}` : null)]));
 
-    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const baseUrl = this.resolveBaseUrl(appUrl);
 
     const items = await Promise.all(
       attendees.map(async (a) => {
@@ -83,7 +83,7 @@ export class QrService implements IQrService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
 
-    const baseUrl = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL ?? "http://localhost:3005";
+    const baseUrl = this.resolveBaseUrl(appUrl);
     const url = `${baseUrl}/join/event/${eventId}`;
     return QRCode.toBuffer(url, { type: "png", width: 300, margin: 2 });
   }
@@ -144,6 +144,14 @@ export class QrService implements IQrService {
 <div class="grid">${cards}</div>
 </body>
 </html>`;
+  }
+
+  private resolveBaseUrl(appUrl?: string): string {
+    const resolved = appUrl ?? process.env.APP_URL ?? process.env.AUTH_URL;
+    if (!resolved) {
+      throw new Error("APP_URL environment variable must be configured for QR code generation");
+    }
+    return resolved.replace(/\/+$/, "");
   }
 
   private async requireMember(eventId: string, userId: string): Promise<void> {

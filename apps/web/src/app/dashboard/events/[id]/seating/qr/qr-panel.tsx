@@ -9,16 +9,23 @@ interface Props {
 export function QrPanel({ eventId }: Props) {
   const { data: attendees = [], isLoading } = useAttendees(eventId);
 
+  function getAppUrl() {
+    return process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+  }
+
   function downloadBulk() {
-    window.open(`/api/proxy/events/${eventId}/qr/bulk`, "_blank");
+    const appUrl = getAppUrl();
+    window.open(`/api/proxy/events/${eventId}/qr/bulk?appUrl=${encodeURIComponent(appUrl)}`, "_blank");
   }
 
   function downloadEventQr() {
-    window.open(`/api/proxy/events/${eventId}/qr/event`, "_blank");
+    const appUrl = getAppUrl();
+    window.open(`/api/proxy/events/${eventId}/qr/event?appUrl=${encodeURIComponent(appUrl)}`, "_blank");
   }
 
   function downloadAttendeeQr(attendeeId: string) {
-    window.open(`/api/proxy/events/${eventId}/attendees/${attendeeId}/qr`, "_blank");
+    const appUrl = getAppUrl();
+    window.open(`/api/proxy/events/${eventId}/attendees/${attendeeId}/qr?appUrl=${encodeURIComponent(appUrl)}`, "_blank");
   }
 
   if (isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
