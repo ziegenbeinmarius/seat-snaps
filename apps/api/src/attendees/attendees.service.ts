@@ -31,11 +31,11 @@ export class AttendeesService implements IAttendeeService {
     return this.attendeeRepository.findByEventId(eventId);
   }
 
-  async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId">[]> {
+  async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "relationInfo" | "conversationStarters">[]> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
     const attendees = await this.attendeeRepository.findByEventId(eventId);
-    return attendees.map(({ id, name, groupLabel, tableId }) => ({ id, name, groupLabel, tableId }));
+    return attendees.map(({ id, name, groupLabel, tableId, relationInfo, conversationStarters }) => ({ id, name, groupLabel, tableId, relationInfo, conversationStarters }));
   }
 
   async getById(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {

@@ -151,6 +151,7 @@ export function AttendeesPanel({ eventId }: Props) {
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
+                <TableHead>Profile</TableHead>
                 <TableHead>Table</TableHead>
                 <TableHead>QR / Link</TableHead>
                 <TableHead className="w-24" />
@@ -162,6 +163,17 @@ export function AttendeesPanel({ eventId }: Props) {
                   <TableCell className="font-medium">{a.name}</TableCell>
                   <TableCell className="text-muted-foreground">{a.email ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{a.groupLabel ?? "—"}</TableCell>
+                  <TableCell className="text-muted-foreground max-w-48">
+                    {a.relationInfo && (
+                      <p className="text-xs truncate" title={a.relationInfo}>{a.relationInfo}</p>
+                    )}
+                    {a.conversationStarters && a.conversationStarters.length > 0 && (
+                      <p className="text-xs text-muted-foreground/70">
+                        {a.conversationStarters.length} starter{a.conversationStarters.length !== 1 ? "s" : ""}
+                      </p>
+                    )}
+                    {!a.relationInfo && (!a.conversationStarters || a.conversationStarters.length === 0) && "—"}
+                  </TableCell>
                   <TableCell className="text-muted-foreground">
                     {a.tableId ? (
                       tableMap.has(a.tableId) ? (
