@@ -22,10 +22,8 @@ interface Props {
 export function AttendeesPanel({ eventId }: Props) {
     // Helper to build the join URL for an attendee
     const getJoinUrl = (qrToken: string) => {
-      if (typeof window !== "undefined") {
-        return `${window.location.origin}/join/${qrToken}`;
-      }
-      return `http://localhost:3005/join/${qrToken}`;
+      const base = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "http://localhost:3005");
+      return `${base}/join/${qrToken}`;
     };
   const { data: attendees = [], isLoading } = useAttendees(eventId);
   const { data: tables = [] } = useTables(eventId);
@@ -325,7 +323,8 @@ export function AttendeesPanel({ eventId }: Props) {
           size="sm"
           variant="default"
           onClick={() => {
-            window.open(`/api/proxy/events/${eventId}/qr/bulk`, "_blank");
+            const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+            window.open(`/api/proxy/events/${eventId}/qr/bulk?appUrl=${encodeURIComponent(appUrl)}`, "_blank");
           }}
         >
           Download All QR Codes (HTML)
