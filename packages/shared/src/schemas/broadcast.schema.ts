@@ -20,5 +20,6 @@ export const BroadcastResponseSchema = z.object({
   targetType: BroadcastTargetTypeSchema,
   targetId: z.string().uuid().nullable(),
   createdAt: z.string().or(z.date()),
+  recipientCount: z.number().optional(),
 });
 export type BroadcastResponse = z.infer<typeof BroadcastResponseSchema>;

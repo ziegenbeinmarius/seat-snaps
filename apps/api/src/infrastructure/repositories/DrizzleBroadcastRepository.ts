@@ -1,4 +1,4 @@
-import { eq } from "@seat-snaps/db";
+import { eq, desc } from "@seat-snaps/db";
 import type { Database, Broadcast, NewBroadcast } from "@seat-snaps/db";
 import { broadcasts } from "@seat-snaps/db";
 import type { IBroadcastRepository } from "../../domain/repositories/IBroadcastRepository";
@@ -12,7 +12,11 @@ export class DrizzleBroadcastRepository implements IBroadcastRepository {
   }
 
   async findByEventId(eventId: string): Promise<Broadcast[]> {
-    return this.db.select().from(broadcasts).where(eq(broadcasts.eventId, eventId));
+    return this.db
+      .select()
+      .from(broadcasts)
+      .where(eq(broadcasts.eventId, eventId))
+      .orderBy(desc(broadcasts.createdAt));
   }
 
   async create(data: NewBroadcast): Promise<Broadcast> {
