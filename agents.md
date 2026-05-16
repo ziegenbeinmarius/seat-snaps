@@ -92,7 +92,7 @@ npm run db:seed       # Seed database (from packages/db)
 
 - **DB schema**: `packages/db/src/schema/broadcasts.ts` — `broadcasts` table (already in migration 0000)
 - **Repository**: `IBroadcastRepository` / `DrizzleBroadcastRepository` — registered in `DatabaseModule`
-- **Gateway**: `apps/api/src/broadcasts/broadcasts.gateway.ts` — Socket.io WS gateway, runs on `SOCKET_PORT` (default 3002)
+- **Gateway**: `apps/api/src/broadcasts/broadcasts.gateway.ts` — Socket.io WS gateway
 - **Service**: `apps/api/src/broadcasts/broadcasts.service.ts` — creates broadcasts, emits via gateway
 - **Controller**: `apps/api/src/broadcasts/broadcasts.controller.ts` — REST under `/api/events/:id/broadcasts`
 - **Module**: `apps/api/src/broadcasts/broadcasts.module.ts`
@@ -133,15 +133,6 @@ Room structure:
 - **API hooks**: `apps/web/src/lib/api/broadcasts.ts` — `useBroadcasts`, `useAttendeeBroadcasts`, `useCreateBroadcast`
 - **Organizer page (desktop)**: `/dashboard/events/[id]/broadcasts` — compose form with quick templates + history
 - **Organizer page (mobile)**: `/organizer/events/[id]/broadcasts` — same panel
-
-### New Environment Variables
-
-| Variable | Description |
-|---|---|
-| `SOCKET_PORT` | Port for Socket.io gateway (default: 3002) |
-| `NEXT_PUBLIC_WS_URL` | Socket.io server URL for browser clients (default: `http://localhost:3002`) |
-
----
 
 ## Event Theme System
 

@@ -4,15 +4,18 @@ import { io, type Socket } from "socket.io-client";
 
 let socketInstance: Socket | null = null;
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
+const SOCKET_URL =
+  process.env.NEXT_PUBLIC_API_URL
+  ?? "http://localhost:3001";
 
 export function getSocket(token: string, eventId: string): Socket {
   if (socketInstance?.connected) return socketInstance;
 
   socketInstance?.disconnect();
 
-  socketInstance = io(API_URL, {
+  socketInstance = io(SOCKET_URL, {
     auth: { token, eventId },
+    transports: ["websocket"],
     reconnection: true,
     reconnectionAttempts: Infinity,
     reconnectionDelay: 1000,

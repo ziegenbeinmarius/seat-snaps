@@ -8,7 +8,7 @@ Real-time broadcast announcements from organizers to attendees. Broadcasts are p
 
 - `broadcasts.controller.ts` — REST endpoints under `events/:id/broadcasts`
 - `broadcasts.service.ts` — Business logic; creates broadcasts and emits via gateway
-- `broadcasts.gateway.ts` — Socket.io WebSocket gateway (runs on `SOCKET_PORT`, default 3002)
+- `broadcasts.gateway.ts` — Socket.io WebSocket gateway
 - `domain/IBroadcastService.ts` — Service interface + injection token
 - `dto/create-broadcast.dto.ts` — Validated DTO for broadcast creation
 
@@ -22,7 +22,6 @@ Real-time broadcast announcements from organizers to attendees. Broadcasts are p
 
 ## WebSocket Gateway
 
-- Port: `SOCKET_PORT` env var (default `3002`)
 - The client sends `{ token, eventId }` in handshake `auth`
 - Attendee session tokens: gateway looks up session, assigns socket to `event:{eventId}` room and `event:{eventId}:table:{tableId}` if attendee has a table
 - Organizer JWT tokens: gateway verifies JWT and event membership, assigns socket to `event:{eventId}` room

@@ -1,4 +1,4 @@
-const CACHE_NAME = "seat-snaps-v2";
+const CACHE_NAME = "seat-snaps-v3";
 const STATIC_ASSETS = [
   "/manifest.json",
   "/manifest-attendee.json",
@@ -27,6 +27,7 @@ self.addEventListener("fetch", (event) => {
   if (
     url.pathname.startsWith("/api") ||
     url.pathname.startsWith("/auth") ||
+    url.pathname.startsWith("/_next") ||
     event.request.mode === "navigate"
   ) {
     event.respondWith(fetch(event.request));
