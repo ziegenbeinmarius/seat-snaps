@@ -41,7 +41,7 @@ async function proxyRequest(
   });
 
   const responseHeaders = new Headers();
-  const forwardHeaders = ["content-type", "content-disposition"];
+  const forwardHeaders = ["content-type", "content-disposition", "set-cookie"];
   for (const name of forwardHeaders) {
     const value = upstream.headers.get(name);
     if (value) responseHeaders.set(name, value);
