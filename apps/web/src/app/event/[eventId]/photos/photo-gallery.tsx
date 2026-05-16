@@ -108,7 +108,6 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
               ref={fileInputRef}
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
-              capture="environment"
               className="hidden"
               onChange={handleFileChange}
             />

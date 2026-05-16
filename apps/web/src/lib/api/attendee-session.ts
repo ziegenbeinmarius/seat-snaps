@@ -7,13 +7,23 @@ import type {
   ScheduleItemResponse,
 } from "@seat-snaps/shared";
 
+function getXsrfToken(): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)XSRF-TOKEN=([^;]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 async function fetchApi<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
+  const headers: Record<string, string> = { "Content-Type": "application/json", ...init?.headers as Record<string, string> };
+  const xsrf = getXsrfToken();
+  if (xsrf && method !== "GET" && method !== "HEAD") headers["x-xsrf-token"] = xsrf;
+
   const res = await fetch(url, {
     ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    headers,
   }).catch((error: unknown) => {
     console.error("[attendee-session api] network failure", {
       method,
@@ -76,7 +86,10 @@ export function useCurrentAttendee() {
 export function useEventAttendeesPublic(eventId: string) {
   return useQuery<AttendeeResponse[]>({
     queryKey: ["events", eventId, "attendees", "public"],
-    queryFn: () => fetchApi(`/events/${eventId}/attendees`),
+    queryFn: async () => {
+      const res = await fetchApi<{ data: AttendeeResponse[] } | AttendeeResponse[]>(`/events/${eventId}/attendees?limit=2000`);
+      return Array.isArray(res) ? res : res.data;
+    },
     enabled: !!eventId,
   });
 }

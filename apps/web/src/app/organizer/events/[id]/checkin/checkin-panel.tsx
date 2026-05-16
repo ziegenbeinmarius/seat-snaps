@@ -27,8 +27,11 @@ export function CheckinPanel({ eventId }: Props) {
 
   const [state, setState] = useState<ScanState>({ type: "idle" });
   const [cameraError, setCameraError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const checkin = useCheckinByQrToken(eventId);
+  const checkinRef = useRef(checkin);
+  useEffect(() => { checkinRef.current = checkin; });
 
   const extractQrToken = (text: string): string | null => {
     try {
@@ -39,38 +42,36 @@ export function CheckinPanel({ eventId }: Props) {
         return parts[joinIdx + 1];
       }
     } catch {
-      // Not a URL — treat the raw text as the token
       if (/^[0-9a-f-]{36}$/i.test(text)) return text;
     }
     return null;
   };
 
-  const handleQrCode = useCallback(
-    async (rawText: string) => {
-      if (cooldownRef.current || lastScannedRef.current === rawText) return;
-      const token = extractQrToken(rawText);
-      if (!token) return;
+  const handleQrCode = useCallback(async (rawText: string) => {
+    if (cooldownRef.current || lastScannedRef.current === rawText) return;
+    const token = extractQrToken(rawText);
+    if (!token) return;
 
-      cooldownRef.current = true;
-      lastScannedRef.current = rawText;
-      setState({ type: "processing" });
+    cooldownRef.current = true;
+    lastScannedRef.current = rawText;
+    setState({ type: "processing" });
 
-      try {
-        const attendee = await checkin.mutateAsync(token);
-        setState({ type: "success", attendee });
-      } catch (err) {
-        setState({ type: "error", message: (err as Error).message ?? "Check-in failed" });
-      }
+    try {
+      const attendee = await checkinRef.current.mutateAsync(token);
+      setState({ type: "success", attendee });
+    } catch (err) {
+      setState({ type: "error", message: (err as Error).message ?? "Check-in failed" });
+    }
 
-      // Resume scanning after 3 seconds
-      setTimeout(() => {
-        cooldownRef.current = false;
-        lastScannedRef.current = "";
-        setState({ type: "scanning" });
-      }, 3000);
-    },
-    [checkin],
-  );
+    setTimeout(() => {
+      cooldownRef.current = false;
+      lastScannedRef.current = "";
+      setState({ type: "scanning" });
+    }, 3000);
+  }, []);
+
+  const handleQrCodeRef = useRef(handleQrCode);
+  useEffect(() => { handleQrCodeRef.current = handleQrCode; });
 
   const scan = useCallback(() => {
     const video = videoRef.current;
@@ -95,36 +96,43 @@ export function CheckinPanel({ eventId }: Props) {
     });
 
     if (code) {
-      void handleQrCode(code.data);
+      void handleQrCodeRef.current(code.data);
     }
 
     rafRef.current = requestAnimationFrame(scan);
-  }, [handleQrCode]);
-
-  const startCamera = useCallback(async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-      setState({ type: "scanning" });
-      rafRef.current = requestAnimationFrame(scan);
-    } catch {
-      setCameraError("Camera access denied. Please allow camera permissions and try again.");
-    }
-  }, [scan]);
+  }, []);
 
   useEffect(() => {
+    let active = true;
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
+        if (!active) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+        }
+        setState({ type: "scanning" });
+        rafRef.current = requestAnimationFrame(scan);
+      } catch {
+        if (active) setCameraError("Camera access denied. Please allow camera permissions and try again.");
+      }
+    }
+
     void startCamera();
     return () => {
+      active = false;
       cancelAnimationFrame(rafRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
     };
-  }, [startCamera]);
+  }, [scan, retryCount]);
 
   const overlay = state.type !== "idle" && state.type !== "scanning";
 
@@ -151,7 +159,7 @@ export function CheckinPanel({ eventId }: Props) {
           <button
             onClick={() => {
               setCameraError(null);
-              void startCamera();
+              setRetryCount((c) => c + 1);
             }}
             className="rounded-xl px-5 py-2.5 text-sm font-medium text-white"
             style={{ background: "hsl(28 65% 44%)" }}
