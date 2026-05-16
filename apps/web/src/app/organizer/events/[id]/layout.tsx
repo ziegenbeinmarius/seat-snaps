@@ -49,7 +49,6 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
         }
       />
 
-      <EventTabNav links={links} variant="mobile" />
 
       <div className="px-4 py-4">{children}</div>
     </div>
