@@ -17,14 +17,6 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
   const event = await loadEvent(id, "/organizer");
   const base = `/organizer/events/${id}`;
 
-  const links: TabLink[] = [
-    { href: base as Route, label: "Overview", exact: true },
-    { href: `${base}/checkin` as Route, label: "Check-In" },
-    { href: `${base}/photos` as Route, label: "Photos" },
-    { href: `${base}/schedule` as Route, label: "Schedule" },
-    { href: `${base}/broadcasts` as Route, label: "Broadcasts" },
-  ];
-
   return (
     <div>
       <EventHeroStrip
@@ -50,8 +42,6 @@ export default async function OrganizerEventLayout({ children, params }: Props) 
           </Link>
         }
       />
-
-      <EventTabNav links={links} variant="mobile" />
 
       <div className="px-4 py-4">{children}</div>
     </div>

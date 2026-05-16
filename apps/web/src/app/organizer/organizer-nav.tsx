@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar, Home } from "lucide-react";
+import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar, Home, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
@@ -42,11 +42,11 @@ export function OrganizerNav() {
           active: pathname.includes("/photos"),
         },
         {
-          href: `${eventBase}/checkin` as Route,
-          icon: QrCode,
-          label: "Check-in",
-          active: pathname.includes("/checkin"),
-        },
+           href: `${eventBase}/broadcasts` as Route,
+           icon: Megaphone,
+           label: "Broadcasts",
+           active: pathname.includes("/broadcasts"),
+        }
       ]
     : [
         {
