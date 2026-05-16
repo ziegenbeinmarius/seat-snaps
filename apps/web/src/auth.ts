@@ -128,11 +128,16 @@ const nextAuth: NextAuthResult = NextAuth({
             headers: { Authorization: `Bearer ${bearer}` },
           });
           if (res.ok) {
-            const body = (await res.json()) as { exists: boolean; tokenVersion: number | null };
+            const body = (await res.json()) as {
+              exists: boolean;
+              tokenVersion: number | null;
+              isAdmin?: boolean;
+            };
             if (!body.exists) return null;
             if (body.tokenVersion !== null && (token.tokenVersion ?? 0) < body.tokenVersion) {
               return null;
             }
+            token.isAdmin = body.isAdmin ?? token.isAdmin ?? false;
           }
         } catch {
           // Network error — keep session valid rather than logging everyone out

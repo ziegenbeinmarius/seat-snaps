@@ -79,6 +79,13 @@ npm run db:studio     # Open Drizzle Studio
 npm run db:seed       # Seed database (from packages/db)
 ```
 
+## Agent DB Migration Policy
+
+- Agents must never hand-write SQL files in `packages/db/drizzle/`.
+- For DB changes, agents should only update Drizzle schema files in `packages/db/src/schema/` and then run `npm run db:generate`.
+- Applying migrations (`npm run db:migrate`) is a manual step owned by a human unless explicitly requested in the prompt.
+- If migration drift is detected, agents should stop and report it instead of rewriting existing applied migrations.
+
 ## Event Theme System
 
 ### Architecture

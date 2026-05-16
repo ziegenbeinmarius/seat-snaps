@@ -31,7 +31,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="flex items-center gap-3">
             {session.user?.isAdmin && (
               <Link
-                href="/dashboard/admin"
+                href="/admin"
                 className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
                 style={{ color: "hsl(28 65% 44%)", border: "1px solid hsl(33 18% 82%)" }}
               >

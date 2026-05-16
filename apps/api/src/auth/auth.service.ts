@@ -60,4 +60,17 @@ export class AuthService implements IAuthService {
     if (!user) return null;
     return user.tokenVersion ?? 0;
   }
+
+  async getSessionState(userId: string): Promise<{ exists: boolean; tokenVersion: number | null; isAdmin: boolean }> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) {
+      return { exists: false, tokenVersion: null, isAdmin: false };
+    }
+
+    return {
+      exists: true,
+      tokenVersion: user.tokenVersion ?? 0,
+      isAdmin: user.isAdmin ?? false,
+    };
+  }
 }

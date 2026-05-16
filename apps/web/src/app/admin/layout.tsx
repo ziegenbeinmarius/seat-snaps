@@ -22,21 +22,21 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       </div>
       <nav className="flex gap-1 rounded-lg border border-[rgba(200,175,140,0.35)] p-1" style={{ background: "rgba(250, 244, 234, 0.5)" }}>
         <Link
-          href="/dashboard/admin"
+          href="/admin"
           className="rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-[rgba(200,175,140,0.2)]"
           style={{ color: "hsl(24 12% 20%)" }}
         >
           Overview
         </Link>
         <Link
-          href="/dashboard/admin/users"
+          href="/admin/users"
           className="rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-[rgba(200,175,140,0.2)]"
           style={{ color: "hsl(24 12% 20%)" }}
         >
           Users
         </Link>
         <Link
-          href="/dashboard/admin/events"
+          href="/admin/events"
           className="rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-[rgba(200,175,140,0.2)]"
           style={{ color: "hsl(24 12% 20%)" }}
         >

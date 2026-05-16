@@ -30,9 +30,7 @@ export class AuthController {
   @Throttle({ short: { ttl: 60_000, limit: 5 }, long: { ttl: 600_000, limit: 20 } })
   @Get("users/:id/token-version")
   async getTokenVersion(@Param("id") id: string) {
-    const tokenVersion = await this.authService.getTokenVersion(id);
-    if (tokenVersion === null) return { exists: false, tokenVersion: null };
-    return { exists: true, tokenVersion };
+    return this.authService.getSessionState(id);
   }
 
   @Public()
