@@ -10,6 +10,7 @@ import { attendeeSessions } from "./attendee-sessions.js";
 import { photos } from "./photos.js";
 import { broadcasts } from "./broadcasts.js";
 import { eventThemes } from "./event-themes.js";
+import { pushSubscriptions } from "./push-subscriptions.js";
 
 export const usersRelations = relations(users, ({ many }) => ({
   memberships: many(eventMemberships),
@@ -74,4 +75,13 @@ export const broadcastsRelations = relations(broadcasts, ({ one }) => ({
 
 export const eventThemesRelations = relations(eventThemes, ({ one }) => ({
   event: one(events, { fields: [eventThemes.eventId], references: [events.id] }),
+}));
+
+export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
+  event: one(events, { fields: [pushSubscriptions.eventId], references: [events.id] }),
+  attendeeSession: one(attendeeSessions, {
+    fields: [pushSubscriptions.attendeeSessionId],
+    references: [attendeeSessions.id],
+  }),
+  user: one(users, { fields: [pushSubscriptions.userId], references: [users.id] }),
 }));

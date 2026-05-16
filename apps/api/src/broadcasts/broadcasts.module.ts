@@ -5,6 +5,7 @@ import { BroadcastsController } from "./broadcasts.controller";
 import { EventGateway } from "./event.gateway";
 import { BROADCAST_SERVICE } from "./domain/IBroadcastService";
 import { AttendeeSessionsModule } from "../attendee-sessions/attendee-sessions.module";
+import { PushSubscriptionsModule } from "../push-subscriptions/push-subscriptions.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AttendeeSessionsModule } from "../attendee-sessions/attendee-sessions.m
       }),
     }),
     AttendeeSessionsModule,
+    PushSubscriptionsModule,
   ],
   controllers: [BroadcastsController],
   providers: [

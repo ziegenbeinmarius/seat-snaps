@@ -10,3 +10,4 @@ export * from "./IBroadcastRepository";
 export * from "./IAttendeeSessionRepository";
 export * from "./IScheduleItemRepository";
 export * from "./IEventThemeRepository";
+export * from "./IPushSubscriptionRepository";

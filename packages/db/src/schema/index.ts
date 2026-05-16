@@ -10,4 +10,5 @@ export * from "./photos.js";
 export * from "./broadcasts.js";
 export * from "./event-themes.js";
 export * from "./schedule-items.js";
+export * from "./push-subscriptions.js";
 export * from "./relations.js";
