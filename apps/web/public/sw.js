@@ -48,8 +48,8 @@ self.addEventListener("push", (event) => {
 
   event.waitUntil(
     self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
-      // Skip duplicates only when the app is actively focused in foreground.
-      if (clients.some((c) => c.visibilityState === "visible" && c.focused)) return;
+      // If the app is open and visible, the in-app banner already shows the broadcast.
+      if (clients.some((c) => c.visibilityState === "visible")) return;
 
       return self.registration
         .showNotification(title, {

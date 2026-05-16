@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { X } from "lucide-react";
+import { PlusSquare, SendToBack } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 const STORAGE_KEY = "ios-install-dismissed";
 
@@ -34,88 +43,80 @@ export function IosInstallPrompt() {
     return () => clearTimeout(timer);
   }, []);
 
-  if (!visible) return null;
-
   function dismiss() {
     localStorage.setItem(STORAGE_KEY, "1");
     setVisible(false);
   }
 
+  if (!visible) return null;
+
   return (
-    <div className="fixed bottom-24 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl bg-white shadow-xl ring-1 ring-black/5">
-      <div className="flex items-start gap-3 p-4">
-        <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg"
-          style={{ background: "var(--event-card-chip-bg, #f3f4f6)" }}
-          aria-hidden="true"
-        >
-          📲
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900">Install for notifications</p>
-          <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
-            On iPhone, push notifications require the app to be installed. It only takes a second:
-          </p>
-          <ol className="mt-2 space-y-1.5 text-xs text-gray-600">
-            <li className="flex items-start gap-1.5 text-left leading-relaxed">
-              <span
-                className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: "var(--event-primary, #6366f1)" }}
-              >
-                1
-              </span>
-              <span className="min-w-0">
-                Tap the Share button
-              </span>
-              <span aria-label="share icon" className="shrink-0 text-base leading-none">
-                ⎋
-              </span>
-              <span className="min-w-0">in Safari&apos;s toolbar</span>
-            </li>
-            <li className="flex items-start gap-1.5 text-left leading-relaxed">
-              <span
-                className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: "var(--event-primary, #6366f1)" }}
-              >
-                2
-              </span>
-              <span className="min-w-0">
-                Choose <strong>&quot;Add to Home Screen&quot;</strong>
-              </span>
-              <span aria-label="plus icon" className="shrink-0 text-base leading-none">
-                ➕
-              </span>
-            </li>
-            <li className="flex items-start gap-1.5 text-left leading-relaxed">
-              <span
-                className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
-                style={{ background: "var(--event-primary, #6366f1)" }}
-              >
-                3
-              </span>
-              Open the app from your home screen
-            </li>
-          </ol>
-          <button
+    <Drawer open={visible} onOpenChange={(open) => (!open ? dismiss() : setVisible(open))}>
+      <DrawerContent className="rounded-t-3xl border-[rgba(220,210,195,0.7)] bg-[rgba(255,252,247,0.96)] px-5 pb-5 pt-4 backdrop-blur">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2" style={{ color: "hsl(24 12% 20%)" }}>
+            <span
+              className="inline-flex h-8 w-8 items-center justify-center rounded-xl"
+              style={{ background: "var(--event-card-chip-bg, #f3f4f6)" }}
+              aria-hidden="true"
+            >
+              📲
+            </span>
+            Install SeatSnaps on iPhone
+          </DrawerTitle>
+          <DrawerDescription className="leading-relaxed" style={{ color: "hsl(28 8% 45%)" }}>
+            Push notifications on iOS require the app to be added to your home screen.
+          </DrawerDescription>
+        </DrawerHeader>
+
+        <ol className="mt-3 space-y-2.5 text-sm" style={{ color: "hsl(28 8% 38%)" }}>
+          <li className="flex items-start gap-2.5 leading-relaxed">
+            <span
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+              style={{ background: "var(--event-primary, #6366f1)" }}
+            >
+              1
+            </span>
+            <span className="flex items-center gap-1.5">
+              Tap Share
+              <SendToBack className="h-4 w-4" />
+              in Safari
+            </span>
+          </li>
+          <li className="flex items-start gap-2.5 leading-relaxed">
+            <span
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+              style={{ background: "var(--event-primary, #6366f1)" }}
+            >
+              2
+            </span>
+            <span className="flex items-center gap-1.5">
+              Choose <strong>Add to Home Screen</strong>
+              <PlusSquare className="h-4 w-4" />
+            </span>
+          </li>
+          <li className="flex items-start gap-2.5 leading-relaxed">
+            <span
+              className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+              style={{ background: "var(--event-primary, #6366f1)" }}
+            >
+              3
+            </span>
+            Open the home screen app and enable notifications there.
+          </li>
+        </ol>
+
+        <DrawerFooter className="mt-5">
+          <Button
+            type="button"
+            className="w-full text-white"
+            style={{ background: "var(--event-primary, #6366f1)" }}
             onClick={dismiss}
-            className="mt-3 text-xs font-medium text-gray-400 hover:text-gray-600 transition-colors"
           >
-            Dismiss
-          </button>
-        </div>
-        <button
-          onClick={dismiss}
-          className="-mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Dismiss"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-      {/* Arrow pointing down toward Safari's bottom toolbar */}
-      <div
-        className="absolute -bottom-2 left-1/2 -translate-x-1/2 h-4 w-4 rotate-45 rounded-sm bg-white shadow-md ring-1 ring-black/5"
-        aria-hidden="true"
-      />
-    </div>
+            Got it
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

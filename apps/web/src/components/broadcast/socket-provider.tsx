@@ -56,10 +56,6 @@ export function SocketProvider({ token, eventId, children }: Props) {
       setBroadcasts((prev) => [payload, ...prev]);
       setLatestBroadcast(payload);
       setBannerVisible(true);
-
-      if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
-        new Notification(payload.title, { body: payload.content });
-      }
     };
     const onSeatingUpdate = () => setSeatingUpdateAt(Date.now());
 

@@ -1,8 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bell, X } from "lucide-react";
+import { BellRing, ShieldCheck } from "lucide-react";
 import { syncPushSubscription, useSubscribeToPush } from "@/lib/api/push-subscriptions";
+import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 
 interface Props {
   eventId: string;
@@ -97,44 +106,51 @@ export function PushPermissionPrompt({ eventId }: Props) {
   }
 
   return (
-    <div className="fixed bottom-24 left-1/2 z-50 w-[calc(100%-2rem)] max-w-sm -translate-x-1/2 rounded-2xl bg-white shadow-xl ring-1 ring-black/5">
-      <div className="flex items-start gap-3 p-4">
+    <Drawer open={visible} onOpenChange={(open) => (!open ? dismiss() : setVisible(open))}>
+      <DrawerContent className="rounded-t-3xl border-[rgba(220,210,195,0.7)] bg-[rgba(255,252,247,0.96)] px-5 pb-5 pt-4 backdrop-blur">
+        <DrawerHeader>
+          <DrawerTitle className="flex items-center gap-2" style={{ color: "hsl(24 12% 20%)" }}>
+            <span
+              className="inline-flex h-8 w-8 items-center justify-center rounded-xl"
+              style={{ background: "var(--event-card-chip-bg, #f3f4f6)" }}
+              aria-hidden="true"
+            >
+              <BellRing className="h-4 w-4" style={{ color: "var(--event-primary, #6366f1)" }} />
+            </span>
+            Stay in the loop
+          </DrawerTitle>
+          <DrawerDescription className="leading-relaxed" style={{ color: "hsl(28 8% 45%)" }}>
+            Allow push notifications for live announcements and important updates.
+          </DrawerDescription>
+        </DrawerHeader>
+
         <div
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
-          style={{ background: "var(--event-card-chip-bg, #f3f4f6)" }}
+          className="mt-3 flex items-start gap-2 rounded-xl border px-3 py-2 text-xs"
+          style={{
+            borderColor: "rgba(220,210,195,0.9)",
+            background: "rgba(255,255,255,0.6)",
+            color: "hsl(28 8% 40%)",
+          }}
         >
-          <Bell className="h-5 w-5" style={{ color: "var(--event-primary, #6366f1)" }} />
+          <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          You can turn notifications off anytime from your browser or app settings.
         </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-900">Stay in the loop</p>
-          <p className="mt-0.5 text-xs text-gray-500 leading-relaxed">
-            Get notified about announcements and updates even when the app is in the background.
-          </p>
-          <div className="mt-3 flex gap-2">
-            <button
-              onClick={handleSubscribe}
-              disabled={isPending}
-              className="flex-1 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity disabled:opacity-60"
-              style={{ background: "var(--event-primary, #6366f1)" }}
-            >
-              {isPending ? "Enabling…" : "Enable notifications"}
-            </button>
-            <button
-              onClick={dismiss}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors"
-            >
-              Not now
-            </button>
-          </div>
-        </div>
-        <button
-          onClick={dismiss}
-          className="-mr-1 -mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Dismiss"
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-    </div>
+
+        <DrawerFooter className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <Button
+            type="button"
+            onClick={handleSubscribe}
+            disabled={isPending}
+            className="w-full text-white"
+            style={{ background: "var(--event-primary, #6366f1)" }}
+          >
+            {isPending ? "Enabling..." : "Enable notifications"}
+          </Button>
+          <Button type="button" variant="outline" onClick={dismiss} className="w-full">
+            Not now
+          </Button>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }
