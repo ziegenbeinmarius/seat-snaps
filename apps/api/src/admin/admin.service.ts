@@ -98,18 +98,19 @@ export class AdminService implements IAdminService {
   async getMetrics(): Promise<AdminMetricsResponse> {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfMonthIso = startOfMonth.toISOString();
 
     const [userStats] = await this.db
       .select({
         total: sql<number>`cast(count(*) as int)`,
-        thisMonth: sql<number>`cast(count(*) filter (where ${users.createdAt} >= ${startOfMonth}) as int)`,
+        thisMonth: sql<number>`cast(count(*) filter (where ${users.createdAt} >= ${startOfMonthIso}) as int)`,
       })
       .from(users);
-
+    
     const [eventStats] = await this.db
       .select({
         total: sql<number>`cast(count(*) as int)`,
-        thisMonth: sql<number>`cast(count(*) filter (where ${events.createdAt} >= ${startOfMonth}) as int)`,
+        thisMonth: sql<number>`cast(count(*) filter (where ${events.createdAt} >= ${startOfMonthIso}) as int)`,
       })
       .from(events);
 

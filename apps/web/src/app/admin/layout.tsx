@@ -8,7 +8,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!session.user?.isAdmin) redirect("/dashboard");
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 py-8 max-w-7xl mx-auto">
       <div>
         <h1
           className="text-3xl font-semibold tracking-tight"
