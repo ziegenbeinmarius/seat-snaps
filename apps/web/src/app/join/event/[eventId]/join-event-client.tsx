@@ -25,6 +25,7 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
     if (!selected) return;
     try {
       const result = await createSession.mutateAsync({ attendeeId: selected, eventId });
+      router.refresh();
       router.push(`/event/${result.eventId}`);
     } catch {
       /* handled by mutation error state */

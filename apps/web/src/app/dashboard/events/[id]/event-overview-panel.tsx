@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { CheckCircle2 } from "lucide-react";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
 import { useEvent, useUpdateEvent } from "@/lib/api/events";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface Props {
   eventId: string;
@@ -31,6 +33,7 @@ export function EventOverviewPanel({ eventId }: Props) {
   const updateMutation = useUpdateEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
 
   const {
     register,
@@ -85,18 +88,39 @@ export function EventOverviewPanel({ eventId }: Props) {
     minute: "2-digit",
   });
 
+  async function toggleFinished() {
+    await updateMutation.mutateAsync({ isFinished: !event!.isFinished });
+    setFinishConfirmOpen(false);
+  }
+
   return (
     <>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           {saved ? (
             <p className="text-sm font-medium text-green-600">Changes saved.</p>
           ) : (
             <span />
           )}
-          <Button size="sm" variant="outline" onClick={openEdit}>
-            Edit
-          </Button>
+          <div className="flex items-center gap-2">
+            {event?.isFinished ? (
+              <div className="flex items-center gap-1.5 rounded-full bg-green-50 px-3 py-1 text-sm font-medium text-green-700">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                Finished
+              </div>
+            ) : null}
+            <Button
+              size="sm"
+              variant={event?.isFinished ? "outline" : "default"}
+              onClick={() => setFinishConfirmOpen(true)}
+              disabled={updateMutation.isPending}
+            >
+              {event?.isFinished ? "Reopen event" : "Mark as finished"}
+            </Button>
+            <Button size="sm" variant="outline" onClick={openEdit}>
+              Edit
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
@@ -210,6 +234,20 @@ export function EventOverviewPanel({ eventId }: Props) {
           </form>
         </DialogContent>
       </Dialog>
+
+      <ConfirmDialog
+        open={finishConfirmOpen}
+        onOpenChange={setFinishConfirmOpen}
+        title={event?.isFinished ? "Reopen this event?" : "Mark event as finished?"}
+        description={
+          event?.isFinished
+            ? "This will mark the event as active again."
+            : "This marks the event as completed. You can still edit it afterwards."
+        }
+        confirmLabel={event?.isFinished ? "Reopen" : "Mark as finished"}
+        variant="default"
+        onConfirm={toggleFinished}
+      />
     </>
   );
 }

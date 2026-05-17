@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Check, X, Trash2, ZoomIn, User, Star } from "lucide-react";
+import { Check, X, Trash2, ZoomIn, User, Star, Download, Loader2 } from "lucide-react";
+import JSZip from "jszip";
+import { toast } from "sonner";
 import { usePhotoModeration, type PhotoFilter } from "@/lib/api/use-photo-moderation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +35,7 @@ export function PhotoModerationPanel({ eventId }: Props) {
   const [lightbox, setLightbox] = useState<PhotoResponse | null>(null);
   const [bulkSelected, setBulkSelected] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<PhotoResponse | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const toggleSelect = (id: string) => {
     setBulkSelected((prev) => {
@@ -71,6 +74,38 @@ export function PhotoModerationPanel({ eventId }: Props) {
     if (lightbox?.id === deleteTarget.id) setLightbox(null);
   };
 
+  const downloadAll = async (photosToDownload: PhotoResponse[], zipName: string) => {
+    if (photosToDownload.length === 0) {
+      toast.error("No photos to download");
+      return;
+    }
+    setIsDownloading(true);
+    try {
+      const zip = new JSZip();
+      await Promise.all(
+        photosToDownload.map(async (photo, i) => {
+          const res = await fetch(photo.url);
+          if (!res.ok) return;
+          const blob = await res.blob();
+          const ext = blob.type.split("/")[1] ?? "jpg";
+          zip.file(`${String(i + 1).padStart(3, "0")}_${photo.attendeeName.replace(/[^a-z0-9]/gi, "_")}.${ext}`, blob);
+        }),
+      );
+      const content = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(content);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = zipName;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success(`Downloaded ${photosToDownload.length} photos`);
+    } catch {
+      toast.error("Download failed");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const filterTabs: { key: PhotoFilter; label: string }[] = [
     { key: "all", label: `All (${counts.all})` },
     { key: "pending", label: `Pending (${counts.pending})` },
@@ -79,10 +114,16 @@ export function PhotoModerationPanel({ eventId }: Props) {
     { key: "highlight", label: `Highlights (${counts.highlight})` },
   ];
 
+  const downloadablePhotos = filter === "approved"
+    ? filtered.filter((p) => p.status === "approved")
+    : filter === "highlight"
+    ? filtered.filter((p) => p.isHighlight)
+    : null;
+
   return (
     <div className="space-y-4">
       {/* Filter tabs */}
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {filterTabs.map(({ key, label }) => (
           <button
             key={key}
@@ -99,6 +140,27 @@ export function PhotoModerationPanel({ eventId }: Props) {
             {label}
           </button>
         ))}
+        {downloadablePhotos && downloadablePhotos.length > 0 && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() =>
+              downloadAll(
+                downloadablePhotos,
+                `photos-${filter}-${Date.now()}.zip`,
+              )
+            }
+            disabled={isDownloading}
+            className="ml-auto"
+          >
+            {isDownloading ? (
+              <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Download className="mr-1.5 h-3.5 w-3.5" />
+            )}
+            Download all ({downloadablePhotos.length})
+          </Button>
+        )}
       </div>
 
       {/* Bulk actions */}

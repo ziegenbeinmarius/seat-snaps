@@ -78,6 +78,7 @@ export class EventsService implements IEventService {
       ...(data.endDate !== undefined && { endDate: data.endDate }),
       ...(data.location !== undefined && { location: data.location }),
       ...(data.type !== undefined && { type: data.type }),
+      ...(data.isFinished !== undefined && { isFinished: data.isFinished }),
     });
   }
 

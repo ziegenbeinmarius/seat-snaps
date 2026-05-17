@@ -13,7 +13,9 @@ export const CreateEventSchema = z.object({
 });
 export type CreateEventInput = z.infer<typeof CreateEventSchema>;
 
-export const UpdateEventSchema = CreateEventSchema.partial();
+export const UpdateEventSchema = CreateEventSchema.partial().extend({
+  isFinished: z.boolean().optional(),
+});
 export type UpdateEventInput = z.infer<typeof UpdateEventSchema>;
 
 export const EventResponseSchema = z.object({
@@ -24,6 +26,7 @@ export const EventResponseSchema = z.object({
   endDate: z.coerce.date().nullable(),
   location: z.string().nullable(),
   type: EventTypeSchema,
+  isFinished: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

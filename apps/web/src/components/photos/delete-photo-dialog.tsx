@@ -1,13 +1,15 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 
 interface DeletePhotoDialogProps {
   open: boolean;
@@ -25,30 +27,28 @@ export function DeletePhotoDialog({
   onCancel,
 }: DeletePhotoDialogProps) {
   return (
-    <Dialog open={open} onOpenChange={(o) => { if (!o) onCancel(); }}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete photo?</DialogTitle>
-        </DialogHeader>
-        <p className="text-sm text-muted-foreground">
-          This will permanently remove the photo
-          {attendeeName && (
-            <>
-              {" "}uploaded by{" "}
-              <span className="font-medium text-foreground">{attendeeName}</span>
-            </>
-          )}{" "}
-          and cannot be undone.
-        </p>
-        <DialogFooter className="mt-4">
-          <Button variant="outline" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={onConfirm} disabled={isPending}>
+    <AlertDialog open={open} onOpenChange={(o) => { if (!o) onCancel(); }}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Delete photo?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This will permanently remove the photo
+            {attendeeName && (
+              <>
+                {" "}uploaded by{" "}
+                <span className="font-medium text-foreground">{attendeeName}</span>
+              </>
+            )}{" "}
+            and cannot be undone.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm} disabled={isPending}>
             {isPending ? "Deleting…" : "Delete permanently"}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
