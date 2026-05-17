@@ -26,6 +26,7 @@ export function NewEventForm({ onClose }: Props) {
     formState: { errors },
   } = useForm<CreateEventInput>({
     resolver: zodResolver(CreateEventSchema),
+    defaultValues: { hasSeating: true },
   });
 
   async function onSubmit(data: CreateEventInput) {
@@ -85,6 +86,23 @@ export function NewEventForm({ onClose }: Props) {
           <option value="other">Other</option>
         </Select>
         {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
+      </div>
+
+      <div className="flex items-center gap-3 rounded-md border p-3">
+        <input
+          id="event-has-seating"
+          type="checkbox"
+          className="h-4 w-4 rounded border-gray-300"
+          {...register("hasSeating")}
+        />
+        <div>
+          <Label htmlFor="event-has-seating" className="cursor-pointer font-medium">
+            Assigned seating
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Attendees will be assigned to specific tables and seats.
+          </p>
+        </div>
       </div>
 
       <div className="flex gap-3 pt-2">

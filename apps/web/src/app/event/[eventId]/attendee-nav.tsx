@@ -9,9 +9,10 @@ import type { Route } from "next";
 
 interface Props {
   eventId: string;
+  hasSeating?: boolean;
 }
 
-export function AttendeeNav({ eventId }: Props) {
+export function AttendeeNav({ eventId, hasSeating = true }: Props) {
   const pathname = usePathname();
   const base = `/event/${eventId}`;
 
@@ -19,7 +20,7 @@ export function AttendeeNav({ eventId }: Props) {
     { href: base as Route, icon: Home, label: "Home" },
     { href: `${base}/schedule` as Route, icon: Calendar, label: "Schedule" },
     { href: `${base}/attendees` as Route, icon: Users, label: "Guests" },
-    { href: `${base}/seating` as Route, icon: MapPin, label: "Seating" },
+    ...(hasSeating ? [{ href: `${base}/seating` as Route, icon: MapPin, label: "Seating" }] : []),
     { href: `${base}/photos` as Route, icon: Camera, label: "Photos" },
     { href: `${base}/announcements` as Route, icon: Megaphone, label: "News" },
   ];

@@ -21,7 +21,7 @@ export default async function EventLayout({ children, params }: EventLayoutProps
     { href: base as Route, label: "Overview", exact: true },
     { href: `${base}/team` as Route, label: "Team" },
     { href: `${base}/attendees` as Route, label: "Attendees" },
-    { href: `${base}/seating` as Route, label: "Seating" },
+    ...(event.hasSeating ? [{ href: `${base}/seating` as Route, label: "Seating" }] : []),
     { href: `${base}/photos` as Route, label: "Photos" },
     { href: `${base}/theme` as Route, label: "Theme" },
     { href: `${base}/schedule` as Route, label: "Schedule" },

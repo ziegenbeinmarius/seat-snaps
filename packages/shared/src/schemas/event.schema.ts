@@ -10,6 +10,7 @@ export const CreateEventSchema = z.object({
   endDate: z.coerce.date().optional(),
   location: z.string().optional(),
   type: EventTypeSchema,
+  hasSeating: z.boolean().optional(),
 });
 export type CreateEventInput = z.infer<typeof CreateEventSchema>;
 
@@ -26,6 +27,7 @@ export const EventResponseSchema = z.object({
   endDate: z.coerce.date().nullable(),
   location: z.string().nullable(),
   type: EventTypeSchema,
+  hasSeating: z.boolean(),
   isFinished: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),

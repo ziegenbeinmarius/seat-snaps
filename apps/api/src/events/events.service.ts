@@ -36,6 +36,7 @@ export class EventsService implements IEventService {
       endDate: event.endDate,
       location: event.location,
       type: event.type,
+      hasSeating: event.hasSeating,
     };
   }
 
@@ -57,6 +58,7 @@ export class EventsService implements IEventService {
       endDate: data.endDate ?? null,
       location: data.location ?? null,
       type: data.type,
+      hasSeating: data.hasSeating ?? true,
     });
 
     await this.membershipRepository.create({
@@ -79,6 +81,7 @@ export class EventsService implements IEventService {
       ...(data.location !== undefined && { location: data.location }),
       ...(data.type !== undefined && { type: data.type }),
       ...(data.isFinished !== undefined && { isFinished: data.isFinished }),
+      ...(data.hasSeating !== undefined && { hasSeating: data.hasSeating }),
     });
   }
 

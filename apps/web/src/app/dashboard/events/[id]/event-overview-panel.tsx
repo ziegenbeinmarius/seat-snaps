@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
 import { useEvent, useUpdateEvent } from "@/lib/api/events";
+import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -30,6 +31,7 @@ function toDatetimeLocal(date: Date | string | null | undefined): string {
 
 export function EventOverviewPanel({ eventId }: Props) {
   const { data: event, isLoading } = useEvent(eventId);
+  const { data: tables = [] } = useTables(eventId);
   const updateMutation = useUpdateEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -39,10 +41,13 @@ export function EventOverviewPanel({ eventId }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm<UpdateEventInput>({
     resolver: zodResolver(UpdateEventSchema),
   });
+
+  const watchedHasSeating = useWatch({ control, name: "hasSeating" });
 
   function openEdit() {
     if (!event) return;
@@ -53,6 +58,7 @@ export function EventOverviewPanel({ eventId }: Props) {
       endDate: event.endDate ? (toDatetimeLocal(event.endDate) as unknown as Date) : undefined,
       location: event.location ?? undefined,
       type: event.type,
+      hasSeating: event.hasSeating,
     });
     updateMutation.reset();
     setSaved(false);
@@ -143,6 +149,10 @@ export function EventOverviewPanel({ eventId }: Props) {
                   <span>{event.location}</span>
                 </div>
               )}
+              <div className="flex gap-2">
+                <span className="text-muted-foreground w-20 shrink-0 font-medium">Seating</span>
+                <span>{event.hasSeating ? "Assigned seating" : "No seating plan"}</span>
+              </div>
               {event.endDate && (
                 <div className="flex gap-2">
                   <span className="text-muted-foreground w-20 shrink-0 font-medium">Ends</span>
@@ -221,6 +231,28 @@ export function EventOverviewPanel({ eventId }: Props) {
                 <option value="other">Other</option>
               </Select>
               {errors.type && <p className="text-xs text-destructive">{errors.type.message}</p>}
+            </div>
+
+            <div className="flex items-start gap-3 rounded-md border p-3">
+              <input
+                id="edit-has-seating"
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 rounded border-gray-300"
+                {...register("hasSeating")}
+              />
+              <div>
+                <Label htmlFor="edit-has-seating" className="cursor-pointer font-medium">
+                  Assigned seating
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Attendees will be assigned to specific tables and seats.
+                </p>
+                {!watchedHasSeating && tables.length > 0 && (
+                  <p className="mt-1 text-xs text-amber-600">
+                    Warning: this event already has {tables.length} table{tables.length !== 1 ? "s" : ""}. Disabling seating will orphan existing table data.
+                  </p>
+                )}
+              </div>
             </div>
 
             <DialogFooter className="pt-2">

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString, IsEnum } from "class-validator";
+import { IsString, IsNotEmpty, IsOptional, IsDateString, IsEnum, IsBoolean } from "class-validator";
 
 export class UpdateEventDto {
   @IsString()
@@ -25,4 +25,8 @@ export class UpdateEventDto {
   @IsEnum(["wedding", "birthday", "corporate", "other"])
   @IsOptional()
   type?: "wedding" | "birthday" | "corporate" | "other";
+
+  @IsBoolean()
+  @IsOptional()
+  hasSeating?: boolean;
 }
