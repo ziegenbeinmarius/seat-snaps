@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsOptional, IsDateString, IsEnum } from "class-validator";
+import { IsString, IsNotEmpty, IsOptional, IsDateString, IsEnum, IsBoolean } from "class-validator";
 
 export class CreateEventDto {
   @IsString()
@@ -22,4 +22,8 @@ export class CreateEventDto {
 
   @IsEnum(["wedding", "birthday", "corporate", "other"])
   type: "wedding" | "birthday" | "corporate" | "other";
+
+  @IsBoolean()
+  @IsOptional()
+  hasSeating?: boolean;
 }

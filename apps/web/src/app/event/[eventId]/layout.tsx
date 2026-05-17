@@ -37,6 +37,7 @@ interface Props {
 
 interface EventInfo {
   type: "wedding" | "birthday" | "corporate" | "other";
+  hasSeating: boolean;
 }
 
 interface EventTheme {
@@ -115,7 +116,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
         </div>
         <IosInstallPrompt />
         <PushPermissionPrompt eventId={eventId} />
-        <AttendeeNav eventId={eventId} />
+        <AttendeeNav eventId={eventId} hasSeating={event?.hasSeating ?? true} />
       </div>
     </SocketProvider>
   );

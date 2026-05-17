@@ -16,6 +16,7 @@ export const AdminEventResponseSchema = z.object({
   type: z.string(),
   date: z.string(),
   location: z.string().nullable(),
+  isFinished: z.boolean(),
   ownerName: z.string().nullable(),
   ownerEmail: z.string().nullable(),
   attendeeCount: z.number(),

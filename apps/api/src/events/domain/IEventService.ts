@@ -9,6 +9,7 @@ export interface PublicEventInfo {
   endDate: Date | null;
   location: string | null;
   type: string;
+  hasSeating: boolean;
 }
 
 export interface IEventService {

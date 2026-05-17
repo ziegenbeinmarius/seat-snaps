@@ -1,4 +1,7 @@
+import { redirect } from "next/navigation";
 import { SeatingLive } from "./seating-live";
+
+const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
 interface Props {
   params: Promise<{ eventId: string }>;
@@ -6,6 +9,14 @@ interface Props {
 
 export default async function SeatingPage({ params }: Props) {
   const { eventId } = await params;
+
+  const res = await fetch(`${API_URL}/api/events/${eventId}/info`, { cache: "no-store" });
+  if (res.ok) {
+    const info = (await res.json()) as { hasSeating: boolean };
+    if (!info.hasSeating) {
+      redirect(`/event/${eventId}`);
+    }
+  }
 
   return (
     <div className="min-h-screen px-4 pb-6 pt-8">

@@ -10,6 +10,7 @@ export const events = pgTable("events", {
   endDate: timestamp("end_date", { withTimezone: true }),
   location: text("location"),
   type: eventTypeEnum("type").notNull(),
+  hasSeating: boolean("has_seating").notNull().default(true),
   isFinished: boolean("is_finished").notNull().default(false),
   settings: jsonb("settings"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),

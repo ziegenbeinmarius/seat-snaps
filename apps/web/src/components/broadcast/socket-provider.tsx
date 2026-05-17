@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import type { Socket } from "socket.io-client";
 import { toast } from "sonner";
-import { getSocket, disconnectSocket } from "@/lib/socket";
+import { getSocket, scheduleDisconnect } from "@/lib/socket";
 import type { BroadcastResponse } from "@seat-snaps/shared";
 
 interface SocketContextValue {
@@ -81,7 +81,7 @@ export function SocketProvider({ token, eventId, children }: Props) {
 
   useEffect(() => {
     return () => {
-      disconnectSocket();
+      scheduleDisconnect();
     };
   }, []);
 

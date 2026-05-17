@@ -17,9 +17,10 @@ import { AttendeeQrDialog } from "./attendee-qr-dialog";
 
 interface Props {
   eventId: string;
+  hasSeating?: boolean;
 }
 
-export function AttendeesPanel({ eventId }: Props) {
+export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
     // Helper to build the join URL for an attendee
     const getJoinUrl = (qrToken: string) => {
       const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
@@ -152,7 +153,7 @@ export function AttendeesPanel({ eventId }: Props) {
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
                 <TableHead>Profile</TableHead>
-                <TableHead>Table</TableHead>
+                {hasSeating && <TableHead>Table</TableHead>}
                 <TableHead>QR / Link</TableHead>
                 <TableHead className="w-24" />
               </TableRow>
@@ -174,28 +175,30 @@ export function AttendeesPanel({ eventId }: Props) {
                     )}
                     {!a.relationInfo && (!a.conversationStarters || a.conversationStarters.length === 0) && "—"}
                   </TableCell>
-                  <TableCell className="text-muted-foreground">
-                    {a.tableId ? (
-                      tableMap.has(a.tableId) ? (
-                        tableMap.get(a.tableId)
+                  {hasSeating && (
+                    <TableCell className="text-muted-foreground">
+                      {a.tableId ? (
+                        tableMap.has(a.tableId) ? (
+                          tableMap.get(a.tableId)
+                        ) : (
+                          <span className="flex items-center gap-1.5">
+                            <span className="text-destructive text-xs">Stale assignment</span>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-5 px-1.5 text-xs text-destructive hover:text-destructive"
+                              onClick={() => unassignMutation.mutate(a.id)}
+                              disabled={unassignMutation.isPending}
+                            >
+                              Fix
+                            </Button>
+                          </span>
+                        )
                       ) : (
-                        <span className="flex items-center gap-1.5">
-                          <span className="text-destructive text-xs">Stale assignment</span>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-5 px-1.5 text-xs text-destructive hover:text-destructive"
-                            onClick={() => unassignMutation.mutate(a.id)}
-                            disabled={unassignMutation.isPending}
-                          >
-                            Fix
-                          </Button>
-                        </span>
-                      )
-                    ) : (
-                      "—"
-                    )}
-                  </TableCell>
+                        "—"
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell className="text-xs">
                     <Button
                       size="sm"
