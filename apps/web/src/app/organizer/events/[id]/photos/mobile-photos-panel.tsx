@@ -146,21 +146,21 @@ export function MobilePhotosPanel({ eventId }: Props) {
               </div>
 
               <div
-                className="flex items-center justify-between gap-1 px-2 py-1.5"
+                className="flex items-center justify-between gap-1 px-2 py-2"
                 style={{ background: "rgba(0,0,0,0.7)" }}
               >
                 <span className="min-w-0 flex-1 truncate text-xs text-white/80">
                   {photo.attendeeName}
                 </span>
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 items-center gap-3">
                   {photo.status !== "approved" && (
                     <button
                       onClick={() => handleApprove(photo)}
                       disabled={updateStatus.isPending}
                       aria-label="Approve"
-                      className="disabled:opacity-40"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-green-500/20 disabled:opacity-40"
                     >
-                      <Check className="h-4 w-4 text-green-400" />
+                      <Check className="h-5 w-5 text-green-400" />
                     </button>
                   )}
                   {photo.status !== "rejected" && (
@@ -168,9 +168,9 @@ export function MobilePhotosPanel({ eventId }: Props) {
                       onClick={() => handleReject(photo)}
                       disabled={updateStatus.isPending}
                       aria-label="Reject"
-                      className="disabled:opacity-40"
+                      className="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/20 disabled:opacity-40"
                     >
-                      <X className="h-4 w-4 text-red-400" />
+                      <X className="h-5 w-5 text-red-400" />
                     </button>
                   )}
                   {photo.status === "approved" && (
@@ -181,10 +181,10 @@ export function MobilePhotosPanel({ eventId }: Props) {
                       }}
                       disabled={toggleHighlight.isPending}
                       aria-label={photo.isHighlight ? "Remove highlight" : "Highlight"}
-                      className="disabled:opacity-40"
+                      className="flex h-8 w-8 items-center justify-center rounded-full disabled:opacity-40"
                     >
                       <Star
-                        className={`h-4 w-4 ${photo.isHighlight ? "fill-yellow-400 text-yellow-400" : "text-white/50"}`}
+                        className={`h-5 w-5 ${photo.isHighlight ? "fill-yellow-400 text-yellow-400" : "text-white/50"}`}
                       />
                     </button>
                   )}
@@ -192,9 +192,9 @@ export function MobilePhotosPanel({ eventId }: Props) {
                     onClick={() => setDeleteTarget(photo)}
                     disabled={deletePhoto.isPending}
                     aria-label="Delete"
-                    className="disabled:opacity-40"
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 disabled:opacity-40"
                   >
-                    <Trash2 className="h-4 w-4 text-white/50 hover:text-red-400" />
+                    <Trash2 className="h-5 w-5 text-white/50" />
                   </button>
                 </div>
               </div>

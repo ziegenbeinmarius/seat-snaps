@@ -9,6 +9,7 @@ import React, {
   useRef,
 } from "react";
 import type { Socket } from "socket.io-client";
+import { toast } from "sonner";
 import { getSocket, disconnectSocket } from "@/lib/socket";
 import type { BroadcastResponse } from "@seat-snaps/shared";
 
@@ -56,6 +57,10 @@ export function SocketProvider({ token, eventId, children }: Props) {
       setBroadcasts((prev) => [payload, ...prev]);
       setLatestBroadcast(payload);
       setBannerVisible(true);
+      toast(payload.title, {
+        description: payload.content,
+        duration: 6000,
+      });
     };
     const onSeatingUpdate = () => setSeatingUpdateAt(Date.now());
 
