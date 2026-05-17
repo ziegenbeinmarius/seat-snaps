@@ -29,4 +29,8 @@ export class UpdateEventDto {
   @IsBoolean()
   @IsOptional()
   hasSeating?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isFinished?: boolean;
 }

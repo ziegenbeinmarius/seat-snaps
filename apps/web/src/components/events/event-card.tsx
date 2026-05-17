@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { CalendarDays, MapPin } from "lucide-react";
+import { CalendarDays, CheckCircle2, MapPin } from "lucide-react";
 import type { EventResponse } from "@seat-snaps/shared";
 import { getTypeGradient, getTypeLabel } from "@/lib/event-helpers";
 
@@ -41,7 +41,15 @@ function GridCard({ event, href }: Omit<EventCardProps, "variant">) {
             >
               {event.title}
             </h2>
-            <TypeBadge type={event.type} />
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <TypeBadge type={event.type} />
+              {event.isFinished && (
+                <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  <CheckCircle2 className="h-3 w-3" />
+                  Finished
+                </span>
+              )}
+            </div>
           </div>
           <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
             {new Date(event.date).toLocaleDateString("en-US", {
@@ -80,7 +88,15 @@ function ListCard({ event, href }: Omit<EventCardProps, "variant">) {
             >
               {event.title}
             </h2>
-            <TypeBadge type={event.type} />
+            <div className="flex shrink-0 flex-col items-end gap-1">
+              <TypeBadge type={event.type} />
+              {event.isFinished && (
+                <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  <CheckCircle2 className="h-3 w-3" />
+                  Finished
+                </span>
+              )}
+            </div>
           </div>
           <div className="mt-2 flex items-center gap-4">
             <span className="flex items-center gap-1 text-xs" style={{ color: "hsl(28 8% 52%)" }}>

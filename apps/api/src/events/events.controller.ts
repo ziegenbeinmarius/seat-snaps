@@ -68,6 +68,7 @@ export class EventsController {
         ...(dto.location !== undefined && { location: dto.location }),
         ...(dto.type !== undefined && { type: dto.type }),
         ...(dto.hasSeating !== undefined && { hasSeating: dto.hasSeating }),
+        ...(dto.isFinished !== undefined && { isFinished: dto.isFinished }),
       },
       user.id,
     );

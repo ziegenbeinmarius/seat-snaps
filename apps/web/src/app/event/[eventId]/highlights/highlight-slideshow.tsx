@@ -123,15 +123,15 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
           onClick={() => setFullscreen(false)}
         >
           <button
-            className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white"
-            onClick={() => setFullscreen(false)}
+            className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white"
+            onClick={(e) => { e.stopPropagation(); setFullscreen(false); }}
           >
             <X className="h-6 w-6" />
           </button>
 
           <div
             className="relative h-screen w-full"
-            onClick={(e) => e.stopPropagation()}
+            onClick={() => setFullscreen(false)}
           >
             <Image
               src={photo?.url ?? ""}

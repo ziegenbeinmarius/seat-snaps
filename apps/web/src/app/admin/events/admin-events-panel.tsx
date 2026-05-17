@@ -54,6 +54,7 @@ export function AdminEventsPanel() {
             <TableRow>
               <TableHead>Title</TableHead>
               <TableHead>Type</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Owner</TableHead>
               <TableHead>Date</TableHead>
               <TableHead className="text-center">Attendees</TableHead>
@@ -64,7 +65,7 @@ export function AdminEventsPanel() {
           <TableBody>
             {events.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="py-8 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="py-8 text-center text-muted-foreground">
                   No events found
                 </TableCell>
               </TableRow>
@@ -74,6 +75,13 @@ export function AdminEventsPanel() {
                   <TableCell className="font-medium">{event.title}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className="capitalize">{event.type}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    {event.isFinished ? (
+                      <Badge variant="secondary">Finished</Badge>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Active</Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {event.ownerName ?? "No owner"}

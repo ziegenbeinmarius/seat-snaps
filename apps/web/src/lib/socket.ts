@@ -3,12 +3,19 @@
 import { io, type Socket } from "socket.io-client";
 
 let socketInstance: Socket | null = null;
+let disconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
 const SOCKET_URL =
   process.env.NEXT_PUBLIC_API_URL
   ?? "http://localhost:3001";
 
 export function getSocket(token: string, eventId: string): Socket {
+  // Cancel any pending delayed disconnect (page navigation re-mount)
+  if (disconnectTimer !== null) {
+    clearTimeout(disconnectTimer);
+    disconnectTimer = null;
+  }
+
   if (socketInstance?.connected) return socketInstance;
 
   socketInstance?.disconnect();
@@ -28,4 +35,14 @@ export function getSocket(token: string, eventId: string): Socket {
 export function disconnectSocket() {
   socketInstance?.disconnect();
   socketInstance = null;
+}
+
+// Schedule a disconnect after a delay so rapid page-transition remounts
+// don't teardown the socket. The timer is cancelled by the next getSocket call.
+export function scheduleDisconnect(delayMs = 8000) {
+  if (disconnectTimer !== null) return;
+  disconnectTimer = setTimeout(() => {
+    disconnectTimer = null;
+    disconnectSocket();
+  }, delayMs);
 }
