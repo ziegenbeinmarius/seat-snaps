@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CreateEventSchema, type CreateEventInput } from "@seat-snaps/shared";
 import { useCreateEvent } from "@/lib/api/events";
@@ -11,6 +11,7 @@ import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
   onClose?: () => void;
@@ -23,6 +24,7 @@ export function NewEventForm({ onClose }: Props) {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<CreateEventInput>({
     resolver: zodResolver(CreateEventSchema),
@@ -89,11 +91,16 @@ export function NewEventForm({ onClose }: Props) {
       </div>
 
       <div className="flex items-center gap-3 rounded-md border p-3">
-        <input
-          id="event-has-seating"
-          type="checkbox"
-          className="h-4 w-4 rounded border-gray-300"
-          {...register("hasSeating")}
+        <Controller
+          name="hasSeating"
+          control={control}
+          render={({ field }) => (
+            <Checkbox
+              id="event-has-seating"
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+            />
+          )}
         />
         <div>
           <Label htmlFor="event-has-seating" className="cursor-pointer font-medium">

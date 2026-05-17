@@ -160,7 +160,7 @@ export default async function AttendeeHomePage({ params }: Props) {
         )}
 
         {/* My Seat */}
-        {myTable && (
+        {event?.hasSeating && myTable && (
           <div className="glass-card rounded-2xl p-4">
             <h2 className="event-body mb-3 text-xs font-semibold uppercase tracking-widest event-card-muted-text">
               My Seat

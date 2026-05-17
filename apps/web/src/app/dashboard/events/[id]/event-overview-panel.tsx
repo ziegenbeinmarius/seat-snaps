@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm, useWatch } from "react-hook-form";
+import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2 } from "lucide-react";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
@@ -16,6 +16,7 @@ import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Props {
   eventId: string;
@@ -234,11 +235,17 @@ export function EventOverviewPanel({ eventId }: Props) {
             </div>
 
             <div className="flex items-start gap-3 rounded-md border p-3">
-              <input
-                id="edit-has-seating"
-                type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-gray-300"
-                {...register("hasSeating")}
+              <Controller
+                name="hasSeating"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="edit-has-seating"
+                    className="mt-0.5"
+                    checked={field.value ?? false}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
               />
               <div>
                 <Label htmlFor="edit-has-seating" className="cursor-pointer font-medium">
