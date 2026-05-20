@@ -10,6 +10,7 @@ import { BroadcastBanner } from "@/components/broadcast/broadcast-banner";
 import { ConnectionStatus } from "@/components/broadcast/connection-status";
 import { PushPermissionPrompt } from "@/components/push-notifications/push-permission-prompt";
 import { IosInstallPrompt } from "@/components/push-notifications/ios-install-prompt";
+import { WelcomeDialog } from "@/components/attendee/welcome-dialog";
 
 export async function generateMetadata({
   params,
@@ -38,6 +39,7 @@ interface Props {
 interface EventInfo {
   type: "wedding" | "birthday" | "corporate" | "other";
   hasSeating: boolean;
+  title?: string;
 }
 
 interface EventTheme {
@@ -114,6 +116,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
           <ConnectionStatus />
           <main className="flex-1 pb-20">{children}</main>
         </div>
+        <WelcomeDialog eventId={eventId} eventName={event?.title ?? "this event"} />
         <IosInstallPrompt />
         <PushPermissionPrompt eventId={eventId} />
         <AttendeeNav eventId={eventId} hasSeating={event?.hasSeating ?? true} />
