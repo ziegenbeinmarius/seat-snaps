@@ -11,6 +11,7 @@ export interface PublicEventInfo {
   timezone: string | null;
   type: string;
   hasSeating: boolean;
+  rsvpEnabled: boolean;
 }
 
 export interface IEventService {

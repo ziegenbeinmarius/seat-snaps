@@ -6,28 +6,79 @@ import {
   Delete,
   Body,
   Param,
+  Res,
   HttpCode,
   HttpStatus,
+  Inject,
   UseInterceptors,
   UploadedFile,
   BadRequestException,
 } from "@nestjs/common";
+import { randomBytes } from "node:crypto";
+import type { FastifyReply } from "fastify";
 import { AttendeesService } from "./attendees.service";
 import { CreateAttendeeDto } from "./dto/create-attendee.dto";
 import { UpdateAttendeeDto } from "./dto/update-attendee.dto";
 import { CheckinDto } from "./dto/checkin.dto";
+import { RsvpRegistrationDto } from "./dto/rsvp-registration.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import { Public } from "../auth/decorators/public.decorator";
+import type { IAttendeeSessionService } from "../attendee-sessions/domain/IAttendeeSessionService";
+import { ATTENDEE_SESSION_SERVICE } from "../attendee-sessions/domain/IAttendeeSessionService";
+import { ATTENDEE_SESSION_COOKIE } from "../attendee-sessions/guards/attendee-session.guard";
+import { CSRF_COOKIE } from "../attendee-sessions/guards/csrf.guard";
 import type { SessionUser } from "@seat-snaps/shared";
+
+const SESSION_TTL_SECONDS = 90 * 24 * 60 * 60;
 
 @Controller("events/:eventId/attendees")
 export class AttendeesController {
-  constructor(private readonly attendeesService: AttendeesService) {}
+  constructor(
+    private readonly attendeesService: AttendeesService,
+    @Inject(ATTENDEE_SESSION_SERVICE)
+    private readonly sessionService: IAttendeeSessionService,
+  ) {}
 
   @Public()
   @Get("public")
   listPublic(@Param("eventId") eventId: string) {
     return this.attendeesService.listPublic(eventId);
+  }
+
+  @Public()
+  @Post("rsvp")
+  @HttpCode(HttpStatus.CREATED)
+  async rsvp(
+    @Param("eventId") eventId: string,
+    @Body() dto: RsvpRegistrationDto,
+    @Res() reply: FastifyReply,
+  ) {
+    const attendee = await this.attendeesService.createFromRsvp(eventId, dto);
+    const result = await this.sessionService.createFromAttendeeId(attendee.id, eventId);
+
+    reply.setCookie(ATTENDEE_SESSION_COOKIE, result.session.token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_TTL_SECONDS,
+    });
+
+    const csrfToken = randomBytes(32).toString("hex");
+    reply.setCookie(CSRF_COOKIE, csrfToken, {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: SESSION_TTL_SECONDS,
+    });
+
+    return reply.status(201).send({
+      attendee,
+      eventId,
+      token: result.session.token,
+      csrfToken,
+    });
   }
 
   @Get()

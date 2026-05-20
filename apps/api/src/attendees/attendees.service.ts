@@ -11,7 +11,7 @@ import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IAttendeeService } from "./domain/IAttendeeService";
-import type { CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/shared";
+import type { CreateAttendeeInput, UpdateAttendeeInput, RsvpRegistrationInput } from "@seat-snaps/shared";
 
 @Injectable()
 export class AttendeesService implements IAttendeeService {
@@ -60,6 +60,27 @@ export class AttendeesService implements IAttendeeService {
       conversationStarters: data.conversationStarters ?? null,
       photoLimit: data.photoLimit ?? 10,
       qrToken: randomUUID(),
+    });
+  }
+
+  async createFromRsvp(eventId: string, data: RsvpRegistrationInput): Promise<Attendee> {
+    const event = await this.eventRepository.findById(eventId);
+    if (!event) throw new NotFoundException("Event not found");
+    if (!event.rsvpEnabled) throw new ForbiddenException("RSVP is not enabled for this event");
+
+    const existing = await this.attendeeRepository.findByEventAndEmail(eventId, data.email);
+    if (existing) throw new ConflictException("An attendee with this email is already registered for this event");
+
+    return this.attendeeRepository.create({
+      eventId,
+      name: data.name,
+      email: data.email,
+      description: data.description ?? null,
+      conversationStarters: data.conversationStarters ?? null,
+      groupLabel: null,
+      photoLimit: 10,
+      qrToken: randomUUID(),
+      status: "pending",
     });
   }
 
