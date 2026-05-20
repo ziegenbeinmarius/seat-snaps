@@ -6,7 +6,6 @@ import {
   Delete,
   Body,
   Param,
-  Query,
   Res,
   HttpCode,
   HttpStatus,
@@ -88,9 +87,8 @@ export class AttendeesController {
   list(
     @Param("eventId") eventId: string,
     @CurrentUser() user: SessionUser,
-    @Query("status") status?: string,
   ) {
-    return this.attendeesService.listForEvent(eventId, user.id, status);
+    return this.attendeesService.listForEvent(eventId, user.id);
   }
 
   @Post()

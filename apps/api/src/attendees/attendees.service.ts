@@ -10,7 +10,7 @@ import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
-import type { IAttendeeService, AttendeeListResult } from "./domain/IAttendeeService";
+import type { IAttendeeService } from "./domain/IAttendeeService";
 import type { CreateAttendeeInput, UpdateAttendeeInput, RsvpRegistrationInput } from "@seat-snaps/shared";
 
 @Injectable()
@@ -26,16 +26,9 @@ export class AttendeesService implements IAttendeeService {
     private readonly membershipRepository: IEventMembershipRepository,
   ) {}
 
-  async listForEvent(eventId: string, userId: string, status?: string): Promise<AttendeeListResult> {
+  async listForEvent(eventId: string, userId: string): Promise<Attendee[]> {
     await this.requireMember(eventId, userId);
-    const all = await this.attendeeRepository.findByEventId(eventId);
-    const meta = {
-      pending: all.filter((a) => a.status === "pending").length,
-      confirmed: all.filter((a) => a.status === "confirmed").length,
-      declined: all.filter((a) => a.status === "declined").length,
-    };
-    const filtered = status && status !== "all" ? all.filter((a) => a.status === status) : all;
-    return { attendees: filtered, meta };
+    return this.attendeeRepository.findByEventId(eventId);
   }
 
   async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "description" | "conversationStarters">[]> {
