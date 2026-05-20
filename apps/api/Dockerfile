@@ -41,4 +41,4 @@ WORKDIR /app/apps/api
 EXPOSE 3001
 
 # Run pending migrations then start the server
-CMD ["sh", "-c", "node ../../node_modules/.bin/drizzle-kit migrate --config=../../packages/db/drizzle.config.ts 2>/dev/null; node dist/main"]
+CMD ["sh", "-c", "node ../../node_modules/.bin/drizzle-kit migrate --config=../../packages/db/drizzle.config.ts && node dist/main"]
