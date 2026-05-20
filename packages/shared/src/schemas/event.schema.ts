@@ -12,12 +12,12 @@ export const CreateEventSchema = z.object({
   timezone: z.string().optional(),
   type: EventTypeSchema,
   hasSeating: z.boolean().optional(),
+  rsvpEnabled: z.boolean().optional(),
 });
 export type CreateEventInput = z.infer<typeof CreateEventSchema>;
 
 export const UpdateEventSchema = CreateEventSchema.partial().extend({
   isFinished: z.boolean().optional(),
-  rsvpEnabled: z.boolean().optional(),
 });
 export type UpdateEventInput = z.infer<typeof UpdateEventSchema>;
 

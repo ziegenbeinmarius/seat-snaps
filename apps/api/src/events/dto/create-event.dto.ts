@@ -30,4 +30,8 @@ export class CreateEventDto {
   @IsBoolean()
   @IsOptional()
   hasSeating?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  rsvpEnabled?: boolean;
 }

@@ -2,10 +2,6 @@ import { pgTable, uuid, text, timestamp, jsonb, pgEnum, boolean } from "drizzle-
 
 export const eventTypeEnum = pgEnum("event_type", ["wedding", "birthday", "corporate", "other"]);
 
-export type EventSettings = {
-  rsvpEnabled?: boolean;
-};
-
 export const events = pgTable("events", {
   id: uuid("id").defaultRandom().primaryKey(),
   title: text("title").notNull(),
@@ -17,7 +13,8 @@ export const events = pgTable("events", {
   type: eventTypeEnum("type").notNull(),
   hasSeating: boolean("has_seating").notNull().default(true),
   isFinished: boolean("is_finished").notNull().default(false),
-  settings: jsonb("settings").$type<EventSettings>(),
+  rsvpEnabled: boolean("rsvp_enabled").notNull().default(false),
+  settings: jsonb("settings"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

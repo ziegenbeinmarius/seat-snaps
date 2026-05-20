@@ -61,6 +61,7 @@ export class EventsService implements IEventService {
       timezone: data.timezone ?? "Europe/Stockholm",
       type: data.type,
       hasSeating: data.hasSeating ?? true,
+      rsvpEnabled: data.rsvpEnabled ?? false,
     });
 
     await this.membershipRepository.create({
@@ -85,6 +86,7 @@ export class EventsService implements IEventService {
       ...(data.type !== undefined && { type: data.type }),
       ...(data.isFinished !== undefined && { isFinished: data.isFinished }),
       ...(data.hasSeating !== undefined && { hasSeating: data.hasSeating }),
+      ...(data.rsvpEnabled !== undefined && { rsvpEnabled: data.rsvpEnabled }),
     });
   }
 

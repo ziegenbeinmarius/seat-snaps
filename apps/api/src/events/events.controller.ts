@@ -37,6 +37,7 @@ export class EventsController {
         timezone: dto.timezone,
         type: dto.type,
         hasSeating: dto.hasSeating,
+        rsvpEnabled: dto.rsvpEnabled,
       },
       user.id
     );
@@ -71,6 +72,7 @@ export class EventsController {
         ...(dto.type !== undefined && { type: dto.type }),
         ...(dto.hasSeating !== undefined && { hasSeating: dto.hasSeating }),
         ...(dto.isFinished !== undefined && { isFinished: dto.isFinished }),
+        ...(dto.rsvpEnabled !== undefined && { rsvpEnabled: dto.rsvpEnabled }),
       },
       user.id,
     );
