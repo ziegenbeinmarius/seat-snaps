@@ -38,6 +38,7 @@ export class EventsService implements IEventService {
       timezone: event.timezone,
       type: event.type,
       hasSeating: event.hasSeating,
+      rsvpEnabled: event.rsvpEnabled,
     };
   }
 
