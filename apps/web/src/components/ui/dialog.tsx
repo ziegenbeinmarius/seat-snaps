@@ -1,43 +1,31 @@
 "use client";
 
 import * as React from "react";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
-interface DialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
-}
+const Dialog = DialogPrimitive.Root;
+const DialogPortal = DialogPrimitive.Portal;
 
-function Dialog({ open, onOpenChange, children }: DialogProps) {
-  // Track when the dialog opened so we can ignore the ghost click
-  // that fires when the tap that opened the dialog propagates to the backdrop.
-  const openedAt = React.useRef<number>(0);
-  React.useLayoutEffect(() => {
-    if (open) openedAt.current = Date.now();
-  }, [open]);
+const DialogOverlay = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Overlay>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+>(({ className, ...props }, ref) => (
+  <DialogPrimitive.Overlay
+    ref={ref}
+    className={cn("fixed inset-0 z-50 bg-black/50", className)}
+    {...props}
+  />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-  if (!open) return null;
-
-  const handleBackdropClick = () => {
-    if (Date.now() - openedAt.current > 250) onOpenChange(false);
-  };
-
-  return (
-    <div className="fixed inset-0 z-50">
-      <div
-        className="fixed inset-0 bg-black/50"
-        onClick={handleBackdropClick}
-        aria-hidden="true"
-      />
-      {children}
-    </div>
-  );
-}
-
-const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => (
-    <div
+const DialogContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPortal>
+    <DialogOverlay />
+    <DialogPrimitive.Content
       ref={ref}
       className={cn(
         "fixed left-[50%] top-[50%] z-50 w-full max-w-lg translate-x-[-50%] translate-y-[-50%] rounded-xl border border-border bg-background p-6 shadow-lg",
@@ -46,10 +34,10 @@ const DialogContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
       {...props}
     >
       {children}
-    </div>
-  ),
-);
-DialogContent.displayName = "DialogContent";
+    </DialogPrimitive.Content>
+  </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("flex flex-col space-y-1.5 text-center sm:text-left", className)} {...props} />
@@ -57,16 +45,16 @@ const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 DialogHeader.displayName = "DialogHeader";
 
 const DialogTitle = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  React.ElementRef<typeof DialogPrimitive.Title>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <h2
+  <DialogPrimitive.Title
     ref={ref}
     className={cn("text-lg font-semibold leading-none tracking-tight", className)}
     {...props}
   />
 ));
-DialogTitle.displayName = "DialogTitle";
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div

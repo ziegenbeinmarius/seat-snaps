@@ -1,26 +1,18 @@
 "use client";
 
 import * as React from "react";
-import { Dialog } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
-interface DrawerProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  children: React.ReactNode;
-}
+const Drawer = DialogPrimitive.Root;
 
-function Drawer({ open, onOpenChange, children }: DrawerProps) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      {children}
-    </Dialog>
-  );
-}
-
-const DrawerContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, children, ...props }, ref) => (
-    <div
+const DrawerContent = React.forwardRef<
+  React.ElementRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <DialogPrimitive.Portal>
+    <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
+    <DialogPrimitive.Content
       ref={ref}
       className={cn(
         "fixed inset-x-0 bottom-0 z-50 mx-auto w-full max-w-lg rounded-t-2xl border border-border bg-background p-4 shadow-lg",
@@ -30,9 +22,9 @@ const DrawerContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     >
       <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-muted" aria-hidden="true" />
       {children}
-    </div>
-  ),
-);
+    </DialogPrimitive.Content>
+  </DialogPrimitive.Portal>
+));
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -42,17 +34,25 @@ DrawerHeader.displayName = "DrawerHeader";
 
 const DrawerTitle = React.forwardRef<
   HTMLHeadingElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <h2 ref={ref} className={cn("text-base font-semibold leading-tight", className)} {...props} />
+  <DialogPrimitive.Title
+    ref={ref}
+    className={cn("text-base font-semibold leading-tight", className)}
+    {...props}
+  />
 ));
 DrawerTitle.displayName = "DrawerTitle";
 
 const DrawerDescription = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <p ref={ref} className={cn("text-sm text-muted-foreground", className)} {...props} />
+  <DialogPrimitive.Description
+    ref={ref}
+    className={cn("text-sm text-muted-foreground", className)}
+    {...props}
+  />
 ));
 DrawerDescription.displayName = "DrawerDescription";
 
