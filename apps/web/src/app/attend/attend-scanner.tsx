@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
-import { Camera, Loader2, QrCode, RefreshCcw } from "lucide-react";
+import { Loader2, QrCode, RefreshCcw } from "lucide-react";
 
 type ScannerState = "idle" | "starting" | "scanning" | "found" | "error";
 

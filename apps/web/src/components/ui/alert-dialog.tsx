@@ -10,7 +10,7 @@ interface AlertDialogProps {
   children: React.ReactNode;
 }
 
-function AlertDialog({ open, onOpenChange, children }: AlertDialogProps) {
+function AlertDialog({ open, onOpenChange: _onOpenChange, children }: AlertDialogProps) {
   if (!open) return null;
 
   return (

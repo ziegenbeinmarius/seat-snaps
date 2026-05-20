@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { X, Plus } from "lucide-react";
 import { useRsvpRegister } from "@/lib/api/attendees";
@@ -46,7 +46,7 @@ export function RsvpForm({ eventId, eventTitle, onBack }: Props) {
     setStarters((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length > 0) {

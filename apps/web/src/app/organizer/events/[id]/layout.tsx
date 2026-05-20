@@ -1,10 +1,7 @@
 import type { ReactNode } from "react";
-import type { Route } from "next";
 import Link from "next/link";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { EventHeroStrip } from "@/components/events/event-hero-strip";
-import { EventTabNav } from "@/components/events/event-tab-nav";
-import type { TabLink } from "@/components/events/event-tab-nav";
 import { loadEvent } from "@/lib/load-event";
 
 interface Props {
@@ -15,7 +12,6 @@ interface Props {
 export default async function OrganizerEventLayout({ children, params }: Props) {
   const { id } = await params;
   const event = await loadEvent(id, "/organizer");
-  const base = `/organizer/events/${id}`;
 
   return (
     <div>

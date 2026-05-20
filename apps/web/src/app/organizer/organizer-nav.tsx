@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, QrCode, Camera, LogOut, Users, Calendar, Home, Megaphone } from "lucide-react";
+import { CalendarDays, Camera, LogOut, Users, Calendar, Home, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 
