@@ -14,6 +14,8 @@ import {
 interface Props {
   eventId: string;
   eventName: string;
+  active: boolean;
+  onDone: () => void;
 }
 
 function storageKey(eventId: string) {
@@ -43,19 +45,22 @@ const features = [
   },
 ];
 
-export function WelcomeDialog({ eventId, eventName }: Props) {
+export function WelcomeDialog({ eventId, eventName, active, onDone }: Props) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!localStorage.getItem(storageKey(eventId))) {
-      setOpen(true);
+    if (!active) return;
+    if (localStorage.getItem(storageKey(eventId))) {
+      onDone();
+      return;
     }
-  }, [eventId]);
+    setOpen(true);
+  }, [active, eventId, onDone]);
 
   function dismiss() {
     localStorage.setItem(storageKey(eventId), "1");
     setOpen(false);
+    onDone();
   }
 
   return (
