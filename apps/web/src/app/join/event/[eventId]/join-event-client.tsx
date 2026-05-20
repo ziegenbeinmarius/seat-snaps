@@ -4,16 +4,19 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AttendeeResponse } from "@seat-snaps/shared";
 import { useCreateAttendeeSession } from "@/lib/api/attendee-session";
+import { RsvpForm } from "./rsvp-form";
 
 interface Props {
   eventId: string;
   attendees: AttendeeResponse[];
   eventTitle: string;
+  rsvpEnabled: boolean;
 }
 
-export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
+export function JoinEventClient({ eventId, attendees, eventTitle, rsvpEnabled }: Props) {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
+  const [showRsvp, setShowRsvp] = useState(false);
   const router = useRouter();
   const createSession = useCreateAttendeeSession();
 
@@ -30,6 +33,16 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
     } catch {
       /* handled by mutation error state */
     }
+  }
+
+  if (showRsvp) {
+    return (
+      <RsvpForm
+        eventId={eventId}
+        eventTitle={eventTitle}
+        onBack={() => setShowRsvp(false)}
+      />
+    );
   }
 
   return (
@@ -122,6 +135,25 @@ export function JoinEventClient({ eventId, attendees, eventTitle }: Props) {
             </button>
           ))}
         </div>
+
+        {rsvpEnabled && (
+          <div className="mt-6 text-center">
+            <p className="mb-2 text-sm" style={{ color: "hsl(28 8% 52%)" }}>
+              Not on the list yet?
+            </p>
+            <button
+              onClick={() => setShowRsvp(true)}
+              className="rounded-2xl px-6 py-3 text-sm font-semibold transition-opacity hover:opacity-80"
+              style={{
+                background: "rgba(255, 252, 247, 0.75)",
+                border: "1.5px solid rgba(196, 148, 90, 0.5)",
+                color: "hsl(28 45% 40%)",
+              }}
+            >
+              Register as new attendee →
+            </button>
+          </div>
+        )}
       </div>
 
       <div

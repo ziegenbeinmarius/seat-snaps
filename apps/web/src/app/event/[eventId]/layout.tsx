@@ -11,6 +11,7 @@ import { ConnectionStatus } from "@/components/broadcast/connection-status";
 import { PushPermissionPrompt } from "@/components/push-notifications/push-permission-prompt";
 import { IosInstallPrompt } from "@/components/push-notifications/ios-install-prompt";
 import { WelcomeDialog } from "@/components/attendee/welcome-dialog";
+import { PendingStatusBanner } from "@/components/attendee/pending-status-banner";
 
 export async function generateMetadata({
   params,
@@ -116,6 +117,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
         <ThemeSyncer eventId={eventId} />
         <div className="mx-auto flex w-full max-w-lg flex-1 flex-col">
           <AttendeeHeader name={attendee.name} eventId={eventId} />
+          <PendingStatusBanner status={attendee.status} />
           <BroadcastBanner />
           <ConnectionStatus />
           <main className="flex-1 pb-20">{children}</main>

@@ -1,7 +1,12 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { AttendeeResponse, CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/shared";
+import type {
+  AttendeeResponse,
+  CreateAttendeeInput,
+  UpdateAttendeeInput,
+  RsvpRegistrationInput,
+} from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
 import { toast } from "sonner";
 
@@ -80,6 +85,26 @@ export function useCheckinByQrToken(eventId: string) {
     onSuccess: (data) => {
       void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
       toast.success(`${data.name} checked in`);
+    },
+  });
+}
+
+export function useRsvpRegister(eventId: string) {
+  return useMutation<{ attendeeId: string; eventId: string; name: string }, Error, RsvpRegistrationInput>({
+    mutationFn: async (data) => {
+      const res = await fetch(`/api/rsvp/${eventId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        const message = Array.isArray((err as { message?: string | string[] }).message)
+          ? (err as { message: string[] }).message.join(", ")
+          : (err as { message?: string }).message;
+        throw new Error(message ?? `Registration failed (${res.status})`);
+      }
+      return res.json();
     },
   });
 }
