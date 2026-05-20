@@ -3,7 +3,7 @@ import { IsString, IsOptional, IsArray } from "class-validator";
 export class UpdateAttendeeSelfDto {
   @IsOptional()
   @IsString()
-  relationInfo?: string;
+  description?: string;
 
   @IsOptional()
   @IsArray()

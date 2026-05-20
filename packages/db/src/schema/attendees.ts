@@ -13,7 +13,6 @@ export const attendees = pgTable(
     name: text("name").notNull(),
     email: text("email"),
     groupLabel: text("group_label"),
-    relationInfo: text("relation_info"),
     conversationStarters: text("conversation_starters").array(),
     description: text("description"),
     status: attendeeStatusEnum("status").notNull().default("confirmed"),

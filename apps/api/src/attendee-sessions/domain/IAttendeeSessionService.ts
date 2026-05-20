@@ -18,7 +18,7 @@ export interface IAttendeeSessionService {
   getByToken(token: string): Promise<AttendeeSessionWithAttendee>;
   updateSelf(
     attendeeId: string,
-    data: { relationInfo?: string; conversationStarters?: string[] },
+    data: { description?: string; conversationStarters?: string[] },
   ): Promise<Attendee>;
 }
 

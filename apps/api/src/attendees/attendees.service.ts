@@ -31,11 +31,11 @@ export class AttendeesService implements IAttendeeService {
     return this.attendeeRepository.findByEventId(eventId);
   }
 
-  async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "relationInfo" | "conversationStarters">[]> {
+  async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "description" | "conversationStarters">[]> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
     const attendees = await this.attendeeRepository.findByEventId(eventId);
-    return attendees.map(({ id, name, groupLabel, tableId, relationInfo, conversationStarters }) => ({ id, name, groupLabel, tableId, relationInfo, conversationStarters }));
+    return attendees.map(({ id, name, groupLabel, tableId, description, conversationStarters }) => ({ id, name, groupLabel, tableId, description, conversationStarters }));
   }
 
   async getById(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {
@@ -56,7 +56,7 @@ export class AttendeesService implements IAttendeeService {
       name: data.name,
       email: data.email ?? null,
       groupLabel: data.groupLabel ?? null,
-      relationInfo: data.relationInfo ?? null,
+      description: data.description ?? null,
       conversationStarters: data.conversationStarters ?? null,
       photoLimit: data.photoLimit ?? 10,
       qrToken: randomUUID(),
@@ -90,7 +90,7 @@ export class AttendeesService implements IAttendeeService {
         name: row.name,
         email: row.email ?? null,
         groupLabel: row.group ?? null,
-        relationInfo: null,
+        description: null,
         conversationStarters: null,
         photoLimit: 10,
         qrToken: randomUUID(),
@@ -114,7 +114,7 @@ export class AttendeesService implements IAttendeeService {
       ...(data.name !== undefined && { name: data.name }),
       ...(data.email !== undefined && { email: data.email }),
       ...(data.groupLabel !== undefined && { groupLabel: data.groupLabel }),
-      ...(data.relationInfo !== undefined && { relationInfo: data.relationInfo }),
+      ...(data.description !== undefined && { description: data.description }),
       ...(data.conversationStarters !== undefined && {
         conversationStarters: data.conversationStarters,
       }),

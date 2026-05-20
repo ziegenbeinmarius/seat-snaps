@@ -8,12 +8,12 @@ export default function ProfilePage() {
   const { data: attendee, isLoading } = useCurrentAttendee();
   const updateMutation = useUpdateCurrentAttendee();
 
-  const [relationInfo, setRelationInfo] = useState("");
+  const [description, setDescription] = useState("");
   const [conversationStarters, setConversationStarters] = useState("");
 
   useEffect(() => {
     if (attendee) {
-      setRelationInfo(attendee.relationInfo ?? "");
+      setDescription(attendee.description ?? "");
       setConversationStarters(attendee.conversationStarters?.join(", ") ?? "");
     }
   }, [attendee]);
@@ -25,7 +25,7 @@ export default function ProfilePage() {
       .filter(Boolean);
     try {
       await updateMutation.mutateAsync({
-        relationInfo: relationInfo || undefined,
+        description: description || undefined,
         conversationStarters: starters.length > 0 ? starters : [],
       });
     } catch (e) {
@@ -67,8 +67,8 @@ export default function ProfilePage() {
             }}
             rows={3}
             placeholder="e.g. Easy to talk with, loves hiking…"
-            value={relationInfo}
-            onChange={(e) => { setRelationInfo(e.target.value); }}
+            value={description}
+            onChange={(e) => { setDescription(e.target.value); }}
           />
         </div>
 

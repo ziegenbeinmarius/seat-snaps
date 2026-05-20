@@ -1,0 +1,1 @@
+ALTER TABLE "attendees" DROP COLUMN "relation_info";
