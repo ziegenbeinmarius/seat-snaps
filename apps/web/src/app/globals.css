@@ -141,6 +141,18 @@
   box-shadow: var(--event-card-shadow, 0 4px 24px rgba(0, 0, 0, 0.08));
 }
 
+/* ─── Theme-driven button radius ───────────────────────────────────────────── */
+[data-event-theme] button,
+[data-event-theme] [role="button"],
+[data-event-theme] .glass-card {
+  border-radius: var(--event-button-radius, 1rem);
+}
+
+/* ─── Theme text color override ────────────────────────────────────────────── */
+[data-event-theme] .event-card-title {
+  color: var(--event-text, var(--event-card-text, hsl(24 12% 16%)));
+}
+
 /* ─── Attendee typography helpers ───────────────────────────────────────────── */
 .event-heading {
   font-family: var(--event-heading-font, inherit);

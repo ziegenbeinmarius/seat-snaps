@@ -57,6 +57,7 @@ interface EventTheme {
   fontFamily: string | null;
   buttonBorderRadius: string | null;
   headerStyle: string | null;
+  customCss: string | null;
 }
 
 async function fetchEventAndTheme(eventId: string) {
@@ -109,19 +110,44 @@ export default async function AttendeeLayout({ children, params }: Props) {
     full: "9999px",
   };
 
+  const fontCssVarMap: Record<string, string> = {
+    "Inter": "var(--font-inter, 'Inter', system-ui, sans-serif)",
+    "Lato": "var(--font-lato, 'Lato', system-ui, sans-serif)",
+    "Montserrat": "var(--font-montserrat, 'Montserrat', system-ui, sans-serif)",
+    "Merriweather": "var(--font-merriweather, 'Merriweather', Georgia, serif)",
+    "Playfair Display": "var(--font-playfair, 'Playfair Display', Georgia, serif)",
+    "Roboto": "var(--font-roboto, 'Roboto', system-ui, sans-serif)",
+    "Open Sans": "var(--font-opensans, 'Open Sans', system-ui, sans-serif)",
+  };
+
   const themeVars: Record<string, string> = {};
   if (theme?.primaryColor) themeVars["--event-primary"] = theme.primaryColor;
   if (theme?.secondaryColor) themeVars["--event-secondary"] = theme.secondaryColor;
   if (theme?.accentColor) themeVars["--event-accent"] = theme.accentColor;
   if (theme?.textColor) themeVars["--event-text"] = theme.textColor;
-  if (theme?.fontFamily) themeVars["--event-font-family"] = theme.fontFamily;
+  if (theme?.fontFamily && fontCssVarMap[theme.fontFamily]) {
+    themeVars["--event-heading-font"] = fontCssVarMap[theme.fontFamily];
+    themeVars["--event-body-font"] = fontCssVarMap[theme.fontFamily];
+  }
   if (theme?.buttonBorderRadius && borderRadiusMap[theme.buttonBorderRadius]) {
     themeVars["--event-button-radius"] = borderRadiusMap[theme.buttonBorderRadius];
   }
   if (theme?.headerStyle) themeVars["--event-header-style"] = theme.headerStyle;
+  if (theme?.primaryColor) {
+    const accent = theme.accentColor ?? theme.primaryColor;
+    themeVars["--event-gradient"] = `linear-gradient(145deg, ${accent} 0%, ${theme.primaryColor} 45%, ${theme.primaryColor}bb 100%)`;
+    themeVars["--event-active-color"] = theme.primaryColor;
+  }
+
+  const backgroundStyle: React.CSSProperties = theme?.backgroundUrl
+    ? { background: `url(${theme.backgroundUrl}) center/cover no-repeat fixed, var(--event-gradient)` }
+    : { background: "var(--event-gradient)" };
 
   return (
     <SocketProvider token={sessionToken ?? ""} eventId={eventId}>
+      {theme?.customCss && (
+        <style dangerouslySetInnerHTML={{ __html: theme.customCss }} />
+      )}
       <div
         className="flex min-h-screen flex-col"
         data-event-theme={eventThemeType}
@@ -130,7 +156,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
         {/* Full-page gradient background */}
         <div
           className="fixed inset-0 -z-10"
-          style={{ background: "var(--event-gradient)" }}
+          style={backgroundStyle}
           aria-hidden="true"
         />
         {/* Re-syncs CSS vars whenever the attendee returns to this tab or navigates */}
