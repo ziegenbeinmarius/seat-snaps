@@ -7,6 +7,7 @@ import { usePhotoModeration } from "@/lib/api/use-photo-moderation";
 import { PhotoLightbox } from "@/components/photos/photo-lightbox";
 import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
 import type { PhotoResponse } from "@seat-snaps/shared";
+import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 interface Props {
   eventId: string;
@@ -81,7 +82,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
 
   return (
     <div className="space-y-4">
-      {/* Filter tabs */}
+      <MobilePageHeading variant="organizer">Photos</MobilePageHeading>
       <div className="flex gap-2">
         {filterTabs.map(({ key, label, count }) => (
           <button

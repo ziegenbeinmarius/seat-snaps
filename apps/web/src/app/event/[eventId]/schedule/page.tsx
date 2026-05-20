@@ -1,5 +1,6 @@
 import { Clock } from "lucide-react";
 import type { EventResponse, ScheduleItemResponse } from "@seat-snaps/shared";
+import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
@@ -46,13 +47,10 @@ export default async function SchedulePage({ params }: Props) {
 
   return (
     <div className="min-h-screen px-4 pb-6 pt-8">
-      {/* Page heading sits directly on gradient */}
-      <h1 className="event-heading mb-6 px-2 text-2xl font-semibold text-white drop-shadow-sm">
-        Schedule
-      </h1>
+      <MobilePageHeading className="px-2">Schedule</MobilePageHeading>
 
       {items.length === 0 && (
-        <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center shadow-sm">
           <Clock className="mb-3 h-10 w-10 event-card-muted-text" />
           <p className="event-body event-card-muted-text">No schedule yet</p>
         </div>
@@ -83,13 +81,13 @@ export default async function SchedulePage({ params }: Props) {
 
               {/* Card — text inside glass needs dark color */}
               <div
-                className={`mb-1 flex-1 rounded-2xl p-6 ${past ? "opacity-60" : "glass-card"}`}
+                className={`mb-1 flex-1 rounded-2xl p-6 shadow-sm ${past ? "opacity-60" : ""}`}
                 style={
                   past
-                    ? { background: "rgba(255,255,255,0.12)", backdropFilter: "blur(12px)" }
+                    ? { background: "rgba(255,255,255,0.7)" }
                     : active
-                      ? { background: "var(--event-card-chip-bg)" }
-                      : {}
+                      ? { background: "white", boxShadow: `0 0 0 2px var(--event-primary)` }
+                      : { background: "white" }
                 }
               >
                 {active && (

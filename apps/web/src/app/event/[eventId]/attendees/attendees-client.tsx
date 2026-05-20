@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Users } from "lucide-react";
 import type { AttendeeResponse } from "@seat-snaps/shared";
+import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 interface Props {
   attendees: AttendeeResponse[];
@@ -19,13 +20,9 @@ export function AttendeesClient({ attendees }: Props) {
 
   return (
     <div className="min-h-screen px-4 pb-6 pt-8">
-      {/* Page heading sits on gradient */}
-      <div className="mb-5 px-2">
-        <h1 className="event-heading text-2xl font-semibold text-white drop-shadow-sm">Guests</h1>
-      </div>
+      <MobilePageHeading className="px-2">Guests</MobilePageHeading>
 
-      {/* Search — glass card with dark text inside */}
-      <div className="glass-card mb-4 flex items-center gap-2 rounded-2xl px-4 py-3">
+      <div className="mb-4 flex items-center gap-2 rounded-2xl bg-white px-4 py-3 shadow-sm">
         <Users className="h-4 w-4 shrink-0 event-card-muted-text" />
         <input
           type="text"
@@ -38,7 +35,7 @@ export function AttendeesClient({ attendees }: Props) {
       </div>
 
       {filtered.length === 0 && (
-        <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
+        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center shadow-sm">
           <Users className="mb-3 h-10 w-10 event-card-muted-text" />
           <p className="event-body event-card-muted-text">No guests found</p>
         </div>
@@ -46,7 +43,7 @@ export function AttendeesClient({ attendees }: Props) {
 
       <div className="space-y-2">
         {filtered.map((a) => (
-          <div key={a.id} className="glass-card rounded-2xl p-4">
+          <div key={a.id} className="rounded-2xl bg-white p-4 shadow-sm">
             <div className="flex items-start justify-between">
               <div>
                 <div className="event-heading font-semibold event-card-title">{a.name}</div>

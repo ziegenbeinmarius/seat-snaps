@@ -10,6 +10,7 @@ import {
   useConfirmUpload,
 } from "@/lib/api/photos";
 import type { PhotoResponse } from "@seat-snaps/shared";
+import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 interface Props {
   eventId: string;
@@ -79,8 +80,9 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
   );
 
   return (
-    <div className="p-4 space-y-4">
-      {/* Upload area */}
+    <div className="px-4 pb-6 pt-8 space-y-4">
+      <MobilePageHeading className="px-2">Photos</MobilePageHeading>
+
       <div className="rounded-2xl bg-white p-4 shadow-sm">
         <div className="flex items-center justify-between mb-3">
           <span className="text-sm font-medium text-gray-700">

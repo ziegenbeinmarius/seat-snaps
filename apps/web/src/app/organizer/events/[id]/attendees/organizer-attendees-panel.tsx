@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { AttendeeResponse } from "@seat-snaps/shared";
 import { CheckCircle2, Clock, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 interface Props {
   eventId: string;
@@ -37,14 +38,16 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold" style={{ fontFamily: "var(--font-cormorant, Georgia, serif)" }}>
-          Attendees
-        </h2>
-        <span className="text-sm text-[hsl(28_8%_52%)]">
-          {checkedIn} / {attendees.length} checked in
-        </span>
-      </div>
+      <MobilePageHeading
+        variant="organizer"
+        action={
+          <span className="text-sm text-[hsl(28_8%_52%)]">
+            {checkedIn} / {attendees.length} checked in
+          </span>
+        }
+      >
+        Attendees
+      </MobilePageHeading>
 
       {/* Pending RSVP section */}
       {pendingAttendees.length > 0 && (
@@ -123,7 +126,7 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
           {nonPendingAttendees.map((a) => (
             <div
               key={a.id}
-              className="flex items-center gap-3 rounded-xl border border-[rgba(200,175,140,0.3)] bg-white/60 px-4 py-3"
+              className="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-sm"
             >
               <div
                 className={cn(
