@@ -12,6 +12,7 @@ export type UpdateAttendeeData = Partial<
     | "seatId"
     | "photoLimit"
     | "checkedInAt"
+    | "status"
   >
 >;
 
@@ -22,6 +23,7 @@ export interface IAttendeeRepository {
   findByEventAndEmail(eventId: string, email: string): Promise<Attendee | null>;
   create(data: NewAttendee): Promise<Attendee>;
   update(id: string, data: UpdateAttendeeData): Promise<Attendee>;
+  bulkUpdateStatus(ids: string[], status: "confirmed" | "pending" | "declined"): Promise<Attendee[]>;
   delete(id: string): Promise<void>;
 }
 

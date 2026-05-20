@@ -10,7 +10,7 @@ import type { IEventRepository } from "../domain/repositories/IEventRepository";
 import { EVENT_REPOSITORY } from "../domain/repositories/IEventRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
-import type { IAttendeeService } from "./domain/IAttendeeService";
+import type { IAttendeeService, AttendeeListResult } from "./domain/IAttendeeService";
 import type { CreateAttendeeInput, UpdateAttendeeInput, RsvpRegistrationInput } from "@seat-snaps/shared";
 
 @Injectable()
@@ -26,16 +26,25 @@ export class AttendeesService implements IAttendeeService {
     private readonly membershipRepository: IEventMembershipRepository,
   ) {}
 
-  async listForEvent(eventId: string, userId: string): Promise<Attendee[]> {
+  async listForEvent(eventId: string, userId: string, status?: string): Promise<AttendeeListResult> {
     await this.requireMember(eventId, userId);
-    return this.attendeeRepository.findByEventId(eventId);
+    const all = await this.attendeeRepository.findByEventId(eventId);
+    const meta = {
+      pending: all.filter((a) => a.status === "pending").length,
+      confirmed: all.filter((a) => a.status === "confirmed").length,
+      declined: all.filter((a) => a.status === "declined").length,
+    };
+    const filtered = status && status !== "all" ? all.filter((a) => a.status === status) : all;
+    return { attendees: filtered, meta };
   }
 
   async listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "description" | "conversationStarters">[]> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
-    const attendees = await this.attendeeRepository.findByEventId(eventId);
-    return attendees.map(({ id, name, groupLabel, tableId, description, conversationStarters }) => ({ id, name, groupLabel, tableId, description, conversationStarters }));
+    const all = await this.attendeeRepository.findByEventId(eventId);
+    return all
+      .filter((a) => a.status === "confirmed")
+      .map(({ id, name, groupLabel, tableId, description, conversationStarters }) => ({ id, name, groupLabel, tableId, description, conversationStarters }));
   }
 
   async getById(attendeeId: string, eventId: string, userId: string): Promise<Attendee> {
@@ -165,6 +174,27 @@ export class AttendeesService implements IAttendeeService {
     const attendee = await this.attendeeRepository.findByQrToken(qrToken);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
     return this.attendeeRepository.update(attendee.id, { checkedInAt: new Date() });
+  }
+
+  async updateStatus(attendeeId: string, eventId: string, status: "confirmed" | "declined", userId: string): Promise<Attendee> {
+    await this.requireMember(eventId, userId);
+    const attendee = await this.attendeeRepository.findById(attendeeId);
+    if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
+    if (attendee.status !== "pending") {
+      throw new BadRequestException(`Cannot change status: attendee is already '${attendee.status}'`);
+    }
+    return this.attendeeRepository.update(attendeeId, { status });
+  }
+
+  async bulkUpdateStatus(attendeeIds: string[], eventId: string, status: "confirmed" | "declined", userId: string): Promise<{ updated: Attendee[] }> {
+    await this.requireMember(eventId, userId);
+    const attendees = await Promise.all(attendeeIds.map((id) => this.attendeeRepository.findById(id)));
+    const mismatched = attendees.filter((a) => !a || a.eventId !== eventId);
+    if (mismatched.length > 0) throw new BadRequestException("One or more attendees not found in this event");
+    const nonPending = attendees.filter((a) => a!.status !== "pending");
+    if (nonPending.length > 0) throw new BadRequestException("One or more attendees are not in pending status");
+    const updated = await this.attendeeRepository.bulkUpdateStatus(attendeeIds, status);
+    return { updated };
   }
 
   private async requireMember(eventId: string, userId: string): Promise<void> {
