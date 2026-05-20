@@ -3,17 +3,23 @@ import { z } from "zod";
 export const TableShapeSchema = z.enum(["round", "rectangular", "long"]);
 export type TableShape = z.infer<typeof TableShapeSchema>;
 
+export const AttendeeStatusSchema = z.enum(["confirmed", "pending", "declined"]);
+export type AttendeeStatus = z.infer<typeof AttendeeStatusSchema>;
+
 export const CreateAttendeeSchema = z.object({
   name: z.string().min(1, "Name is required"),
   email: z.string().email().optional(),
   groupLabel: z.string().optional(),
   relationInfo: z.string().optional(),
   conversationStarters: z.array(z.string()).optional(),
+  description: z.string().optional(),
   photoLimit: z.number().int().positive().optional(),
 });
 export type CreateAttendeeInput = z.infer<typeof CreateAttendeeSchema>;
 
-export const UpdateAttendeeSchema = CreateAttendeeSchema.partial();
+export const UpdateAttendeeSchema = CreateAttendeeSchema.partial().extend({
+  status: AttendeeStatusSchema.optional(),
+});
 export type UpdateAttendeeInput = z.infer<typeof UpdateAttendeeSchema>;
 
 export const AttendeeResponseSchema = z.object({
@@ -24,6 +30,8 @@ export const AttendeeResponseSchema = z.object({
   groupLabel: z.string().nullable(),
   relationInfo: z.string().nullable(),
   conversationStarters: z.array(z.string()).nullable(),
+  description: z.string().nullable(),
+  status: AttendeeStatusSchema,
   tableId: z.string().uuid().nullable(),
   seatId: z.string().uuid().nullable(),
   qrToken: z.string(),
@@ -33,6 +41,14 @@ export const AttendeeResponseSchema = z.object({
   updatedAt: z.coerce.date(),
 });
 export type AttendeeResponse = z.infer<typeof AttendeeResponseSchema>;
+
+export const RsvpRegistrationSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Valid email is required"),
+  description: z.string().optional(),
+  conversationStarters: z.array(z.string()).optional(),
+});
+export type RsvpRegistrationInput = z.infer<typeof RsvpRegistrationSchema>;
 
 export const CreateTableSchema = z.object({
   name: z.string().min(1, "Name is required"),

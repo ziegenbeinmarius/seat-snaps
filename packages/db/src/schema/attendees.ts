@@ -1,5 +1,7 @@
-import { pgTable, uuid, text, timestamp, integer, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, integer, index, uniqueIndex, pgEnum } from "drizzle-orm/pg-core";
 import { events } from "./events.js";
+
+export const attendeeStatusEnum = pgEnum("attendee_status", ["confirmed", "pending", "declined"]);
 
 export const attendees = pgTable(
   "attendees",
@@ -13,6 +15,8 @@ export const attendees = pgTable(
     groupLabel: text("group_label"),
     relationInfo: text("relation_info"),
     conversationStarters: text("conversation_starters").array(),
+    description: text("description"),
+    status: attendeeStatusEnum("status").notNull().default("confirmed"),
     // tableId and seatId are denormalized for quick lookup; FKs enforced from the other side
     tableId: uuid("table_id"),
     seatId: uuid("seat_id"),

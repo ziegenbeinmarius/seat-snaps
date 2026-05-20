@@ -57,6 +57,13 @@
       "when": 1779262981461,
       "tag": "0007_zippy_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779267663870,
+      "tag": "0008_solid_wither",
+      "breakpoints": true
     }
   ]
 }
