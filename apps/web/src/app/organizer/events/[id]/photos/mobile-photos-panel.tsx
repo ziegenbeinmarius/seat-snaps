@@ -8,6 +8,7 @@ import { PhotoLightbox } from "@/components/photos/photo-lightbox";
 import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
 import type { PhotoResponse } from "@seat-snaps/shared";
 import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface Props {
   eventId: string;
@@ -121,14 +122,13 @@ export function MobilePhotosPanel({ eventId }: Props) {
       )}
 
       {filtered.length === 0 ? (
-        <div
-          className="rounded-2xl py-16 text-center"
-          style={{ background: "rgba(255,252,247,0.75)", border: "1px solid rgba(220,210,195,0.6)" }}
-        >
-          <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
-            {filter === "pending" ? "No photos pending review." : "No photos here."}
-          </p>
-        </div>
+        <Card>
+          <CardContent className="py-16 text-center">
+            <p className="text-sm text-muted-foreground">
+              {filter === "pending" ? "No photos pending review." : "No photos here."}
+            </p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid grid-cols-2 gap-3">
           {filtered.map((photo) => (

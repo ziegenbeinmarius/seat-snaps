@@ -1,6 +1,7 @@
 import { Clock } from "lucide-react";
 import type { EventResponse, ScheduleItemResponse } from "@seat-snaps/shared";
 import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
+import { Card, CardContent } from "@/components/ui/card";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
@@ -50,10 +51,12 @@ export default async function SchedulePage({ params }: Props) {
       <MobilePageHeading className="px-2">Schedule</MobilePageHeading>
 
       {items.length === 0 && (
-        <div className="flex flex-col items-center justify-center rounded-2xl bg-white py-16 text-center shadow-sm">
-          <Clock className="mb-3 h-10 w-10 event-card-muted-text" />
-          <p className="event-body event-card-muted-text">No schedule yet</p>
-        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+            <Clock className="mb-3 h-10 w-10 event-card-muted-text" />
+            <p className="event-body event-card-muted-text">No schedule yet</p>
+          </CardContent>
+        </Card>
       )}
 
       <div className="space-y-3">
@@ -79,37 +82,38 @@ export default async function SchedulePage({ params }: Props) {
                 )}
               </div>
 
-              {/* Card — text inside glass needs dark color */}
-              <div
-                className={`mb-1 flex-1 rounded-2xl p-6 shadow-sm ${past ? "opacity-60" : ""}`}
+              <Card
+                className={`mb-1 flex-1 ${past ? "opacity-60" : ""}`}
                 style={
-                  past
-                    ? { background: "rgba(255,255,255,0.7)" }
-                    : active
-                      ? { background: "white", boxShadow: `0 0 0 2px var(--event-primary)` }
-                      : { background: "white" }
+                  active
+                    ? { boxShadow: `0 0 0 2px var(--event-primary)` }
+                    : past
+                      ? { background: "rgba(255,255,255,0.7)" }
+                      : undefined
                 }
               >
-                {active && (
-                  <span
-                    className="mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
-                    style={{ background: "var(--event-primary)" }}
-                  >
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
-                    Happening now
-                  </span>
-                )}
-                <div className="event-heading text-lg font-semibold event-card-title">{item.title}</div>
-                <div className="event-body mt-0.5 text-sm event-card-muted-text">
-                  {formatTime(item.startTime, eventTimezone)}
-                  {item.endTime && ` – ${formatTime(item.endTime, eventTimezone)}`}
-                </div>
-                {item.description && (
-                  <p className="event-body mt-1.5 text-base leading-relaxed event-card-desc">
-                    {item.description}
-                  </p>
-                )}
-              </div>
+                <CardContent className="p-6">
+                  {active && (
+                    <span
+                      className="mb-1.5 inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white"
+                      style={{ background: "var(--event-primary)" }}
+                    >
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
+                      Happening now
+                    </span>
+                  )}
+                  <div className="event-heading text-lg font-semibold event-card-title">{item.title}</div>
+                  <div className="event-body mt-0.5 text-sm event-card-muted-text">
+                    {formatTime(item.startTime, eventTimezone)}
+                    {item.endTime && ` – ${formatTime(item.endTime, eventTimezone)}`}
+                  </div>
+                  {item.description && (
+                    <p className="event-body mt-1.5 text-base leading-relaxed event-card-desc">
+                      {item.description}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
           );
         })}
