@@ -14,6 +14,7 @@ import {
 interface Props {
   eventId: string;
   eventName: string;
+  hasSeating: boolean;
   active: boolean;
   onDone: () => void;
 }
@@ -22,30 +23,35 @@ function storageKey(eventId: string) {
   return `seatsnaps-welcomed-${eventId}`;
 }
 
-const features = [
+const allFeatures = [
   {
     icon: MapPin,
     label: "Find your seat",
     desc: "See your table assignment and who's sitting nearby.",
+    requiresSeating: true,
   },
   {
     icon: Users,
     label: "Browse guests",
     desc: "Explore the guest directory and discover shared interests.",
+    requiresSeating: false,
   },
   {
     icon: Calendar,
     label: "View the schedule",
     desc: "Stay on top of every moment as the event unfolds.",
+    requiresSeating: false,
   },
   {
     icon: Camera,
     label: "Upload photos",
     desc: "Take pictures and share them — they might make the highlights reel!",
+    requiresSeating: false,
   },
 ];
 
-export function WelcomeDialog({ eventId, eventName, active, onDone }: Props) {
+export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }: Props) {
+  const features = allFeatures.filter((f) => !f.requiresSeating || hasSeating);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
