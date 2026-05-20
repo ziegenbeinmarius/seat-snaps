@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Copy, Check } from "lucide-react";
+import Link from "next/link";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
 import { useEvent, useUpdateEvent } from "@/lib/api/events";
 import { useAttendees } from "@/lib/api/attendees";
@@ -53,6 +54,7 @@ export function EventOverviewPanel({ eventId }: Props) {
   });
 
   const watchedHasSeating = useWatch({ control, name: "hasSeating" });
+  const watchedRsvpEnabled = useWatch({ control, name: "rsvpEnabled" });
 
   function openEdit() {
     if (!event) return;
@@ -101,18 +103,21 @@ export function EventOverviewPanel({ eventId }: Props) {
     minute: "2-digit",
   });
 
+  const pendingCount = attendees.filter((a) => a.status === "pending").length;
+
   async function toggleFinished() {
     await updateMutation.mutateAsync({ isFinished: !event!.isFinished });
     setFinishConfirmOpen(false);
   }
 
-  async function toggleRsvp() {
-    await updateMutation.mutateAsync({ rsvpEnabled: !event!.rsvpEnabled });
-  }
-
   function getRsvpLink() {
     const base = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
     return `${base}/join/event/${eventId}`;
+  }
+
+  function getRsvpQrUrl() {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
+    return `/api/proxy/events/${eventId}/qr/event?appUrl=${encodeURIComponent(appUrl)}`;
   }
 
   async function copyRsvpLink() {
@@ -181,6 +186,35 @@ export function EventOverviewPanel({ eventId }: Props) {
                 <span className="text-muted-foreground w-20 shrink-0 font-medium">Seating</span>
                 <span>{event.hasSeating ? "Assigned seating" : "No seating plan"}</span>
               </div>
+              {event.rsvpEnabled && (
+                <div className="flex gap-2">
+                  <span className="text-muted-foreground w-20 shrink-0 font-medium">RSVP</span>
+                  <div className="flex flex-wrap items-center gap-2 min-w-0">
+                    <code className="text-xs bg-muted border rounded px-2 py-0.5 truncate max-w-[220px]">
+                      {getRsvpLink()}
+                    </code>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 px-2 gap-1 text-xs"
+                      onClick={copyRsvpLink}
+                    >
+                      {copiedRsvp ? (
+                        <><Check className="h-3 w-3 text-green-600" />Copied</>
+                      ) : (
+                        <><Copy className="h-3 w-3" />Copy</>
+                      )}
+                    </Button>
+                    {pendingCount > 0 && (
+                      <Link href={`/dashboard/events/${eventId}/attendees?status=pending`}>
+                        <Badge className="cursor-pointer bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200">
+                          {pendingCount} pending
+                        </Badge>
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
               {event.endDate && (
                 <div className="flex gap-2">
                   <span className="text-muted-foreground w-20 shrink-0 font-medium">Ends</span>
@@ -208,70 +242,6 @@ export function EventOverviewPanel({ eventId }: Props) {
           )}
         </div>
 
-        {/* RSVP settings card */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">RSVP / Self-Registration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-start gap-3">
-              <Checkbox
-                id="rsvp-toggle"
-                className="mt-0.5"
-                checked={event.rsvpEnabled}
-                onCheckedChange={toggleRsvp}
-                disabled={updateMutation.isPending}
-              />
-              <div className="flex-1">
-                <Label htmlFor="rsvp-toggle" className="cursor-pointer font-medium">
-                  Allow guests to register themselves for this event
-                </Label>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  When enabled, share the RSVP link below. New sign-ups appear as pending until you approve or decline them.
-                </p>
-              </div>
-            </div>
-
-            {event.rsvpEnabled && (
-              <div className="rounded-md border bg-muted/30 p-3 space-y-2">
-                <p className="text-xs font-medium text-muted-foreground">Shareable RSVP link</p>
-                <div className="flex items-center gap-2">
-                  <code className="flex-1 text-xs bg-background border rounded px-2 py-1 truncate">
-                    {getRsvpLink()}
-                  </code>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="shrink-0 gap-1.5"
-                    onClick={copyRsvpLink}
-                  >
-                    {copiedRsvp ? (
-                      <>
-                        <Check className="h-3.5 w-3.5 text-green-600" />
-                        Copied
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="h-3.5 w-3.5" />
-                        Copy
-                      </>
-                    )}
-                  </Button>
-                </div>
-                {attendees.filter((a) => a.status === "pending").length > 0 && (
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                      {attendees.filter((a) => a.status === "pending").length} pending approval
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      — review them in the Attendees tab
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -359,27 +329,78 @@ export function EventOverviewPanel({ eventId }: Props) {
               </div>
             </div>
 
-            <div className="flex items-start gap-3 rounded-md border p-3">
-              <Controller
-                name="rsvpEnabled"
-                control={control}
-                render={({ field }) => (
-                  <Checkbox
-                    id="edit-rsvp-enabled"
-                    className="mt-0.5"
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                  />
-                )}
-              />
-              <div>
-                <Label htmlFor="edit-rsvp-enabled" className="cursor-pointer font-medium">
-                  RSVP / Self-Registration
-                </Label>
-                <p className="text-xs text-muted-foreground">
-                  Allow guests to register themselves. New sign-ups appear as pending until approved.
-                </p>
+            <div className="rounded-md border p-3 space-y-3">
+              <div className="flex items-start gap-3">
+                <Controller
+                  name="rsvpEnabled"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      id="edit-rsvp-enabled"
+                      className="mt-0.5"
+                      checked={field.value ?? false}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+                <div>
+                  <Label htmlFor="edit-rsvp-enabled" className="cursor-pointer font-medium">
+                    RSVP / Self-Registration
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Allow guests to register themselves. New sign-ups appear as pending until approved.
+                  </p>
+                </div>
               </div>
+
+              {watchedRsvpEnabled && (
+                <div className="space-y-3 rounded-md bg-muted/30 p-3">
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Shareable RSVP link</p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 text-xs bg-background border rounded px-2 py-1 truncate">
+                        {getRsvpLink()}
+                      </code>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        type="button"
+                        className="shrink-0 gap-1.5"
+                        onClick={copyRsvpLink}
+                      >
+                        {copiedRsvp ? (
+                          <><Check className="h-3.5 w-3.5 text-green-600" />Copied</>
+                        ) : (
+                          <><Copy className="h-3.5 w-3.5" />Copy</>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <div className="shrink-0">
+                      <p className="text-xs font-medium text-muted-foreground mb-1.5">QR Code</p>
+                      <img
+                        src={getRsvpQrUrl()}
+                        alt="RSVP QR code"
+                        className="h-24 w-24 rounded border"
+                      />
+                    </div>
+                    {pendingCount > 0 && (
+                      <div className="flex flex-col justify-center pt-5 gap-1">
+                        <Link
+                          href={`/dashboard/events/${eventId}/attendees?status=pending`}
+                          onClick={closeEdit}
+                        >
+                          <Badge className="cursor-pointer bg-amber-100 text-amber-800 border-amber-200 hover:bg-amber-200">
+                            {pendingCount} pending
+                          </Badge>
+                        </Link>
+                        <span className="text-xs text-muted-foreground">awaiting approval</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <DialogFooter className="pt-2">
