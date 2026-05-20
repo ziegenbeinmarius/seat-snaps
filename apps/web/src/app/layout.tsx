@@ -24,12 +24,13 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.svg",
-    apple: "/favicon.svg",
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "SeatSnaps",
+    startupImage: "/icons/apple-touch-icon.png",
   },
 };
 
