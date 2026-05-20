@@ -35,6 +35,7 @@ export class EventsService implements IEventService {
       date: event.date,
       endDate: event.endDate,
       location: event.location,
+      timezone: event.timezone,
       type: event.type,
       hasSeating: event.hasSeating,
     };
@@ -57,6 +58,7 @@ export class EventsService implements IEventService {
       date: data.date,
       endDate: data.endDate ?? null,
       location: data.location ?? null,
+      timezone: data.timezone ?? "Europe/Stockholm",
       type: data.type,
       hasSeating: data.hasSeating ?? true,
     });
@@ -79,6 +81,7 @@ export class EventsService implements IEventService {
       ...(data.date !== undefined && { date: data.date }),
       ...(data.endDate !== undefined && { endDate: data.endDate }),
       ...(data.location !== undefined && { location: data.location }),
+      ...(data.timezone !== undefined && { timezone: data.timezone }),
       ...(data.type !== undefined && { type: data.type }),
       ...(data.isFinished !== undefined && { isFinished: data.isFinished }),
       ...(data.hasSeating !== undefined && { hasSeating: data.hasSeating }),

@@ -28,7 +28,10 @@ export function NewEventForm({ onClose }: Props) {
     formState: { errors },
   } = useForm<CreateEventInput>({
     resolver: zodResolver(CreateEventSchema),
-    defaultValues: { hasSeating: true },
+    defaultValues: {
+      hasSeating: true,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    },
   });
 
   async function onSubmit(data: CreateEventInput) {
@@ -76,6 +79,11 @@ export function NewEventForm({ onClose }: Props) {
       <div className="space-y-1.5">
         <Label htmlFor="event-location">Location</Label>
         <Input id="event-location" {...register("location")} placeholder="Venue name or address" />
+      </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor="event-timezone">Timezone</Label>
+        <Input id="event-timezone" {...register("timezone")} placeholder="Europe/Stockholm" />
       </div>
 
       <div className="space-y-1.5">

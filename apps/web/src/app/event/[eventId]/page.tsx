@@ -22,17 +22,22 @@ const EVENT_TYPE_LABEL: Record<string, string> = {
   other: "Event",
 };
 
-function formatDate(d: Date | string) {
+function formatDate(d: Date | string, timeZone?: string | null) {
   return new Date(d).toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
+    ...(timeZone ? { timeZone } : {}),
   });
 }
 
-function formatTime(d: Date | string) {
-  return new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+function formatTime(d: Date | string, timeZone?: string | null) {
+  return new Date(d).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
+  });
 }
 
 function getCurrentScheduleItem(items: ScheduleItemResponse[]) {
@@ -89,7 +94,7 @@ export default async function AttendeeHomePage({ params }: Props) {
         {event?.date && (
           <p className="mt-1.5 flex items-center gap-1.5 text-sm text-white/80">
             <Calendar className="h-3.5 w-3.5" />
-            {formatDate(event.date)}
+            {formatDate(event.date, event.timezone)}
           </p>
         )}
         {event?.location && (
@@ -132,8 +137,8 @@ export default async function AttendeeHomePage({ params }: Props) {
                     {currentItem.title}
                   </div>
                   <div className="event-body text-xs event-card-muted-text">
-                    {formatTime(currentItem.startTime)}
-                    {currentItem.endTime && ` – ${formatTime(currentItem.endTime)}`}
+                    {formatTime(currentItem.startTime, event?.timezone)}
+                    {currentItem.endTime && ` – ${formatTime(currentItem.endTime, event?.timezone)}`}
                   </div>
                 </div>
               </div>
@@ -151,7 +156,7 @@ export default async function AttendeeHomePage({ params }: Props) {
                   <div className="text-xs font-medium event-card-muted-text">Up next</div>
                   <div className="event-heading font-medium event-card-title">{nextItem.title}</div>
                   <div className="event-body text-xs event-card-muted-text">
-                    {formatTime(nextItem.startTime)}
+                    {formatTime(nextItem.startTime, event?.timezone)}
                   </div>
                 </div>
               </div>

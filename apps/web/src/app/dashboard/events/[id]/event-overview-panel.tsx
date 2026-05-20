@@ -58,6 +58,7 @@ export function EventOverviewPanel({ eventId }: Props) {
       date: toDatetimeLocal(event.date) as unknown as Date,
       endDate: event.endDate ? (toDatetimeLocal(event.endDate) as unknown as Date) : undefined,
       location: event.location ?? undefined,
+      timezone: event.timezone ?? undefined,
       type: event.type,
       hasSeating: event.hasSeating,
     });
@@ -150,6 +151,12 @@ export function EventOverviewPanel({ eventId }: Props) {
                   <span>{event.location}</span>
                 </div>
               )}
+              {event.timezone && (
+                <div className="flex gap-2">
+                  <span className="text-muted-foreground w-20 shrink-0 font-medium">Timezone</span>
+                  <span>{event.timezone}</span>
+                </div>
+              )}
               <div className="flex gap-2">
                 <span className="text-muted-foreground w-20 shrink-0 font-medium">Seating</span>
                 <span>{event.hasSeating ? "Assigned seating" : "No seating plan"}</span>
@@ -221,6 +228,11 @@ export function EventOverviewPanel({ eventId }: Props) {
             <div className="space-y-1.5">
               <Label htmlFor="edit-location">Location</Label>
               <Input id="edit-location" {...register("location")} placeholder="Venue name or address" />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="edit-timezone">Timezone</Label>
+              <Input id="edit-timezone" {...register("timezone")} placeholder="Europe/Stockholm" />
             </div>
 
             <div className="space-y-1.5">

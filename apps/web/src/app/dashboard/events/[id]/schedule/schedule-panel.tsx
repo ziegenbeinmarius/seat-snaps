@@ -16,14 +16,24 @@ import type { ScheduleItemResponse } from "@seat-snaps/shared";
 interface Props {
   eventId: string;
   eventDate?: Date | string;
+  eventTimezone?: string | null;
 }
 
-function formatTime(d: Date | string) {
-  return new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+function formatTime(d: Date | string, timeZone?: string | null) {
+  return new Date(d).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
+  });
 }
 
-function formatDate(d: Date | string) {
-  return new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+function formatDate(d: Date | string, timeZone?: string | null) {
+  return new Date(d).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    ...(timeZone ? { timeZone } : {}),
+  });
 }
 
 function toDatetimeLocal(d: Date | string | null | undefined): string {
@@ -33,7 +43,7 @@ function toDatetimeLocal(d: Date | string | null | undefined): string {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-export function SchedulePanel({ eventId, eventDate }: Props) {
+export function SchedulePanel({ eventId, eventDate, eventTimezone }: Props) {
   const { data: items = [], isLoading } = useScheduleItems(eventId);
   const createMutation = useCreateScheduleItem(eventId);
   const updateMutation = useUpdateScheduleItem(eventId);
@@ -144,8 +154,8 @@ export function SchedulePanel({ eventId, eventDate }: Props) {
                 <div className="min-w-0 flex-1">
                   <p className="font-medium">{item.title}</p>
                   <p className="text-muted-foreground text-sm">
-                    {formatDate(item.startTime)} · {formatTime(item.startTime)}
-                    {item.endTime && ` – ${formatTime(item.endTime)}`}
+                    {formatDate(item.startTime, eventTimezone)} · {formatTime(item.startTime, eventTimezone)}
+                    {item.endTime && ` – ${formatTime(item.endTime, eventTimezone)}`}
                   </p>
                   {item.description && (
                     <p className="text-muted-foreground mt-1 text-sm">{item.description}</p>

@@ -1,7 +1,7 @@
 import type { Event, NewEvent } from "@seat-snaps/db";
 
 export type UpdateEventData = Partial<
-  Pick<NewEvent, "title" | "description" | "date" | "endDate" | "location" | "type" | "settings" | "isFinished">
+  Pick<NewEvent, "title" | "description" | "date" | "endDate" | "location" | "timezone" | "type" | "settings" | "isFinished">
 >;
 
 export interface EventFilters {

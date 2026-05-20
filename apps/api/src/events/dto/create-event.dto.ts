@@ -20,6 +20,10 @@ export class CreateEventDto {
   @IsOptional()
   location?: string;
 
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
   @IsEnum(["wedding", "birthday", "corporate", "other"])
   type: "wedding" | "birthday" | "corporate" | "other";
 
