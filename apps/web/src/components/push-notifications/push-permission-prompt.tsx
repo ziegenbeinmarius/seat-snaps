@@ -15,80 +15,89 @@ import {
 
 interface Props {
   eventId: string;
+  active: boolean;
+  onDone: () => void;
 }
-
-type DismissState = "dismissed" | null;
 
 const STORAGE_KEY = "push-permission-dismissed";
 
-export function PushPermissionPrompt({ eventId }: Props) {
+export function PushPermissionPrompt({ eventId, active, onDone }: Props) {
   const [visible, setVisible] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const { mutate: subscribe, isPending } = useSubscribeToPush(eventId);
 
+  // Sync subscription silently whenever the user returns to the tab.
   useEffect(() => {
     if (typeof window === "undefined") return;
-    if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
-
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
 
     async function syncIfGranted() {
       if (Notification.permission !== "granted") return;
-
       try {
         const didSync = await syncPushSubscription(eventId);
-        if (!cancelled && didSync) {
-          setSubscribed(true);
-          setVisible(false);
-        }
+        if (didSync) setSubscribed(true);
       } catch {
-        if (!cancelled) {
-          setSubscribed(false);
-        }
+        // ignore
       }
-    }
-
-    function updatePromptState() {
-      if (Notification.permission === "granted") {
-        void syncIfGranted();
-        return;
-      }
-
-      if (Notification.permission === "denied") {
-        setVisible(false);
-        return;
-      }
-
-      const dismissed = localStorage.getItem(STORAGE_KEY) as DismissState;
-      if (dismissed === "dismissed") return;
-
-      timer = setTimeout(() => setVisible(true), 3000);
     }
 
     function retrySyncOnResume() {
-      if (document.visibilityState === "visible") {
-        void syncIfGranted();
-      }
+      if (document.visibilityState === "visible") void syncIfGranted();
     }
 
-    updatePromptState();
     window.addEventListener("focus", retrySyncOnResume);
     document.addEventListener("visibilitychange", retrySyncOnResume);
-
     return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
       window.removeEventListener("focus", retrySyncOnResume);
       document.removeEventListener("visibilitychange", retrySyncOnResume);
     };
   }, [eventId]);
+
+  // Sequencer: decide whether to show or skip when it's our turn.
+  useEffect(() => {
+    if (!active) return;
+    if (typeof window === "undefined") return;
+    if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+      onDone();
+      return;
+    }
+
+    let cancelled = false;
+
+    async function checkAndShow() {
+      if (Notification.permission === "granted") {
+        try {
+          const didSync = await syncPushSubscription(eventId);
+          if (!cancelled && didSync) setSubscribed(true);
+        } catch {
+          // ignore
+        }
+        if (!cancelled) onDone();
+        return;
+      }
+
+      if (Notification.permission === "denied") {
+        onDone();
+        return;
+      }
+
+      if (localStorage.getItem(STORAGE_KEY) === "dismissed") {
+        onDone();
+        return;
+      }
+
+      if (!cancelled) setVisible(true);
+    }
+
+    void checkAndShow();
+    return () => { cancelled = true; };
+  }, [active, eventId, onDone]);
 
   if (!visible || subscribed) return null;
 
   function dismiss() {
     localStorage.setItem(STORAGE_KEY, "dismissed");
     setVisible(false);
+    onDone();
   }
 
   function handleSubscribe() {
@@ -97,6 +106,7 @@ export function PushPermissionPrompt({ eventId }: Props) {
         if (granted) {
           setSubscribed(true);
           setVisible(false);
+          onDone();
         } else {
           dismiss();
         }

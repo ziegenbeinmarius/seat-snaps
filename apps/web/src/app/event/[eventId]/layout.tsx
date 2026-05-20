@@ -8,9 +8,7 @@ import { ThemeSyncer } from "./theme-syncer";
 import { SocketProvider } from "@/components/broadcast/socket-provider";
 import { BroadcastBanner } from "@/components/broadcast/broadcast-banner";
 import { ConnectionStatus } from "@/components/broadcast/connection-status";
-import { PushPermissionPrompt } from "@/components/push-notifications/push-permission-prompt";
-import { IosInstallPrompt } from "@/components/push-notifications/ios-install-prompt";
-import { WelcomeDialog } from "@/components/attendee/welcome-dialog";
+import { AttendeeOnboardingFlow } from "@/components/attendee/onboarding-flow";
 import { PendingStatusBanner } from "@/components/attendee/pending-status-banner";
 
 export async function generateMetadata({
@@ -142,9 +140,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
           <ConnectionStatus />
           <main className="flex-1 pb-20">{children}</main>
         </div>
-        <WelcomeDialog eventId={eventId} eventName={event?.title ?? "this event"} />
-        <IosInstallPrompt />
-        <PushPermissionPrompt eventId={eventId} />
+        <AttendeeOnboardingFlow eventId={eventId} eventName={event?.title ?? "this event"} />
         <AttendeeNav eventId={eventId} hasSeating={event?.hasSeating ?? true} />
       </div>
     </SocketProvider>

@@ -31,21 +31,27 @@ function isStandalone(): boolean {
   );
 }
 
-export function IosInstallPrompt() {
+interface Props {
+  active: boolean;
+  onDone: () => void;
+}
+
+export function IosInstallPrompt({ active, onDone }: Props) {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!isIosSafari()) return;
-    if (isStandalone()) return;
-    if (localStorage.getItem(STORAGE_KEY)) return;
-
-    const timer = setTimeout(() => setVisible(true), 4000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!active) return;
+    if (!isIosSafari() || isStandalone() || localStorage.getItem(STORAGE_KEY)) {
+      onDone();
+      return;
+    }
+    setVisible(true);
+  }, [active, onDone]);
 
   function dismiss() {
     localStorage.setItem(STORAGE_KEY, "1");
     setVisible(false);
+    onDone();
   }
 
   if (!visible) return null;
