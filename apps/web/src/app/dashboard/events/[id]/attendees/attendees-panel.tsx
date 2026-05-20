@@ -1,19 +1,33 @@
 "use client";
 
 import { useState, useRef, type ChangeEvent } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { useAttendees, useCreateAttendee, useUpdateAttendee, useDeleteAttendee, useImportAttendees, useUnassignAttendee } from "@/lib/api/attendees";
+import { Pencil, Trash2, Check, X } from "lucide-react";
+import {
+  useAttendees,
+  useCreateAttendee,
+  useUpdateAttendee,
+  useDeleteAttendee,
+  useImportAttendees,
+  useUnassignAttendee,
+  useUpdateAttendeeStatus,
+  useBulkUpdateAttendeeStatus,
+} from "@/lib/api/attendees";
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import type { AttendeeResponse } from "@seat-snaps/shared";
 import { AttendeeQrDialog } from "./attendee-qr-dialog";
+import { cn } from "@/lib/utils";
+
+type StatusFilter = "all" | "pending" | "confirmed" | "declined";
 
 interface Props {
   eventId: string;
@@ -21,11 +35,11 @@ interface Props {
 }
 
 export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
-    // Helper to build the join URL for an attendee
-    const getJoinUrl = (qrToken: string) => {
-      const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
-      return `${base}/join/${qrToken}`;
-    };
+  const getJoinUrl = (qrToken: string) => {
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    return `${base}/join/${qrToken}`;
+  };
+
   const { data: attendees = [], isLoading } = useAttendees(eventId);
   const { data: tables = [] } = useTables(eventId);
   const tableMap = new Map(tables.map((t) => [t.id, t.name]));
@@ -34,6 +48,11 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
   const deleteMutation = useDeleteAttendee(eventId);
   const importMutation = useImportAttendees(eventId);
   const unassignMutation = useUnassignAttendee(eventId);
+  const updateStatusMutation = useUpdateAttendeeStatus(eventId);
+  const bulkStatusMutation = useBulkUpdateAttendeeStatus(eventId);
+
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingAttendee, setEditingAttendee] = useState<AttendeeResponse | null>(null);
@@ -41,6 +60,39 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [qrDialog, setQrDialog] = useState<{ open: boolean; attendee: AttendeeResponse | null }>({ open: false, attendee: null });
+
+  const pendingCount = attendees.filter((a) => a.status === "pending").length;
+  const confirmedCount = attendees.filter((a) => a.status === "confirmed").length;
+  const declinedCount = attendees.filter((a) => a.status === "declined").length;
+
+  const filteredAttendees =
+    statusFilter === "all" ? attendees : attendees.filter((a) => a.status === statusFilter);
+
+  const pendingAttendees = attendees.filter((a) => a.status === "pending");
+
+  function handleFilterChange(f: StatusFilter) {
+    setStatusFilter(f);
+    setSelectedIds(new Set());
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    const pendingOnScreen = filteredAttendees.filter((a) => a.status === "pending");
+    if (pendingOnScreen.every((a) => selectedIds.has(a.id))) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(pendingOnScreen.map((a) => a.id)));
+    }
+  }
 
   function openAdd() {
     setForm({ name: "", email: "", groupLabel: "", description: "", conversationStarters: "" });
@@ -105,20 +157,54 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
     if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
+  async function handleApprove(attendeeId: string) {
+    await updateStatusMutation.mutateAsync({ attendeeId, status: "confirmed" });
+  }
+
+  async function handleDecline(attendeeId: string) {
+    await updateStatusMutation.mutateAsync({ attendeeId, status: "declined" });
+  }
+
+  async function handleApproveAllPending() {
+    const ids = pendingAttendees.map((a) => a.id);
+    if (ids.length === 0) return;
+    await bulkStatusMutation.mutateAsync({ attendeeIds: ids, status: "confirmed" });
+  }
+
+  async function handleDeclineSelected() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    await bulkStatusMutation.mutateAsync({ attendeeIds: ids, status: "declined" });
+    setSelectedIds(new Set());
+  }
+
   const isPending = createMutation.isPending || updateMutation.isPending;
 
-  const [qrDialog, setQrDialog] = useState<{ open: boolean; attendee: AttendeeResponse | null }>({ open: false, attendee: null });
+  const getQrUrl = (qrToken: string) => `/api/qr/${qrToken}`;
 
-  // Helper to get QR code image URL for an attendee
-  const getQrUrl = (qrToken: string) => {
-    // Use the same join URL as the QR code route
-    return `/api/qr/${qrToken}`;
-  };
+  const pendingOnScreen = filteredAttendees.filter((a) => a.status === "pending");
+  const allPendingSelected =
+    pendingOnScreen.length > 0 && pendingOnScreen.every((a) => selectedIds.has(a.id));
+
+  const tabs: { label: string; value: StatusFilter; count: number }[] = [
+    { label: "All", value: "all", count: attendees.length },
+    { label: "Pending", value: "pending", count: pendingCount },
+    { label: "Confirmed", value: "confirmed", count: confirmedCount },
+    { label: "Declined", value: "declined", count: declinedCount },
+  ];
 
   return (
     <div className="space-y-4">
+      {/* Header */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Attendees ({attendees.length})</h2>
+        <h2 className="text-lg font-semibold">
+          Attendees ({attendees.length})
+          {pendingCount > 0 && (
+            <Badge className="ml-2 bg-amber-100 text-amber-800 border-amber-200">
+              {pendingCount} pending
+            </Badge>
+          )}
+        </h2>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()}>
             Import CSV
@@ -136,12 +222,76 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
         </div>
       </div>
 
+      {/* Status filter tabs */}
+      <div className="flex items-center gap-1 flex-wrap">
+        {tabs.map((tab) => (
+          <button
+            key={tab.value}
+            onClick={() => handleFilterChange(tab.value)}
+            className={cn(
+              "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium transition-colors",
+              statusFilter === tab.value
+                ? "bg-primary text-primary-foreground"
+                : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
+            )}
+          >
+            {tab.label}
+            <span
+              className={cn(
+                "rounded-full px-1.5 py-0.5 text-xs",
+                statusFilter === tab.value
+                  ? "bg-primary-foreground/20 text-primary-foreground"
+                  : "bg-muted text-muted-foreground",
+                tab.value === "pending" && tab.count > 0 && statusFilter !== "pending"
+                  ? "bg-amber-100 text-amber-800"
+                  : "",
+              )}
+            >
+              {tab.count}
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {/* Bulk actions for pending */}
+      {(statusFilter === "pending" || statusFilter === "all") && pendingCount > 0 && (
+        <div className="flex items-center gap-2 rounded-md bg-amber-50 border border-amber-200 px-3 py-2">
+          <span className="text-sm text-amber-800 font-medium">
+            {pendingCount} pending RSVP{pendingCount !== 1 ? "s" : ""}
+          </span>
+          <div className="ml-auto flex gap-2">
+            {selectedIds.size > 0 && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-red-200 text-red-700 hover:bg-red-50"
+                onClick={handleDeclineSelected}
+                disabled={bulkStatusMutation.isPending}
+              >
+                Decline Selected ({selectedIds.size})
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              className="border-green-200 text-green-700 hover:bg-green-50"
+              onClick={handleApproveAllPending}
+              disabled={bulkStatusMutation.isPending}
+            >
+              Approve All Pending
+            </Button>
+          </div>
+        </div>
+      )}
+
       {isLoading ? (
         <p className="text-sm text-muted-foreground">Loading…</p>
-      ) : attendees.length === 0 ? (
+      ) : filteredAttendees.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">
-            No attendees yet. Add one or import from CSV.
+            {statusFilter === "all"
+              ? "No attendees yet. Add one or import from CSV."
+              : `No ${statusFilter} attendees.`}
           </CardContent>
         </Card>
       ) : (
@@ -149,18 +299,37 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
           <Table>
             <TableHeader>
               <TableRow>
+                {statusFilter === "pending" && (
+                  <TableHead className="w-8">
+                    <Checkbox
+                      checked={allPendingSelected}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all pending"
+                    />
+                  </TableHead>
+                )}
                 <TableHead>Name</TableHead>
                 <TableHead>Email</TableHead>
                 <TableHead>Group</TableHead>
                 <TableHead>Profile</TableHead>
-                {hasSeating && <TableHead>Table</TableHead>}
-                <TableHead>QR / Link</TableHead>
-                <TableHead className="w-24" />
+                <TableHead>Status</TableHead>
+                {hasSeating && statusFilter !== "pending" && <TableHead>Table</TableHead>}
+                {statusFilter !== "pending" && <TableHead>QR / Link</TableHead>}
+                <TableHead className="w-32" />
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendees.map((a) => (
-                <TableRow key={a.id}>
+              {filteredAttendees.map((a) => (
+                <TableRow key={a.id} className={a.status === "pending" ? "bg-amber-50/50" : ""}>
+                  {statusFilter === "pending" && (
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedIds.has(a.id)}
+                        onCheckedChange={() => toggleSelect(a.id)}
+                        aria-label={`Select ${a.name}`}
+                      />
+                    </TableCell>
+                  )}
                   <TableCell className="font-medium">{a.name}</TableCell>
                   <TableCell className="text-muted-foreground">{a.email ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{a.groupLabel ?? "—"}</TableCell>
@@ -175,7 +344,18 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
                     )}
                     {!a.description && (!a.conversationStarters || a.conversationStarters.length === 0) && "—"}
                   </TableCell>
-                  {hasSeating && (
+                  <TableCell>
+                    {a.status === "pending" && (
+                      <Badge className="bg-amber-100 text-amber-800 border-amber-200">Pending</Badge>
+                    )}
+                    {a.status === "confirmed" && (
+                      <Badge className="bg-green-100 text-green-800 border-green-200">Confirmed</Badge>
+                    )}
+                    {a.status === "declined" && (
+                      <Badge variant="outline" className="text-muted-foreground">Declined</Badge>
+                    )}
+                  </TableCell>
+                  {hasSeating && statusFilter !== "pending" && (
                     <TableCell className="text-muted-foreground">
                       {a.tableId ? (
                         tableMap.has(a.tableId) ? (
@@ -199,29 +379,43 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
                       )}
                     </TableCell>
                   )}
-                  <TableCell className="text-xs">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setQrDialog({ open: true, attendee: a })}
-                    >
-                      Show QR / Link
-                    </Button>
-                  </TableCell>
-                    {qrDialog.attendee && (
-                      <AttendeeQrDialog
-                        open={qrDialog.open}
-                        onOpenChange={(open: boolean) => setQrDialog({ open, attendee: open ? qrDialog.attendee : null })}
-                        name={qrDialog.attendee.name}
-                        tableName={qrDialog.attendee.tableId ? tableMap.get(qrDialog.attendee.tableId) ?? null : null}
-                        joinUrl={getJoinUrl(qrDialog.attendee.qrToken)}
-                        qrUrl={getQrUrl(qrDialog.attendee.qrToken)}
-                        eventId={eventId}
-                        attendeeId={qrDialog.attendee.id}
-                      />
-                    )}
+                  {statusFilter !== "pending" && (
+                    <TableCell className="text-xs">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setQrDialog({ open: true, attendee: a })}
+                      >
+                        Show QR / Link
+                      </Button>
+                    </TableCell>
+                  )}
                   <TableCell>
                     <div className="flex gap-1 justify-end">
+                      {a.status === "pending" && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-50"
+                            onClick={() => handleApprove(a.id)}
+                            disabled={updateStatusMutation.isPending}
+                            aria-label="Approve"
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                            onClick={() => handleDecline(a.id)}
+                            disabled={updateStatusMutation.isPending}
+                            aria-label="Decline"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
@@ -247,6 +441,19 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
             </TableBody>
           </Table>
         </Card>
+      )}
+
+      {qrDialog.attendee && (
+        <AttendeeQrDialog
+          open={qrDialog.open}
+          onOpenChange={(open: boolean) => setQrDialog({ open, attendee: open ? qrDialog.attendee : null })}
+          name={qrDialog.attendee.name}
+          tableName={qrDialog.attendee.tableId ? tableMap.get(qrDialog.attendee.tableId) ?? null : null}
+          joinUrl={getJoinUrl(qrDialog.attendee.qrToken)}
+          qrUrl={getQrUrl(qrDialog.attendee.qrToken)}
+          eventId={eventId}
+          attendeeId={qrDialog.attendee.id}
+        />
       )}
 
       <ConfirmDialog
@@ -332,6 +539,7 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
       {/* Bulk QR download button at bottom */}
       <div className="flex justify-end pt-6">
         <Button

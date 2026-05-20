@@ -121,3 +121,33 @@ export function useUnassignAttendee(eventId: string) {
     },
   });
 }
+
+export function useUpdateAttendeeStatus(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<AttendeeResponse, Error, { attendeeId: string; status: "confirmed" | "declined" }>({
+    mutationFn: ({ attendeeId, status }) =>
+      fetchApi(`/events/${eventId}/attendees/${attendeeId}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+      }),
+    onSuccess: (_, { status }) => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success(status === "confirmed" ? "Attendee approved" : "Attendee declined");
+    },
+  });
+}
+
+export function useBulkUpdateAttendeeStatus(eventId: string) {
+  const qc = useQueryClient();
+  return useMutation<AttendeeResponse[], Error, { attendeeIds: string[]; status: "confirmed" | "declined" }>({
+    mutationFn: ({ attendeeIds, status }) =>
+      fetchApi(`/events/${eventId}/attendees/bulk-status`, {
+        method: "POST",
+        body: JSON.stringify({ attendeeIds, status }),
+      }),
+    onSuccess: (data, { status }) => {
+      void qc.invalidateQueries({ queryKey: ["events", eventId, "attendees"] });
+      toast.success(`${data.length} attendee${data.length !== 1 ? "s" : ""} ${status === "confirmed" ? "approved" : "declined"}`);
+    },
+  });
+}

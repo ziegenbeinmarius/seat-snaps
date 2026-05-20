@@ -3,9 +3,10 @@
 import { useState } from "react";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Copy, Check } from "lucide-react";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
 import { useEvent, useUpdateEvent } from "@/lib/api/events";
+import { useAttendees } from "@/lib/api/attendees";
 import { useTables } from "@/lib/api/tables";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DateTimePicker } from "@/components/ui/date-time-picker";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -33,10 +35,12 @@ function toDatetimeLocal(date: Date | string | null | undefined): string {
 export function EventOverviewPanel({ eventId }: Props) {
   const { data: event, isLoading } = useEvent(eventId);
   const { data: tables = [] } = useTables(eventId);
+  const { data: attendees = [] } = useAttendees(eventId);
   const updateMutation = useUpdateEvent(eventId);
   const [editOpen, setEditOpen] = useState(false);
   const [saved, setSaved] = useState(false);
   const [finishConfirmOpen, setFinishConfirmOpen] = useState(false);
+  const [copiedRsvp, setCopiedRsvp] = useState(false);
 
   const {
     register,
@@ -61,6 +65,7 @@ export function EventOverviewPanel({ eventId }: Props) {
       timezone: event.timezone ?? undefined,
       type: event.type,
       hasSeating: event.hasSeating,
+      rsvpEnabled: event.rsvpEnabled,
     });
     updateMutation.reset();
     setSaved(false);
@@ -99,6 +104,21 @@ export function EventOverviewPanel({ eventId }: Props) {
   async function toggleFinished() {
     await updateMutation.mutateAsync({ isFinished: !event!.isFinished });
     setFinishConfirmOpen(false);
+  }
+
+  async function toggleRsvp() {
+    await updateMutation.mutateAsync({ rsvpEnabled: !event!.rsvpEnabled });
+  }
+
+  function getRsvpLink() {
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
+    return `${base}/join/event/${eventId}`;
+  }
+
+  async function copyRsvpLink() {
+    await navigator.clipboard.writeText(getRsvpLink());
+    setCopiedRsvp(true);
+    setTimeout(() => setCopiedRsvp(false), 2000);
   }
 
   return (
@@ -187,6 +207,71 @@ export function EventOverviewPanel({ eventId }: Props) {
             </Card>
           )}
         </div>
+
+        {/* RSVP settings card */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">RSVP / Self-Registration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="rsvp-toggle"
+                className="mt-0.5"
+                checked={event.rsvpEnabled}
+                onCheckedChange={toggleRsvp}
+                disabled={updateMutation.isPending}
+              />
+              <div className="flex-1">
+                <Label htmlFor="rsvp-toggle" className="cursor-pointer font-medium">
+                  Allow guests to register themselves for this event
+                </Label>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  When enabled, share the RSVP link below. New sign-ups appear as pending until you approve or decline them.
+                </p>
+              </div>
+            </div>
+
+            {event.rsvpEnabled && (
+              <div className="rounded-md border bg-muted/30 p-3 space-y-2">
+                <p className="text-xs font-medium text-muted-foreground">Shareable RSVP link</p>
+                <div className="flex items-center gap-2">
+                  <code className="flex-1 text-xs bg-background border rounded px-2 py-1 truncate">
+                    {getRsvpLink()}
+                  </code>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0 gap-1.5"
+                    onClick={copyRsvpLink}
+                  >
+                    {copiedRsvp ? (
+                      <>
+                        <Check className="h-3.5 w-3.5 text-green-600" />
+                        Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3.5 w-3.5" />
+                        Copy
+                      </>
+                    )}
+                  </Button>
+                </div>
+                {attendees.filter((a) => a.status === "pending").length > 0 && (
+                  <div className="flex items-center gap-2">
+                    <Badge className="bg-amber-100 text-amber-800 border-amber-200">
+                      {attendees.filter((a) => a.status === "pending").length} pending approval
+                    </Badge>
+                    <span className="text-xs text-muted-foreground">
+                      — review them in the Attendees tab
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
@@ -271,6 +356,29 @@ export function EventOverviewPanel({ eventId }: Props) {
                     Warning: this event already has {tables.length} table{tables.length !== 1 ? "s" : ""}. Disabling seating will orphan existing table data.
                   </p>
                 )}
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 rounded-md border p-3">
+              <Controller
+                name="rsvpEnabled"
+                control={control}
+                render={({ field }) => (
+                  <Checkbox
+                    id="edit-rsvp-enabled"
+                    className="mt-0.5"
+                    checked={field.value ?? false}
+                    onCheckedChange={field.onChange}
+                  />
+                )}
+              />
+              <div>
+                <Label htmlFor="edit-rsvp-enabled" className="cursor-pointer font-medium">
+                  RSVP / Self-Registration
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Allow guests to register themselves. New sign-ups appear as pending until approved.
+                </p>
               </div>
             </div>
 
