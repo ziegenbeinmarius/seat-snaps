@@ -42,5 +42,12 @@ export default async function JoinEventPage({ params }: Props) {
     );
   }
 
-  return <JoinEventClient eventId={eventId} attendees={attendees} eventTitle={event.title} />;
+  return (
+    <JoinEventClient
+      eventId={eventId}
+      attendees={attendees}
+      eventTitle={event.title}
+      rsvpEnabled={event.rsvpEnabled}
+    />
+  );
 }
