@@ -1,4 +1,4 @@
-import { eq, and } from "@seat-snaps/db";
+import { eq, and, inArray } from "@seat-snaps/db";
 import type { Database, Attendee, NewAttendee } from "@seat-snaps/db";
 import { attendees } from "@seat-snaps/db";
 import type { IAttendeeRepository, UpdateAttendeeData } from "../../domain/repositories/IAttendeeRepository";
@@ -46,6 +46,15 @@ export class DrizzleAttendeeRepository implements IAttendeeRepository {
       .returning();
     if (!result[0]) throw new Error(`Attendee ${id} not found`);
     return result[0];
+  }
+
+  async bulkUpdateStatus(ids: string[], status: "confirmed" | "pending" | "declined"): Promise<Attendee[]> {
+    if (ids.length === 0) return [];
+    return this.db
+      .update(attendees)
+      .set({ status, updatedAt: new Date() })
+      .where(inArray(attendees.id, ids))
+      .returning();
   }
 
   async delete(id: string): Promise<void> {

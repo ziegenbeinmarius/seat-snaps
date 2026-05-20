@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
   Res,
   HttpCode,
   HttpStatus,
@@ -19,6 +20,8 @@ import type { FastifyReply } from "fastify";
 import { AttendeesService } from "./attendees.service";
 import { CreateAttendeeDto } from "./dto/create-attendee.dto";
 import { UpdateAttendeeDto } from "./dto/update-attendee.dto";
+import { UpdateAttendeeStatusDto } from "./dto/update-attendee-status.dto";
+import { BulkStatusDto } from "./dto/bulk-status.dto";
 import { CheckinDto } from "./dto/checkin.dto";
 import { RsvpRegistrationDto } from "./dto/rsvp-registration.dto";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
@@ -82,8 +85,12 @@ export class AttendeesController {
   }
 
   @Get()
-  list(@Param("eventId") eventId: string, @CurrentUser() user: SessionUser) {
-    return this.attendeesService.listForEvent(eventId, user.id);
+  list(
+    @Param("eventId") eventId: string,
+    @CurrentUser() user: SessionUser,
+    @Query("status") status?: string,
+  ) {
+    return this.attendeesService.listForEvent(eventId, user.id, status);
   }
 
   @Post()
@@ -104,6 +111,16 @@ export class AttendeesController {
     return this.attendeesService.checkIn(eventId, dto.qrToken, user.id);
   }
 
+  @Post("bulk-status")
+  @HttpCode(HttpStatus.OK)
+  bulkStatus(
+    @Param("eventId") eventId: string,
+    @Body() dto: BulkStatusDto,
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.attendeesService.bulkUpdateStatus(dto.attendeeIds, eventId, dto.status, user.id);
+  }
+
   @Post("import")
   async importCsv(
     @Param("eventId") eventId: string,
@@ -121,6 +138,17 @@ export class AttendeesController {
     @CurrentUser() user: SessionUser,
   ) {
     return this.attendeesService.getById(attendeeId, eventId, user.id);
+  }
+
+  @Patch(":attendeeId/status")
+  @HttpCode(HttpStatus.OK)
+  updateStatus(
+    @Param("eventId") eventId: string,
+    @Param("attendeeId") attendeeId: string,
+    @Body() dto: UpdateAttendeeStatusDto,
+    @CurrentUser() user: SessionUser,
+  ) {
+    return this.attendeesService.updateStatus(attendeeId, eventId, dto.status, user.id);
   }
 
   @Patch(":attendeeId/unassign")
