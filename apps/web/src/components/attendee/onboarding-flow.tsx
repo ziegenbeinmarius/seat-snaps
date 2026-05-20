@@ -8,11 +8,12 @@ import { PushPermissionPrompt } from "@/components/push-notifications/push-permi
 interface Props {
   eventId: string;
   eventName: string;
+  hasSeating: boolean;
 }
 
 type Step = 0 | 1 | 2 | 3;
 
-export function AttendeeOnboardingFlow({ eventId, eventName }: Props) {
+export function AttendeeOnboardingFlow({ eventId, eventName, hasSeating }: Props) {
   const [step, setStep] = useState<Step>(0);
 
   const next = useCallback(
@@ -22,7 +23,7 @@ export function AttendeeOnboardingFlow({ eventId, eventName }: Props) {
 
   return (
     <>
-      <WelcomeDialog eventId={eventId} eventName={eventName} active={step === 0} onDone={next} />
+      <WelcomeDialog eventId={eventId} eventName={eventName} hasSeating={hasSeating} active={step === 0} onDone={next} />
       <IosInstallPrompt active={step === 1} onDone={next} />
       <PushPermissionPrompt eventId={eventId} active={step === 2} onDone={next} />
     </>

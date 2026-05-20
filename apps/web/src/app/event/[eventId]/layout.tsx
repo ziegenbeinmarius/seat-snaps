@@ -166,7 +166,7 @@ export default async function AttendeeLayout({ children, params }: Props) {
           <ConnectionStatus />
           <main className="flex-1 pb-20">{children}</main>
         </div>
-        <AttendeeOnboardingFlow eventId={eventId} eventName={event?.title ?? "this event"} />
+        <AttendeeOnboardingFlow eventId={eventId} eventName={event?.title ?? "this event"} hasSeating={event?.hasSeating ?? true} />
         <AttendeeNav eventId={eventId} hasSeating={event?.hasSeating ?? true} />
       </div>
     </SocketProvider>
