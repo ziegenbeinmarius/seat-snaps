@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useAttendees } from "@/lib/api/attendees";
+import { useEvent } from "@/lib/api/events";
 import { useOrganizerPhotos } from "@/lib/api/photos";
 import { useScheduleItems } from "@/lib/api/schedule";
-import { QrCode, Camera, Calendar, Users, CheckCircle, Clock } from "lucide-react";
+import { QrCode, Camera, Calendar, Users, CheckCircle, Clock, Copy, Check } from "lucide-react";
 
 interface Props {
   eventId: string;
@@ -13,11 +14,29 @@ interface Props {
 
 export function EventDashboardPanel({ eventId }: Props) {
   const { data: attendees = [], isLoading: loadingAttendees } = useAttendees(eventId);
+  const { data: event } = useEvent(eventId);
   const { data: photos = [], isLoading: loadingPhotos } = useOrganizerPhotos(eventId);
   const { data: scheduleItems = [], isLoading: loadingSchedule } = useScheduleItems(eventId);
+  const [copiedRsvp, setCopiedRsvp] = useState(false);
 
   const checkedIn = attendees.filter((a) => a.checkedInAt != null).length;
   const pendingPhotos = photos.filter((p) => p.status === "pending").length;
+
+  function getRsvpLink() {
+    const base = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
+    return `${base}/join/event/${eventId}`;
+  }
+
+  async function copyRsvpLink() {
+    await navigator.clipboard.writeText(getRsvpLink());
+    setCopiedRsvp(true);
+    setTimeout(() => setCopiedRsvp(false), 2000);
+  }
+
+  function getQrUrl() {
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
+    return `/api/proxy/events/${eventId}/qr/event?appUrl=${encodeURIComponent(appUrl)}`;
+  }
 
   const now = new Date();
   const upcomingItem = scheduleItems
@@ -142,6 +161,55 @@ export function EventDashboardPanel({ eventId }: Props) {
           </Link>
         ))}
       </div>
+
+      {/* RSVP QR code — visible when RSVP is enabled */}
+      {event?.rsvpEnabled && (
+        <div
+          className="rounded-2xl p-4 space-y-3"
+          style={{
+            background: "rgba(255,252,247,0.75)",
+            border: "1px solid rgba(220,210,195,0.6)",
+          }}
+        >
+          <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "hsl(28 8% 55%)" }}>
+            RSVP QR Code
+          </p>
+          <div className="flex items-start gap-4">
+            <img
+              src={getQrUrl()}
+              alt="RSVP QR code"
+              className="h-28 w-28 shrink-0 rounded-lg border"
+            />
+            <div className="min-w-0 flex-1 space-y-2">
+              <p className="text-sm font-medium" style={{ color: "hsl(24 12% 20%)" }}>
+                Show to guests to let them register
+              </p>
+              <code
+                className="block truncate rounded border px-2 py-1 text-xs"
+                style={{ background: "rgba(255,255,255,0.8)", color: "hsl(28 8% 40%)" }}
+              >
+                {getRsvpLink()}
+              </code>
+              <button
+                onClick={copyRsvpLink}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                style={{
+                  background: copiedRsvp ? "rgba(34, 197, 94, 0.1)" : "rgba(180, 120, 60, 0.1)",
+                  color: copiedRsvp ? "hsl(142 71% 35%)" : "hsl(28 65% 44%)",
+                  border: "1px solid",
+                  borderColor: copiedRsvp ? "rgba(34, 197, 94, 0.3)" : "rgba(180, 120, 60, 0.3)",
+                }}
+              >
+                {copiedRsvp ? (
+                  <><Check className="h-3.5 w-3.5" />Copied!</>
+                ) : (
+                  <><Copy className="h-3.5 w-3.5" />Copy link</>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Desktop dashboard link */}
       <div className="text-center">

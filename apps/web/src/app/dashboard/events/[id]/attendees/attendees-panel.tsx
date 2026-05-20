@@ -27,14 +27,15 @@ import type { AttendeeResponse } from "@seat-snaps/shared";
 import { AttendeeQrDialog } from "./attendee-qr-dialog";
 import { cn } from "@/lib/utils";
 
-type StatusFilter = "all" | "pending" | "confirmed" | "declined";
+export type StatusFilter = "all" | "pending" | "confirmed" | "declined";
 
 interface Props {
   eventId: string;
   hasSeating?: boolean;
+  defaultStatus?: StatusFilter;
 }
 
-export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
+export function AttendeesPanel({ eventId, hasSeating = true, defaultStatus }: Props) {
   const getJoinUrl = (qrToken: string) => {
     const base = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
     return `${base}/join/${qrToken}`;
@@ -51,7 +52,7 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
   const updateStatusMutation = useUpdateAttendeeStatus(eventId);
   const bulkStatusMutation = useBulkUpdateAttendeeStatus(eventId);
 
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(defaultStatus ?? "all");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const [showAddDialog, setShowAddDialog] = useState(false);
