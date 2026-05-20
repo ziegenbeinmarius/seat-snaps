@@ -355,27 +355,6 @@ export function EventOverviewPanel({ eventId }: Props) {
 
               {watchedRsvpEnabled && (
                 <div className="space-y-3 rounded-md bg-muted/30 p-3">
-                  <div className="space-y-1.5">
-                    <p className="text-xs font-medium text-muted-foreground">Shareable RSVP link</p>
-                    <div className="flex items-center gap-2">
-                      <code className="flex-1 text-xs bg-background border rounded px-2 py-1 truncate">
-                        {getRsvpLink()}
-                      </code>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        type="button"
-                        className="shrink-0 gap-1.5"
-                        onClick={copyRsvpLink}
-                      >
-                        {copiedRsvp ? (
-                          <><Check className="h-3.5 w-3.5 text-green-600" />Copied</>
-                        ) : (
-                          <><Copy className="h-3.5 w-3.5" />Copy</>
-                        )}
-                      </Button>
-                    </div>
-                  </div>
                   <div className="flex items-start gap-4">
                     <div className="shrink-0">
                       <p className="text-xs font-medium text-muted-foreground mb-1.5">QR Code</p>
