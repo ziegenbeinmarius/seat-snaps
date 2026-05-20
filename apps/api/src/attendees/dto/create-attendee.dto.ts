@@ -15,7 +15,7 @@ export class CreateAttendeeDto {
 
   @IsString()
   @IsOptional()
-  relationInfo?: string;
+  description?: string;
 
   @IsArray()
   @IsString({ each: true })

@@ -3,7 +3,7 @@ import type { CreateAttendeeInput, UpdateAttendeeInput } from "@seat-snaps/share
 
 export interface IAttendeeService {
   listForEvent(eventId: string, userId: string): Promise<Attendee[]>;
-  listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "relationInfo" | "conversationStarters">[]>;
+  listPublic(eventId: string): Promise<Pick<Attendee, "id" | "name" | "groupLabel" | "tableId" | "description" | "conversationStarters">[]>;
   getById(attendeeId: string, eventId: string, userId: string): Promise<Attendee>;
   create(eventId: string, data: CreateAttendeeInput, userId: string): Promise<Attendee>;
   bulkImport(eventId: string, csv: string, userId: string): Promise<Attendee[]>;

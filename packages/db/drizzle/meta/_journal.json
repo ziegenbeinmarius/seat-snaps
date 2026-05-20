@@ -57,6 +57,13 @@
       "when": 1779262981461,
       "tag": "0007_zippy_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779270036083,
+      "tag": "0008_lively_queen_noir",
+      "breakpoints": true
     }
   ]
 }

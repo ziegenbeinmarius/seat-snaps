@@ -37,13 +37,13 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
 
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editingAttendee, setEditingAttendee] = useState<AttendeeResponse | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", groupLabel: "", relationInfo: "", conversationStarters: "" });
+  const [form, setForm] = useState({ name: "", email: "", groupLabel: "", description: "", conversationStarters: "" });
   const [error, setError] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function openAdd() {
-    setForm({ name: "", email: "", groupLabel: "", relationInfo: "", conversationStarters: "" });
+    setForm({ name: "", email: "", groupLabel: "", description: "", conversationStarters: "" });
     setError(null);
     setShowAddDialog(true);
   }
@@ -53,7 +53,7 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
       name: a.name,
       email: a.email ?? "",
       groupLabel: a.groupLabel ?? "",
-      relationInfo: a.relationInfo ?? "",
+      description: a.description ?? "",
       conversationStarters: a.conversationStarters?.join(", ") ?? "",
     });
     setError(null);
@@ -69,7 +69,7 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
       name: form.name,
       email: form.email || undefined,
       groupLabel: form.groupLabel || undefined,
-      relationInfo: form.relationInfo || undefined,
+      description: form.description || undefined,
       conversationStarters: starters.length > 0 ? starters : undefined,
     };
   }
@@ -165,15 +165,15 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
                   <TableCell className="text-muted-foreground">{a.email ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{a.groupLabel ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground max-w-48">
-                    {a.relationInfo && (
-                      <p className="text-xs truncate" title={a.relationInfo}>{a.relationInfo}</p>
+                    {a.description && (
+                      <p className="text-xs truncate" title={a.description}>{a.description}</p>
                     )}
                     {a.conversationStarters && a.conversationStarters.length > 0 && (
                       <p className="text-xs text-muted-foreground/70">
                         {a.conversationStarters.length} starter{a.conversationStarters.length !== 1 ? "s" : ""}
                       </p>
                     )}
-                    {!a.relationInfo && (!a.conversationStarters || a.conversationStarters.length === 0) && "—"}
+                    {!a.description && (!a.conversationStarters || a.conversationStarters.length === 0) && "—"}
                   </TableCell>
                   {hasSeating && (
                     <TableCell className="text-muted-foreground">
@@ -301,8 +301,8 @@ export function AttendeesPanel({ eventId, hasSeating = true }: Props) {
               <Label>Description</Label>
               <Textarea
                 placeholder="e.g. Easy to talk with, loves hiking…"
-                value={form.relationInfo}
-                onChange={(e) => setForm({ ...form, relationInfo: e.target.value })}
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
                 rows={2}
               />
             </div>

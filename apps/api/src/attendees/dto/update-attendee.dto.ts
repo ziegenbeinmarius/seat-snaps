@@ -15,7 +15,7 @@ export class UpdateAttendeeDto {
 
   @IsString()
   @IsOptional()
-  relationInfo?: string;
+  description?: string;
 
   @IsArray()
   @IsString({ each: true })

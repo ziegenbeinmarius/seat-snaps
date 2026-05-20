@@ -30,6 +30,7 @@ export function NewEventForm({ onClose }: Props) {
     resolver: zodResolver(CreateEventSchema),
     defaultValues: {
       hasSeating: true,
+      rsvpEnabled: false,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
   });
@@ -116,6 +117,28 @@ export function NewEventForm({ onClose }: Props) {
           </Label>
           <p className="text-xs text-muted-foreground">
             Attendees will be assigned to specific tables and seats.
+          </p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 rounded-md border p-3">
+        <Controller
+          name="rsvpEnabled"
+          control={control}
+          render={({ field }) => (
+            <Checkbox
+              id="event-rsvp-enabled"
+              checked={field.value ?? false}
+              onCheckedChange={field.onChange}
+            />
+          )}
+        />
+        <div>
+          <Label htmlFor="event-rsvp-enabled" className="cursor-pointer font-medium">
+            RSVP self-registration
+          </Label>
+          <p className="text-xs text-muted-foreground">
+            Guests can register themselves via a public RSVP link.
           </p>
         </div>
       </div>

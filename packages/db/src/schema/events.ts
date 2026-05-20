@@ -13,6 +13,7 @@ export const events = pgTable("events", {
   type: eventTypeEnum("type").notNull(),
   hasSeating: boolean("has_seating").notNull().default(true),
   isFinished: boolean("is_finished").notNull().default(false),
+  rsvpEnabled: boolean("rsvp_enabled").notNull().default(false),
   settings: jsonb("settings"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),

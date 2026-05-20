@@ -6,7 +6,7 @@ export type UpdateAttendeeData = Partial<
     | "name"
     | "email"
     | "groupLabel"
-    | "relationInfo"
+    | "description"
     | "conversationStarters"
     | "tableId"
     | "seatId"

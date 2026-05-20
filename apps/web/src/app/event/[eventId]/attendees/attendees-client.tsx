@@ -53,9 +53,9 @@ export function AttendeesClient({ attendees }: Props) {
                 {a.groupLabel && (
                   <div className="event-body mt-0.5 text-sm event-card-desc">{a.groupLabel}</div>
                 )}
-                {a.relationInfo && (
+                {a.description && (
                   <div className="event-body mt-0.5 text-xs event-card-muted-text">
-                    {a.relationInfo}
+                    {a.description}
                   </div>
                 )}
               </div>

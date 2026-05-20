@@ -89,7 +89,7 @@ export function useUpdateCurrentAttendee() {
   return useMutation<
     AttendeeResponse,
     Error,
-    { relationInfo?: string; conversationStarters?: string[] }
+    { description?: string; conversationStarters?: string[] }
   >({
     mutationFn: (data) =>
       fetchApi("/attendee-sessions/me", {

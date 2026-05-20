@@ -12,6 +12,7 @@ export const CreateEventSchema = z.object({
   timezone: z.string().optional(),
   type: EventTypeSchema,
   hasSeating: z.boolean().optional(),
+  rsvpEnabled: z.boolean().optional(),
 });
 export type CreateEventInput = z.infer<typeof CreateEventSchema>;
 
@@ -31,6 +32,7 @@ export const EventResponseSchema = z.object({
   type: EventTypeSchema,
   hasSeating: z.boolean(),
   isFinished: z.boolean(),
+  rsvpEnabled: z.boolean(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

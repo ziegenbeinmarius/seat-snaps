@@ -37,4 +37,8 @@ export class UpdateEventDto {
   @IsBoolean()
   @IsOptional()
   isFinished?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  rsvpEnabled?: boolean;
 }
