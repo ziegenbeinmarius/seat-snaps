@@ -61,6 +61,7 @@ export function WelcomeDialog({ eventId, eventName }: Props) {
   return (
     <Dialog open={open} onOpenChange={(o) => !o && dismiss()}>
       <DialogContent
+        showCloseButton={false}
         className="w-[calc(100%-2rem)] max-w-sm rounded-2xl border-0 p-0 shadow-2xl"
         style={{ background: "var(--event-dialog-bg, rgba(255,252,247,0.98))" }}
       >
