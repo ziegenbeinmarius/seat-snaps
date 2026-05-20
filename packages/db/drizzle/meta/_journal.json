@@ -61,22 +61,8 @@
     {
       "idx": 8,
       "version": "7",
-      "when": 1779267663870,
-      "tag": "0008_solid_wither",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1779268045431,
-      "tag": "0009_mute_the_spike",
-      "breakpoints": true
-    },
-    {
-      "idx": 10,
-      "version": "7",
-      "when": 1779268528490,
-      "tag": "0010_mighty_chimera",
+      "when": 1779270036083,
+      "tag": "0008_lively_queen_noir",
       "breakpoints": true
     }
   ]

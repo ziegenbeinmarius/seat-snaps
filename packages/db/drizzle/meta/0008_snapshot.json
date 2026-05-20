@@ -1,5 +1,5 @@
 {
-  "id": "df41cf05-e929-4934-986a-8cf898a76930",
+  "id": "f6d93cce-7e44-47d4-8657-ec4af149f53a",
   "prevId": "24adfe39-f68c-4e6f-9b9a-1238ad934aed",
   "version": "7",
   "dialect": "postgresql",
@@ -165,12 +165,6 @@
         },
         "group_label": {
           "name": "group_label",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "relation_info": {
-          "name": "relation_info",
           "type": "text",
           "primaryKey": false,
           "notNull": false
@@ -698,6 +692,13 @@
         },
         "is_finished": {
           "name": "is_finished",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "rsvp_enabled": {
+          "name": "rsvp_enabled",
           "type": "boolean",
           "primaryKey": false,
           "notNull": true,
