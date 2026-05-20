@@ -9,6 +9,7 @@ export const events = pgTable("events", {
   date: timestamp("date", { withTimezone: true }).notNull(),
   endDate: timestamp("end_date", { withTimezone: true }),
   location: text("location"),
+  timezone: text("timezone").notNull().default("Europe/Stockholm"),
   type: eventTypeEnum("type").notNull(),
   hasSeating: boolean("has_seating").notNull().default(true),
   isFinished: boolean("is_finished").notNull().default(false),

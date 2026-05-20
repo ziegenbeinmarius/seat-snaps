@@ -22,6 +22,10 @@ export class UpdateEventDto {
   @IsOptional()
   location?: string;
 
+  @IsString()
+  @IsOptional()
+  timezone?: string;
+
   @IsEnum(["wedding", "birthday", "corporate", "other"])
   @IsOptional()
   type?: "wedding" | "birthday" | "corporate" | "other";

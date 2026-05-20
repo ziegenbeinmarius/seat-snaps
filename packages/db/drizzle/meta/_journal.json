@@ -50,6 +50,13 @@
       "when": 1779049987045,
       "tag": "0006_omniscient_magneto",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1779262981461,
+      "tag": "0007_zippy_deathstrike",
+      "breakpoints": true
     }
   ]
 }

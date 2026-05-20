@@ -8,6 +8,7 @@ export interface PublicEventInfo {
   date: Date;
   endDate: Date | null;
   location: string | null;
+  timezone: string | null;
   type: string;
   hasSeating: boolean;
 }

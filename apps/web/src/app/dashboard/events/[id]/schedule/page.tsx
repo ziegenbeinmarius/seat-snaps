@@ -8,5 +8,5 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
   const { id } = await params;
   const event = await loadEvent(id, "/dashboard");
 
-  return <SchedulePanel eventId={id} eventDate={event.date} />;
+  return <SchedulePanel eventId={id} eventDate={event.date} eventTimezone={event.timezone} />;
 }

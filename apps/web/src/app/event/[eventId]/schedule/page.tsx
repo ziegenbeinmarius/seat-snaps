@@ -1,10 +1,14 @@
 import { Clock } from "lucide-react";
-import type { ScheduleItemResponse } from "@seat-snaps/shared";
+import type { EventResponse, ScheduleItemResponse } from "@seat-snaps/shared";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
 
-function formatTime(d: Date | string) {
-  return new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+function formatTime(d: Date | string, timeZone?: string | null) {
+  return new Date(d).toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    ...(timeZone ? { timeZone } : {}),
+  });
 }
 
 function isActive(item: ScheduleItemResponse) {
@@ -25,9 +29,17 @@ export default async function SchedulePage({ params }: Props) {
   const { eventId } = await params;
 
   let items: ScheduleItemResponse[] = [];
+  let eventTimezone: string | null = null;
   try {
-    const res = await fetch(`${API_URL}/api/events/${eventId}/schedule`, { cache: "no-store" });
-    if (res.ok) items = (await res.json()) as ScheduleItemResponse[];
+    const [scheduleRes, eventRes] = await Promise.all([
+      fetch(`${API_URL}/api/events/${eventId}/schedule`, { cache: "no-store" }),
+      fetch(`${API_URL}/api/events/${eventId}/info`, { cache: "no-store" }),
+    ]);
+    if (scheduleRes.ok) items = (await scheduleRes.json()) as ScheduleItemResponse[];
+    if (eventRes.ok) {
+      const eventData = (await eventRes.json()) as EventResponse;
+      eventTimezone = eventData.timezone ?? null;
+    }
   } catch {
     /* empty */
   }
@@ -91,8 +103,8 @@ export default async function SchedulePage({ params }: Props) {
                 )}
                 <div className="event-heading text-lg font-semibold event-card-title">{item.title}</div>
                 <div className="event-body mt-0.5 text-sm event-card-muted-text">
-                  {formatTime(item.startTime)}
-                  {item.endTime && ` – ${formatTime(item.endTime)}`}
+                  {formatTime(item.startTime, eventTimezone)}
+                  {item.endTime && ` – ${formatTime(item.endTime, eventTimezone)}`}
                 </div>
                 {item.description && (
                   <p className="event-body mt-1.5 text-base leading-relaxed event-card-desc">
