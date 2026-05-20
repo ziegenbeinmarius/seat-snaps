@@ -9,11 +9,54 @@ import type { IEventMembershipRepository } from "../domain/repositories/IEventMe
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
 import type { IThemeService } from "./domain/IThemeService";
 
-const PRESETS: Record<string, { primaryColor: string; secondaryColor: string }> = {
-  wedding: { primaryColor: "#d4a0a0", secondaryColor: "#f5e6e0" },
-  birthday: { primaryColor: "#f59e0b", secondaryColor: "#fef3c7" },
-  corporate: { primaryColor: "#1e40af", secondaryColor: "#eff6ff" },
-  default: { primaryColor: "#3b82f6", secondaryColor: "#eff6ff" },
+const PRESETS: Record<
+  string,
+  {
+    primaryColor: string;
+    secondaryColor: string;
+    accentColor: string;
+    textColor: string;
+    fontFamily: string;
+    buttonBorderRadius: string;
+    headerStyle: string;
+  }
+> = {
+  wedding: {
+    primaryColor: "#d4a0a0",
+    secondaryColor: "#f5e6e0",
+    accentColor: "#b07070",
+    textColor: "#3d2b2b",
+    fontFamily: "Playfair Display",
+    buttonBorderRadius: "lg",
+    headerStyle: "spacious",
+  },
+  birthday: {
+    primaryColor: "#f59e0b",
+    secondaryColor: "#fef3c7",
+    accentColor: "#d97706",
+    textColor: "#1c1917",
+    fontFamily: "Montserrat",
+    buttonBorderRadius: "full",
+    headerStyle: "spacious",
+  },
+  corporate: {
+    primaryColor: "#1e40af",
+    secondaryColor: "#eff6ff",
+    accentColor: "#1d4ed8",
+    textColor: "#0f172a",
+    fontFamily: "Inter",
+    buttonBorderRadius: "sm",
+    headerStyle: "compact",
+  },
+  default: {
+    primaryColor: "#3b82f6",
+    secondaryColor: "#eff6ff",
+    accentColor: "#2563eb",
+    textColor: "#0f172a",
+    fontFamily: "Inter",
+    buttonBorderRadius: "md",
+    headerStyle: "compact",
+  },
 };
 
 @Injectable()
@@ -46,12 +89,23 @@ export class ThemesService implements IThemeService {
       const preset = PRESETS[data.preset];
       updates.primaryColor = preset.primaryColor;
       updates.secondaryColor = preset.secondaryColor;
+      updates.accentColor = preset.accentColor;
+      updates.textColor = preset.textColor;
+      updates.fontFamily = preset.fontFamily;
+      updates.buttonBorderRadius = preset.buttonBorderRadius;
+      updates.headerStyle = preset.headerStyle;
     }
 
     if (data.primaryColor !== undefined) updates.primaryColor = data.primaryColor;
     if (data.secondaryColor !== undefined) updates.secondaryColor = data.secondaryColor;
+    if (data.accentColor !== undefined) updates.accentColor = data.accentColor;
+    if (data.textColor !== undefined) updates.textColor = data.textColor;
     if (data.logoUrl !== undefined) updates.logoUrl = data.logoUrl;
     if (data.backgroundUrl !== undefined) updates.backgroundUrl = data.backgroundUrl;
+    if (data.fontFamily !== undefined) updates.fontFamily = data.fontFamily;
+    if (data.buttonBorderRadius !== undefined) updates.buttonBorderRadius = data.buttonBorderRadius;
+    if (data.headerStyle !== undefined) updates.headerStyle = data.headerStyle;
+    if (data.customCss !== undefined) updates.customCss = data.customCss;
 
     return this.themeRepository.upsert(eventId, updates);
   }

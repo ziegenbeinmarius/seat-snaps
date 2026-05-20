@@ -50,8 +50,13 @@ interface EventInfo {
 interface EventTheme {
   primaryColor: string | null;
   secondaryColor: string | null;
+  accentColor: string | null;
+  textColor: string | null;
   logoUrl: string | null;
   backgroundUrl: string | null;
+  fontFamily: string | null;
+  buttonBorderRadius: string | null;
+  headerStyle: string | null;
 }
 
 async function fetchEventAndTheme(eventId: string) {
@@ -96,9 +101,24 @@ export default async function AttendeeLayout({ children, params }: Props) {
   // Map event type → CSS theme class; also allow custom colors to override
   const eventThemeType = event?.type ?? "other";
 
+  const borderRadiusMap: Record<string, string> = {
+    none: "0px",
+    sm: "4px",
+    md: "8px",
+    lg: "12px",
+    full: "9999px",
+  };
+
   const themeVars: Record<string, string> = {};
   if (theme?.primaryColor) themeVars["--event-primary"] = theme.primaryColor;
   if (theme?.secondaryColor) themeVars["--event-secondary"] = theme.secondaryColor;
+  if (theme?.accentColor) themeVars["--event-accent"] = theme.accentColor;
+  if (theme?.textColor) themeVars["--event-text"] = theme.textColor;
+  if (theme?.fontFamily) themeVars["--event-font-family"] = theme.fontFamily;
+  if (theme?.buttonBorderRadius && borderRadiusMap[theme.buttonBorderRadius]) {
+    themeVars["--event-button-radius"] = borderRadiusMap[theme.buttonBorderRadius];
+  }
+  if (theme?.headerStyle) themeVars["--event-header-style"] = theme.headerStyle;
 
   return (
     <SocketProvider token={sessionToken ?? ""} eventId={eventId}>
