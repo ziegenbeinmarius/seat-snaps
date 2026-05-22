@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, type ReactNode } from "react";
 
-export function LandingShell({ children }: { children: React.ReactNode }) {
+export function LandingShell({ children }: { children: ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleScroll = useCallback(() => {

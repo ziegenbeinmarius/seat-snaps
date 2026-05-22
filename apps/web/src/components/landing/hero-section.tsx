@@ -25,10 +25,10 @@ export function HeroSection() {
       <div data-animate="fade-up" className="landing-animate">
         <div className="landing-mascot-float mb-6">
           <Image
-            src="/images/koala-mascot.svg"
+            src="/images/koala-mascot.png"
             alt="SeatSnaps Koala mascot with a retro camera"
-            width={260}
-            height={300}
+            width={240}
+            height={411}
             priority
           />
         </div>

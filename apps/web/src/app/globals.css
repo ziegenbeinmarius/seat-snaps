@@ -183,6 +183,41 @@
   box-shadow: 0 2px 20px rgba(120, 85, 40, 0.07);
 }
 
+/* ─── Landing page background texture ──────────────────────────────────────── */
+.landing-bg {
+  position: relative;
+  background-color: #ecdfc4;
+  background-image:
+    /* warm bloom, top-left */
+    radial-gradient(48rem 40rem at 12% 2%, rgba(196, 137, 84, 0.38), transparent 55%),
+    /* warm bloom, upper-right */
+    radial-gradient(44rem 44rem at 94% 20%, rgba(214, 166, 112, 0.34), transparent 58%),
+    /* soft lift near the footer */
+    radial-gradient(56rem 46rem at 50% 99%, rgba(150, 104, 60, 0.30), transparent 60%),
+    /* diagonal base — pale cream into a deeper warm sand */
+    linear-gradient(165deg, #faf3e6 0%, #efe1c6 48%, #e2cfa6 100%);
+  background-repeat: no-repeat;
+}
+
+/* Film-grain overlay — sits behind content, blends into the gradient */
+.landing-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.72'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+
+/* Keep landing content above the grain layer */
+.landing-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* ─── Landing page animations ──────────────────────────────────────────────── */
 
 /* Entrance animations (triggered by IntersectionObserver) */

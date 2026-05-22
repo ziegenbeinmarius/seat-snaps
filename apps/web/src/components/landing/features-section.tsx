@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 const features = [
   {
     title: "Seating Plans",
@@ -55,13 +57,27 @@ const features = [
 export function FeaturesSection() {
   return (
     <section className="relative mx-auto max-w-4xl px-6 py-20">
-      <h2
-        data-animate="fade-up"
-        className="landing-animate mb-12 text-center text-3xl font-semibold tracking-tight sm:text-4xl"
-        style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 18%)" }}
-      >
-        Everything your event needs
-      </h2>
+      <div className="mb-12 flex flex-col items-center gap-6 text-center sm:flex-row sm:gap-10 sm:text-left">
+        <div data-animate="fade-up" className="landing-animate flex-shrink-0">
+          <Image
+            src="/images/koala-presenting.png"
+            alt="SeatSnaps Koala mascot presenting with a thumbs up"
+            width={220}
+            height={302}
+          />
+        </div>
+        <div data-animate="fade-up" className="landing-animate landing-delay-1">
+          <h2
+            className="text-3xl font-semibold tracking-tight sm:text-4xl"
+            style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 18%)" }}
+          >
+            Everything your event needs
+          </h2>
+          <p className="mt-3 max-w-md text-base leading-relaxed" style={{ color: "hsl(28 8% 45%)" }}>
+            From the guest list to the last photo, SeatSnaps has every detail covered — so you can focus on the celebration.
+          </p>
+        </div>
+      </div>
 
       <div className="grid gap-8 sm:grid-cols-2">
         {features.map((f, i) => (
