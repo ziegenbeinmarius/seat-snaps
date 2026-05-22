@@ -11,7 +11,7 @@ export function BroadcastBanner() {
   return (
     <div
       className="relative flex items-start gap-3 px-4 py-3 text-sm"
-      style={{ background: "var(--event-primary, #a07850)", color: "white" }}
+      style={{ background: "var(--event-primary, #a07850)", color: "white", border: "1px solid rgba(255,255,255,0.6)" }}
     >
       <Megaphone className="mt-0.5 h-4 w-4 shrink-0" />
       <div className="flex-1 min-w-0">
