@@ -1,15 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <!-- Background circle -->
   <circle cx="32" cy="32" r="32" fill="#C4956A"/>
-  <!-- Table (round) -->
-  <circle cx="32" cy="32" r="13" fill="white" fill-opacity="0.2" stroke="white" stroke-width="2.5"/>
-  <!-- Seats (small circles around the table) -->
-  <circle cx="32" cy="13" r="5" fill="white"/>
-  <circle cx="47" cy="21" r="5" fill="white" fill-opacity="0.85"/>
-  <circle cx="47" cy="43" r="5" fill="white" fill-opacity="0.85"/>
-  <circle cx="32" cy="51" r="5" fill="white"/>
-  <circle cx="17" cy="43" r="5" fill="white" fill-opacity="0.85"/>
-  <circle cx="17" cy="21" r="5" fill="white" fill-opacity="0.85"/>
-  <!-- Camera snap dot in center -->
-  <circle cx="32" cy="32" r="4" fill="white"/>
+  <!-- Koala face -->
+  <!-- Ears -->
+  <circle cx="16" cy="19" r="11" fill="white" fill-opacity="0.3"/>
+  <circle cx="16" cy="19" r="6.5" fill="white" fill-opacity="0.5"/>
+  <circle cx="48" cy="19" r="11" fill="white" fill-opacity="0.3"/>
+  <circle cx="48" cy="19" r="6.5" fill="white" fill-opacity="0.5"/>
+  <!-- Head -->
+  <circle cx="32" cy="34" r="20" fill="white" fill-opacity="0.3"/>
+  <!-- Face -->
+  <ellipse cx="32" cy="38" rx="13" ry="11" fill="white" fill-opacity="0.5"/>
+  <!-- Eyes -->
+  <circle cx="26" cy="33" r="3.5" fill="white"/>
+  <circle cx="38" cy="33" r="3.5" fill="white"/>
+  <circle cx="26" cy="33" r="2" fill="#4A3520"/>
+  <circle cx="38" cy="33" r="2" fill="#4A3520"/>
+  <!-- Nose -->
+  <ellipse cx="32" cy="40" rx="5" ry="3.2" fill="#4A3520" fill-opacity="0.6"/>
 </svg>

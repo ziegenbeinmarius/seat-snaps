@@ -54,18 +54,26 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="mx-auto max-w-4xl px-6 py-20">
+    <section className="relative mx-auto max-w-4xl px-6 py-20">
       <h2
-        className="mb-12 text-center text-3xl font-semibold tracking-tight"
+        data-animate="fade-up"
+        className="landing-animate mb-12 text-center text-3xl font-semibold tracking-tight sm:text-4xl"
         style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 18%)" }}
       >
         Everything your event needs
       </h2>
 
       <div className="grid gap-8 sm:grid-cols-2">
-        {features.map((f) => (
-          <div key={f.title} className="dashboard-glass rounded-2xl p-6">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: "hsl(28 65% 44% / 0.1)", color: "hsl(28 65% 44%)" }}>
+        {features.map((f, i) => (
+          <div
+            key={f.title}
+            data-animate="fade-up"
+            className={`landing-animate landing-delay-${i + 1} dashboard-glass rounded-2xl p-6 transition-shadow duration-300 hover:shadow-lg`}
+          >
+            <div
+              className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 hover:scale-110"
+              style={{ background: "hsl(28 65% 44% / 0.1)", color: "hsl(28 65% 44%)" }}
+            >
               {f.icon}
             </div>
             <h3 className="text-lg font-semibold" style={{ color: "hsl(24 12% 18%)" }}>

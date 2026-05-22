@@ -1,0 +1,203 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" fill="none">
+  <!-- Group of koalas at an event table — one takes a photo of the others -->
+
+  <!-- === TABLE === -->
+  <ellipse cx="450" cy="340" rx="200" ry="35" fill="#D4A87A"/>
+  <ellipse cx="450" cy="335" rx="200" ry="35" fill="#E0BD94"/>
+  <!-- Table cloth edge -->
+  <ellipse cx="450" cy="335" rx="165" ry="28" fill="#EDD5B5" opacity="0.4"/>
+  <!-- Table leg -->
+  <rect x="435" cy="340" y="340" width="30" height="50" rx="4" fill="#B8943E"/>
+
+  <!-- === TABLE ITEMS (plates, glass, centerpiece) === -->
+  <!-- Centerpiece: small flowers -->
+  <circle cx="450" cy="318" r="12" fill="#C4956A" opacity="0.3"/>
+  <circle cx="445" cy="312" r="4" fill="#E8A0A0"/>
+  <circle cx="455" cy="310" r="3.5" fill="#F0C0A0"/>
+  <circle cx="450" cy="316" r="3" fill="#D4A87A"/>
+  <line x1="450" y1="318" x2="450" y2="328" stroke="#8B7355" stroke-width="1.5"/>
+  <!-- Plates -->
+  <ellipse cx="340" cy="325" rx="22" ry="8" fill="white" opacity="0.5"/>
+  <ellipse cx="560" cy="325" rx="22" ry="8" fill="white" opacity="0.5"/>
+
+  <!-- === SEATS (subtle circles) === -->
+  <circle cx="250" cy="360" r="20" fill="#C4956A" opacity="0.2"/>
+  <circle cx="350" cy="375" r="18" fill="#C4956A" opacity="0.15"/>
+  <circle cx="550" cy="375" r="18" fill="#C4956A" opacity="0.15"/>
+  <circle cx="650" cy="360" r="20" fill="#C4956A" opacity="0.2"/>
+
+  <!-- ====== KOALA 1: SITTING LEFT, WAVING ====== -->
+  <g transform="translate(280, 170)">
+    <!-- Body -->
+    <ellipse cx="0" cy="90" rx="38" ry="36" fill="#9A9A9A"/>
+    <ellipse cx="0" cy="95" rx="26" ry="25" fill="#E0E0E0"/>
+    <!-- Left arm waving -->
+    <path d="M-30 75 Q-50 55 -40 40" stroke="#9A9A9A" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <circle cx="-42" cy="40" r="6" fill="#7A7A7A"/>
+    <!-- Right arm resting -->
+    <path d="M28 80 Q40 90 35 105" stroke="#9A9A9A" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <circle cx="35" cy="103" r="5" fill="#7A7A7A"/>
+    <!-- Head -->
+    <circle cx="0" cy="30" r="38" fill="#9A9A9A"/>
+    <!-- Ears -->
+    <circle cx="-30" cy="0" r="20" fill="#9A9A9A"/>
+    <circle cx="-30" cy="0" r="12" fill="#E0E0E0"/>
+    <circle cx="30" cy="0" r="20" fill="#9A9A9A"/>
+    <circle cx="30" cy="0" r="12" fill="#E0E0E0"/>
+    <!-- Face -->
+    <ellipse cx="0" cy="40" rx="25" ry="20" fill="#E0E0E0"/>
+    <!-- Eyes (happy, squinting) -->
+    <path d="M-12 30 Q-9 26 -6 30" stroke="#2A2A2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M6 30 Q9 26 12 30" stroke="#2A2A2A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- Nose -->
+    <ellipse cx="0" cy="42" rx="8" ry="5" fill="#4A4A4A"/>
+    <!-- Mouth -->
+    <path d="M-5 48 Q0 53 5 48" stroke="#4A4A4A" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+    <!-- Blush -->
+    <circle cx="-16" cy="42" r="5" fill="#C4956A" opacity="0.2"/>
+    <circle cx="16" cy="42" r="5" fill="#C4956A" opacity="0.2"/>
+    <!-- Party hat -->
+    <path d="M-10 -2 L0 -30 L10 -2" fill="#C4956A"/>
+    <circle cx="0" cy="-30" r="4" fill="#FFD700"/>
+    <rect x="-10" y="-4" width="20" height="5" rx="2" fill="#D4A87A"/>
+  </g>
+
+  <!-- ====== KOALA 2: CENTER-RIGHT, PEACE SIGN ====== -->
+  <g transform="translate(530, 165)">
+    <!-- Body -->
+    <ellipse cx="0" cy="92" rx="40" ry="38" fill="#7E7E7E"/>
+    <ellipse cx="0" cy="97" rx="28" ry="26" fill="#D5D5D5"/>
+    <!-- Left arm -->
+    <path d="M-30 82 Q-40 92 -35 107" stroke="#7E7E7E" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <circle cx="-35" cy="105" r="5" fill="#636363"/>
+    <!-- Right arm (peace sign) -->
+    <path d="M30 75 Q48 58 45 42" stroke="#7E7E7E" stroke-width="13" fill="none" stroke-linecap="round"/>
+    <circle cx="45" cy="43" r="6" fill="#636363"/>
+    <!-- Peace sign fingers (V shape) -->
+    <line x1="42" y1="43" x2="38" y2="26" stroke="#636363" stroke-width="4" stroke-linecap="round"/>
+    <line x1="48" y1="43" x2="52" y2="26" stroke="#636363" stroke-width="4" stroke-linecap="round"/>
+    <!-- Head -->
+    <circle cx="0" cy="32" r="40" fill="#7E7E7E"/>
+    <!-- Ears -->
+    <circle cx="-32" cy="0" r="22" fill="#7E7E7E"/>
+    <circle cx="-32" cy="0" r="13" fill="#D5D5D5"/>
+    <circle cx="32" cy="0" r="22" fill="#7E7E7E"/>
+    <circle cx="32" cy="0" r="13" fill="#D5D5D5"/>
+    <!-- Face -->
+    <ellipse cx="0" cy="42" rx="26" ry="22" fill="#D5D5D5"/>
+    <!-- Eyes (open, excited) -->
+    <ellipse cx="-10" cy="32" rx="6" ry="7" fill="#2A2A2A"/>
+    <ellipse cx="10" cy="32" rx="6" ry="7" fill="#2A2A2A"/>
+    <circle cx="-8" cy="30" r="2.5" fill="white"/>
+    <circle cx="12" cy="30" r="2.5" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="0" cy="46" rx="9" ry="5.5" fill="#4A4A4A"/>
+    <!-- Big smile -->
+    <path d="M-8 53 Q0 60 8 53" stroke="#4A4A4A" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Blush -->
+    <circle cx="-18" cy="46" r="6" fill="#C4956A" opacity="0.2"/>
+    <circle cx="18" cy="46" r="6" fill="#C4956A" opacity="0.2"/>
+    <!-- Bow tie -->
+    <path d="M-8 68 L0 73 L8 68 L0 78 Z" fill="#C4956A"/>
+    <circle cx="0" cy="73" r="3" fill="#D4A87A"/>
+  </g>
+
+  <!-- ====== KOALA 3: FAR RIGHT, SITTING NICELY ====== -->
+  <g transform="translate(670, 180)">
+    <!-- Body -->
+    <ellipse cx="0" cy="85" rx="34" ry="32" fill="#A0A0A0"/>
+    <ellipse cx="0" cy="90" rx="23" ry="22" fill="#E5E5E5"/>
+    <!-- Arms (holding tiny drink) -->
+    <path d="M-24 76 Q-32 82 -28 96" stroke="#A0A0A0" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M24 76 Q32 82 28 96" stroke="#A0A0A0" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <!-- Tiny cup -->
+    <rect x="-6" y="88" width="12" height="14" rx="2" fill="white" opacity="0.7"/>
+    <rect x="-5" y="89" width="10" height="6" rx="1" fill="#E8B88A" opacity="0.5"/>
+    <!-- Head -->
+    <circle cx="0" cy="28" r="35" fill="#A0A0A0"/>
+    <!-- Ears -->
+    <circle cx="-27" cy="0" r="18" fill="#A0A0A0"/>
+    <circle cx="-27" cy="0" r="11" fill="#E5E5E5"/>
+    <circle cx="27" cy="0" r="18" fill="#A0A0A0"/>
+    <circle cx="27" cy="0" r="11" fill="#E5E5E5"/>
+    <!-- Face -->
+    <ellipse cx="0" cy="36" rx="23" ry="19" fill="#E5E5E5"/>
+    <!-- Eyes (content, slightly closed) -->
+    <ellipse cx="-9" cy="28" rx="5" ry="5.5" fill="#2A2A2A"/>
+    <ellipse cx="9" cy="28" rx="5" ry="5.5" fill="#2A2A2A"/>
+    <circle cx="-7" cy="26.5" r="2" fill="white"/>
+    <circle cx="11" cy="26.5" r="2" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="0" cy="40" rx="7.5" ry="5" fill="#4A4A4A"/>
+    <!-- Gentle smile -->
+    <path d="M-5 46 Q0 50 5 46" stroke="#4A4A4A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <!-- Blush -->
+    <circle cx="-14" cy="39" r="5" fill="#C4956A" opacity="0.2"/>
+    <circle cx="14" cy="39" r="5" fill="#C4956A" opacity="0.2"/>
+    <!-- Flower behind ear -->
+    <circle cx="22" cy="5" r="5" fill="#E8A0A0"/>
+    <circle cx="22" cy="5" r="2" fill="#FFD700"/>
+  </g>
+
+  <!-- ====== PHOTOGRAPHER KOALA (front, facing the group) ====== -->
+  <g transform="translate(120, 200)">
+    <!-- Body (seen from behind, slightly turned) -->
+    <ellipse cx="0" cy="80" rx="42" ry="40" fill="#8C8C8C"/>
+    <!-- Head -->
+    <circle cx="0" cy="22" r="42" fill="#8C8C8C"/>
+    <!-- Ears -->
+    <circle cx="-32" cy="-8" r="22" fill="#8C8C8C"/>
+    <circle cx="-32" cy="-8" r="13" fill="#E0E0E0"/>
+    <circle cx="32" cy="-8" r="22" fill="#8C8C8C"/>
+    <circle cx="32" cy="-8" r="13" fill="#E0E0E0"/>
+    <!-- Face (turned slightly right toward group) -->
+    <ellipse cx="5" cy="32" rx="28" ry="24" fill="#E0E0E0"/>
+    <!-- Eyes (focused, looking through camera) -->
+    <ellipse cx="-4" cy="24" rx="5" ry="6" fill="#2A2A2A"/>
+    <ellipse cx="14" cy="24" rx="5" ry="6" fill="#2A2A2A"/>
+    <circle cx="-2" cy="22" r="2" fill="white"/>
+    <circle cx="16" cy="22" r="2" fill="white"/>
+    <!-- Nose -->
+    <ellipse cx="5" cy="36" rx="9" ry="6" fill="#4A4A4A"/>
+    <!-- Concentrating mouth -->
+    <path d="M0 43 Q5 45 10 43" stroke="#4A4A4A" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- Blush -->
+    <circle cx="-10" cy="36" r="5" fill="#C4956A" opacity="0.2"/>
+    <circle cx="20" cy="36" r="5" fill="#C4956A" opacity="0.2"/>
+    <!-- Arms holding camera up -->
+    <path d="M-32 58 Q-45 50 -38 35" stroke="#8C8C8C" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <path d="M32 58 Q45 50 38 35" stroke="#8C8C8C" stroke-width="14" fill="none" stroke-linecap="round"/>
+    <!-- Camera -->
+    <rect x="-22" y="48" width="50" height="28" rx="5" fill="#3D3D3D"/>
+    <rect x="-20" y="50" width="46" height="24" rx="4" fill="#505050"/>
+    <!-- Lens -->
+    <circle cx="5" cy="62" r="10" fill="#2A2A2A"/>
+    <circle cx="5" cy="62" r="7" fill="#1A1A1A"/>
+    <circle cx="5" cy="62" r="5" fill="#3A6B9F"/>
+    <circle cx="5" cy="62" r="3" fill="#5A9DD0"/>
+    <circle cx="3" cy="60" r="1.5" fill="white" opacity="0.6"/>
+    <!-- Flash -->
+    <rect x="-18" y="43" width="12" height="7" rx="2" fill="#F0D9B5"/>
+    <!-- Viewfinder -->
+    <rect x="16" y="44" width="10" height="7" rx="2" fill="#3D3D3D"/>
+    <!-- Shutter button -->
+    <circle cx="22" cy="46" r="3" fill="#C4956A"/>
+  </g>
+
+  <!-- === FLASH EFFECT (radiating from photographer's camera) === -->
+  <g opacity="0.45">
+    <circle cx="125" cy="262" r="28" fill="white" opacity="0.15"/>
+    <circle cx="125" cy="262" r="16" fill="white" opacity="0.1"/>
+    <!-- Sparkle rays -->
+    <line x1="125" y1="230" x2="125" y2="220" stroke="#FFD700" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+    <line x1="155" y1="250" x2="165" y2="245" stroke="#FFD700" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    <line x1="95" y1="250" x2="85" y2="245" stroke="#FFD700" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+    <line x1="140" y1="235" x2="150" y2="228" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+    <line x1="110" y1="235" x2="100" y2="228" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+    <!-- Star sparkles -->
+    <path d="M170 215 L173 208 L176 215 L170 212 L176 212 Z" fill="#FFD700" opacity="0.6"/>
+    <path d="M80 220 L82 215 L84 220 L80 218 L84 218 Z" fill="#FFD700" opacity="0.5"/>
+    <circle cx="160" cy="228" r="2" fill="#FFD700" opacity="0.5"/>
+    <circle cx="88" cy="232" r="1.5" fill="#FFD700" opacity="0.4"/>
+  </g>
+</svg>

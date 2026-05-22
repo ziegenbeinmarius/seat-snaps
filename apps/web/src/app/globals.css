@@ -182,3 +182,70 @@
   border: 1px solid rgba(220, 210, 195, 0.6);
   box-shadow: 0 2px 20px rgba(120, 85, 40, 0.07);
 }
+
+/* ─── Landing page animations ──────────────────────────────────────────────── */
+
+/* Entrance animations (triggered by IntersectionObserver) */
+.landing-animate {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.landing-animate[data-animate="fade-right"] {
+  transform: translateX(-28px);
+}
+.landing-animate[data-animate="fade-left"] {
+  transform: translateX(28px);
+}
+.landing-visible .landing-animate,
+.landing-visible.landing-animate {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Stagger delays */
+.landing-delay-1 { transition-delay: 0.1s; }
+.landing-delay-2 { transition-delay: 0.2s; }
+.landing-delay-3 { transition-delay: 0.3s; }
+.landing-delay-4 { transition-delay: 0.5s; }
+
+/* Mascot float */
+@keyframes landing-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.landing-mascot-float {
+  animation: landing-float 4s ease-in-out infinite;
+}
+
+/* Logo subtle bounce on hover */
+@keyframes landing-logo-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.landing-logo-bounce {
+  transition: transform 0.3s ease;
+}
+.landing-logo-bounce:hover {
+  animation: landing-logo-bounce 0.5s ease;
+}
+
+/* Scroll hint bob */
+@keyframes landing-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+.landing-scroll-hint {
+  animation: landing-bob 2s ease-in-out infinite;
+}
+
+/* CTA glow pulse */
+@keyframes landing-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196, 149, 106, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(196, 149, 106, 0.18); }
+}
+.landing-btn-glow {
+  animation: landing-glow 3s ease-in-out infinite;
+}
