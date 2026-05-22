@@ -74,12 +74,12 @@ export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }
       <DialogContent
         showCloseButton={false}
         className="w-[calc(100%-2rem)] max-w-sm rounded-2xl border-0 p-0 shadow-2xl"
-        style={{ background: "var(--event-dialog-bg, rgba(255,252,247,0.98))" }}
+        style={{ background: "var(--event-dialog-bg, rgba(243,232,216,0.98))" }}
       >
         {/* Colored header strip */}
         <div
           className="flex flex-col items-center gap-1 rounded-t-2xl px-6 pb-5 pt-6 text-white"
-          style={{ background: "var(--event-primary, #6366f1)" }}
+          style={{ background: "var(--event-primary, #B96B28)" }}
         >
           <span className="mb-1 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/20">
             <Sparkles className="h-5 w-5" />
@@ -100,9 +100,9 @@ export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }
             <li key={label} className="flex items-start gap-3">
               <span
                 className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "var(--event-card-chip-bg, #f3f4f6)" }}
+                style={{ background: "var(--event-card-chip-bg, #F3E8D8)" }}
               >
-                <Icon className="h-4 w-4" style={{ color: "var(--event-primary, #6366f1)" }} />
+                <Icon className="h-4 w-4" style={{ color: "var(--event-primary, #B96B28)" }} />
               </span>
               <div>
                 <div
@@ -124,7 +124,7 @@ export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }
             type="button"
             onClick={dismiss}
             className="w-full text-white"
-            style={{ background: "var(--event-primary, #6366f1)" }}
+            style={{ background: "var(--event-primary, #B96B28)" }}
           >
             Let&apos;s go!
           </Button>

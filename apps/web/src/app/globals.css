@@ -182,3 +182,105 @@
   border: 1px solid rgba(220, 210, 195, 0.6);
   box-shadow: 0 2px 20px rgba(120, 85, 40, 0.07);
 }
+
+/* ─── Landing page background texture ──────────────────────────────────────── */
+.landing-bg {
+  position: relative;
+  background-color: #ecdfc4;
+  background-image:
+    /* warm bloom, top-left */
+    radial-gradient(48rem 40rem at 12% 2%, rgba(196, 137, 84, 0.38), transparent 55%),
+    /* warm bloom, upper-right */
+    radial-gradient(44rem 44rem at 94% 20%, rgba(214, 166, 112, 0.34), transparent 58%),
+    /* soft lift near the footer */
+    radial-gradient(56rem 46rem at 50% 99%, rgba(150, 104, 60, 0.30), transparent 60%),
+    /* diagonal base — pale cream into a deeper warm sand */
+    linear-gradient(165deg, #faf3e6 0%, #efe1c6 48%, #e2cfa6 100%);
+  background-repeat: no-repeat;
+}
+
+/* Film-grain overlay — sits behind content, blends into the gradient */
+.landing-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='200'%20height='200'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.72'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.6;
+  mix-blend-mode: overlay;
+}
+
+/* Keep landing content above the grain layer */
+.landing-bg > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Landing page animations ──────────────────────────────────────────────── */
+
+/* Entrance animations (triggered by IntersectionObserver) */
+.landing-animate {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.landing-animate[data-animate="fade-right"] {
+  transform: translateX(-28px);
+}
+.landing-animate[data-animate="fade-left"] {
+  transform: translateX(28px);
+}
+.landing-visible .landing-animate,
+.landing-visible.landing-animate {
+  opacity: 1;
+  transform: translate(0, 0);
+}
+
+/* Stagger delays */
+.landing-delay-1 { transition-delay: 0.1s; }
+.landing-delay-2 { transition-delay: 0.2s; }
+.landing-delay-3 { transition-delay: 0.3s; }
+.landing-delay-4 { transition-delay: 0.5s; }
+
+/* Mascot float */
+@keyframes landing-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.landing-mascot-float {
+  animation: landing-float 4s ease-in-out infinite;
+}
+
+/* Logo subtle bounce on hover */
+@keyframes landing-logo-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+.landing-logo-bounce {
+  transition: transform 0.3s ease;
+}
+.landing-logo-bounce:hover {
+  animation: landing-logo-bounce 0.5s ease;
+}
+
+/* Scroll hint bob */
+@keyframes landing-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+.landing-scroll-hint {
+  animation: landing-bob 2s ease-in-out infinite;
+}
+
+/* CTA glow pulse */
+@keyframes landing-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(196, 149, 106, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(196, 149, 106, 0.18); }
+}
+.landing-btn-glow {
+  animation: landing-glow 3s ease-in-out infinite;
+}

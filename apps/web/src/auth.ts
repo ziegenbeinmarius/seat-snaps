@@ -57,6 +57,18 @@ declare module "next-auth/jwt" {
 const nextAuth: NextAuthResult = NextAuth({
   secret: authSecret,
   trustHost,
+  logger: {
+    error(error) {
+      // A session cookie that can't be verified (expired, or signed with an
+      // older AUTH_SECRET) just means the visitor isn't signed in — an
+      // expected state on public pages, not an error worth surfacing.
+      // @auth/core throws "Invalid JWT" here; swallow only that case.
+      if ((error as { name?: string } | undefined)?.name === "JWTSessionError") {
+        return;
+      }
+      console.error("[auth][error]", error);
+    },
+  },
   providers: [
     Credentials({
       async authorize(credentials) {

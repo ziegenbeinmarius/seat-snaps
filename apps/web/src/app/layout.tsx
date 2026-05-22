@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   description: "Your event companion app",
   manifest: "/manifest.json",
   icons: {
-    icon: "/favicon.svg",
+    icon: "/favicon.png",
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   appleWebApp: {
