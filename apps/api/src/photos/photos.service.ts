@@ -53,6 +53,12 @@ export class PhotosService implements IPhotoService {
       throw new NotFoundException("Attendee not found");
     }
 
+    if (attendee.status !== "confirmed") {
+      throw new ForbiddenException(
+        "Photo uploads are only available to confirmed attendees",
+      );
+    }
+
     const existing = await this.photoRepository.findByAttendeeId(attendeeId);
     const activePhotos = existing.filter((p) => p.status !== "deleted" && p.status !== "rejected");
     if (activePhotos.length >= attendee.photoLimit) {

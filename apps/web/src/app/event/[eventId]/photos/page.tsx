@@ -19,7 +19,11 @@ export default async function PhotosPage({ params }: Props) {
           </p>
         )}
       </div>
-      <PhotoGallery eventId={eventId} photoLimit={attendee?.photoLimit ?? 10} />
+      <PhotoGallery
+        eventId={eventId}
+        photoLimit={attendee?.photoLimit ?? 10}
+        canUpload={attendee?.status === "confirmed"}
+      />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import { Card, CardContent } from "@/components/ui/card";
 interface Props {
   eventId: string;
   photoLimit: number;
+  canUpload?: boolean;
 }
 
 const COMPRESSION_OPTIONS = {
@@ -24,7 +25,7 @@ const COMPRESSION_OPTIONS = {
   useWebWorker: true,
 };
 
-export function PhotoGallery({ eventId, photoLimit }: Props) {
+export function PhotoGallery({ eventId, photoLimit, canUpload = true }: Props) {
   const { data: photos = [], isLoading } = useAttendeePhotos(eventId);
   const requestUrl = useRequestUploadUrl(eventId);
   const confirmUpload = useConfirmUpload(eventId);
@@ -86,64 +87,72 @@ export function PhotoGallery({ eventId, photoLimit }: Props) {
 
       <Card>
         <CardContent className="p-4">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-700">
-              {myPhotos.length}/{photoLimit} photos uploaded
-            </span>
-            <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-500 rounded-full transition-all"
-                style={{ width: `${Math.min(100, (myPhotos.length / photoLimit) * 100)}%` }}
-              />
-            </div>
-          </div>
+          {canUpload ? (
+            <>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-medium text-gray-700">
+                  {myPhotos.length}/{photoLimit} photos uploaded
+                </span>
+                <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-blue-500 rounded-full transition-all"
+                    style={{ width: `${Math.min(100, (myPhotos.length / photoLimit) * 100)}%` }}
+                  />
+                </div>
+              </div>
 
-          {error && (
-            <p className="mb-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
-          )}
+              {error && (
+                <p className="mb-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+              )}
 
-          {uploading ? (
-            <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-blue-200 p-4 text-blue-600">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
-              <span className="text-sm">{uploadProgress || "Uploading…"}</span>
-            </div>
-          ) : remaining > 0 ? (
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => cameraInputRef.current?.click()}
-                className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
-              >
-                <input
-                  ref={cameraInputRef}
-                  type="file"
-                  accept="image/*"
-                  capture="environment"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <Camera className="h-7 w-7 text-blue-500" />
-                <p className="text-xs font-medium text-gray-700">Take Photo</p>
-              </button>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
-              >
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-                <Upload className="h-7 w-7 text-gray-400" />
-                <p className="text-xs font-medium text-gray-700">Gallery</p>
-              </button>
-            </div>
+              {uploading ? (
+                <div className="flex items-center gap-3 rounded-xl border-2 border-dashed border-blue-200 p-4 text-blue-600">
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-blue-600 border-t-transparent" />
+                  <span className="text-sm">{uploadProgress || "Uploading…"}</span>
+                </div>
+              ) : remaining > 0 ? (
+                <div className="flex gap-3">
+                  <button
+                    type="button"
+                    onClick={() => cameraInputRef.current?.click()}
+                    className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    <input
+                      ref={cameraInputRef}
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                    <Camera className="h-7 w-7 text-blue-500" />
+                    <p className="text-xs font-medium text-gray-700">Take Photo</p>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex flex-1 cursor-pointer flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-200 p-4 transition-colors hover:border-blue-300 hover:bg-blue-50"
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                    <Upload className="h-7 w-7 text-gray-400" />
+                    <p className="text-xs font-medium text-gray-700">Gallery</p>
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">
+                  You've used all {photoLimit} photo slots
+                </div>
+              )}
+            </>
           ) : (
-            <div className="rounded-xl bg-gray-50 p-4 text-center text-sm text-gray-500">
-              You've used all {photoLimit} photo slots
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-center text-sm text-amber-700">
+              Your RSVP is pending — photo uploads will be available once confirmed.
             </div>
           )}
         </CardContent>
