@@ -62,6 +62,29 @@ export class AuthService implements IAuthService {
     return user.tokenVersion ?? 0;
   }
 
+  async getProfile(userId: string): Promise<{ id: string; email: string; name: string }> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new UnauthorizedException("User not found");
+    return { id: user.id, email: user.email, name: user.name };
+  }
+
+  async updateProfile(userId: string, data: { name?: string; email?: string }): Promise<{ id: string; email: string; name: string }> {
+    const user = await this.userRepository.findById(userId);
+    if (!user) throw new UnauthorizedException("User not found");
+
+    if (data.email && data.email.toLowerCase().trim() !== user.email) {
+      const existing = await this.userRepository.findByEmail(data.email.toLowerCase().trim());
+      if (existing) throw new ConflictException("Email already in use");
+    }
+
+    const updated = await this.userRepository.update(userId, {
+      ...(data.name !== undefined && { name: data.name }),
+      ...(data.email !== undefined && { email: data.email.toLowerCase().trim() }),
+    });
+
+    return { id: updated.id, email: updated.email, name: updated.name };
+  }
+
   async getSessionState(userId: string): Promise<{ exists: boolean; tokenVersion: number | null; isAdmin: boolean }> {
     const user = await this.userRepository.findById(userId);
     if (!user) {
