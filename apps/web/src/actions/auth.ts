@@ -40,7 +40,7 @@ export async function registerAction(formData: FormData): Promise<ActionResult> 
     redirect: false,
   });
 
-  redirect("/dashboard");
+  redirect("/select-plan");
 }
 
 export async function loginAction(formData: FormData): Promise<ActionResult> {
