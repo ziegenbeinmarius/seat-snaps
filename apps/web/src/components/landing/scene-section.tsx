@@ -1,6 +1,9 @@
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 
-export function SceneSection() {
+export async function SceneSection() {
+  const t = await getTranslations("landing.scene");
+
   return (
     <section className="relative overflow-hidden px-6 py-24">
       {/* Decorative side blooms */}
@@ -46,7 +49,7 @@ export function SceneSection() {
                 className="pt-3 pb-1 text-center text-base"
                 style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(28 8% 48%)" }}
               >
-                The whole gang, all in one shot
+                {t("caption")}
               </p>
             </div>
           </div>
@@ -61,21 +64,19 @@ export function SceneSection() {
                 className="inline-block h-1.5 w-1.5 rounded-full"
                 style={{ background: "hsl(28 65% 44%)" }}
               />
-              A peek inside
+              {t("badge")}
             </span>
             <h2
               className="text-3xl font-semibold tracking-tight sm:text-4xl"
               style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 18%)" }}
             >
-              Every moment, every guest
+              {t("heading")}
             </h2>
             <p
               className="mt-4 max-w-sm text-base leading-relaxed"
               style={{ color: "hsl(28 8% 45%)" }}
             >
-              From the first snap to the last dance, SeatSnaps brings your event together — seating
-              charts your guests love, a shared photo gallery everyone contributes to, and a
-              directory to stay connected long after.
+              {t("body")}
             </p>
           </div>
         </div>

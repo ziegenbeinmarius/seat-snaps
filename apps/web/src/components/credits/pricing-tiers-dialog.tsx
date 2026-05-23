@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { AlertCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { usePricingTiers } from "@/lib/api/payments";
 import { useCredits } from "@/lib/api/credits";
+import { useTranslations } from "next-intl";
 
 interface Props {
   open: boolean;
@@ -17,6 +18,7 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
   const router = useRouter();
   const { data: tiers, isLoading } = usePricingTiers();
   const { data: credits } = useCredits();
+  const t = useTranslations("credits");
 
   const handleBuy = (tierId: string) => {
     onOpenChange(false);
@@ -30,15 +32,14 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isExhausted ? "Out of Credits" : "Get Event Credits"}</DialogTitle>
+          <DialogTitle>{isExhausted ? t("outOfCredits") : t("getCredits")}</DialogTitle>
           {isExhausted && (
             <DialogDescription>
-              You&apos;ve used all your event credits. Buy a plan to keep creating events.
+              {t("usedAllDesc")}
             </DialogDescription>
           )}
         </DialogHeader>
 
-        {/* Exhausted state banner */}
         {isExhausted && (
           <div
             className="flex items-start gap-3 rounded-lg px-4 py-3"
@@ -50,16 +51,15 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
             <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "hsl(0 65% 44%)" }} />
             <div>
               <p className="text-sm font-semibold" style={{ color: "hsl(0 55% 35%)" }}>
-                0 credits remaining
+                {t("zeroRemaining")}
               </p>
               <p className="text-xs mt-0.5" style={{ color: "hsl(0 40% 45%)" }}>
-                Your free trial has been used and no paid credits are available.
+                {t("trialUsedNoCredits")}
               </p>
             </div>
           </div>
         )}
 
-        {/* Free trial available banner */}
         {hasTrialAvailable && (
           <div
             className="rounded-lg px-4 py-3 text-sm"
@@ -69,14 +69,13 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
               border: "1px solid hsl(142 30% 80%)",
             }}
           >
-            You have a free trial event available! Create your first event at no cost (max 5
-            attendees).
+            {t("trialAvailable")}
           </div>
         )}
 
         {isLoading ? (
           <div className="py-8 text-center text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-            Loading plans...
+            {t("loadingPlans")}
           </div>
         ) : (
           <div className="grid gap-3">
@@ -93,7 +92,7 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
                       {tier.name}
                     </p>
                     <p className="text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-                      {tier.eventCount} event{tier.eventCount !== 1 ? "s" : ""}
+                      {tier.eventCount !== 1 ? t("eventPlural", { count: tier.eventCount }) : t("event", { count: tier.eventCount })}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">
@@ -105,7 +104,7 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
                       onClick={() => handleBuy(tier.id)}
                       style={isExhausted ? { background: "hsl(28 65% 44%)", color: "white" } : undefined}
                     >
-                      Buy
+                      {t("buy")}
                     </Button>
                   </div>
                 </div>
@@ -115,9 +114,9 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
 
         {credits && (
           <p className="text-center text-xs" style={{ color: isExhausted ? "hsl(0 55% 45%)" : "hsl(28 8% 50%)" }}>
-            Current balance:{" "}
+            {t("currentBalance")}{" "}
             <span className={isExhausted ? "font-semibold" : undefined}>
-              {credits.availableCredits} credit{credits.availableCredits !== 1 ? "s" : ""}
+              {credits.availableCredits} {credits.availableCredits !== 1 ? t("creditPlural") : t("credit")}
             </span>
           </p>
         )}

@@ -1,12 +1,15 @@
 "use client";
 
 import { Clock } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface Props {
   status: string;
 }
 
 export function PendingStatusBanner({ status }: Props) {
+  const t = useTranslations("attendeeApp");
+
   if (status !== "pending") return null;
 
   return (
@@ -19,9 +22,7 @@ export function PendingStatusBanner({ status }: Props) {
       }}
     >
       <Clock className="h-4 w-4 shrink-0" style={{ color: "rgba(255, 255, 255, 0.85)" }} />
-      <p>
-        <span className="font-semibold">Registration pending</span> — the organizer will confirm your spot shortly.
-      </p>
+      <p>{t("pendingBanner")}</p>
     </div>
   );
 }

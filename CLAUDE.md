@@ -65,6 +65,8 @@ API modules have individual `agent.md` files in `apps/api/src/<module>/`.
 | `APP_URL` | Public app URL for QR code generation |
 | `STORAGE_*` | S3-compatible storage (bucket, region, keys, endpoint) |
 
+Env vars live in the monorepo-root `.env`. Next.js 16 only auto-loads env files from inside the Next app directory, so `apps/web/.env` is a symlink to `../../.env` — recreate it after a fresh clone: `cd apps/web && ln -s ../../.env .env`.
+
 ## Dev Commands
 
 ```bash

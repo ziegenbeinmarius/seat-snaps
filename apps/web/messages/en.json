@@ -1,0 +1,721 @@
+{
+  "common": {
+    "save": "Save",
+    "saving": "Saving…",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "loading": "Loading…",
+    "tryAgain": "Try again",
+    "remove": "Remove",
+    "create": "Create",
+    "submit": "Submit",
+    "close": "Close",
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "search": "Search",
+    "optional": "optional",
+    "required": "*",
+    "changessaved": "Changes saved.",
+    "error": "Error",
+    "or": "or",
+    "copied": "Copied",
+    "copy": "Copy",
+    "yes": "Yes",
+    "no": "No",
+    "add": "Add",
+    "assign": "Assign",
+    "unassign": "Unassign",
+    "pending": "Pending",
+    "confirmed": "Confirmed",
+    "declined": "Declined",
+    "all": "All",
+    "none": "None",
+    "finished": "Finished",
+    "trial": "Trial",
+    "new": "New"
+  },
+  "nav": {
+    "signOut": "Sign out",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "myProfile": "My Profile",
+    "signIn": "Sign in",
+    "getStarted": "Get Started"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in to your account",
+      "signInWithGoogle": "Sign in with Google",
+      "signIn": "Sign in",
+      "signingIn": "Signing in...",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "••••••••"
+    },
+    "register": {
+      "title": "Create your account",
+      "signUpWithGoogle": "Sign up with Google",
+      "createAccount": "Create account",
+      "creatingAccount": "Creating account...",
+      "alreadyHaveAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "namePlaceholder": "Your name",
+      "emailPlaceholder": "you@example.com",
+      "passwordPlaceholder": "Min. 8 characters"
+    },
+    "logout": {
+      "title": "Sign out",
+      "description": "This will clear your session and return you to login.",
+      "signOut": "Sign out"
+    }
+  },
+  "landing": {
+    "hero": {
+      "tagline": "Your event, captured beautifully",
+      "subtitle": "Seating plans, photo sharing, and a guest directory — all in one place.",
+      "goToDashboard": "Go to Dashboard",
+      "myProfile": "My Profile",
+      "createEvent": "Create Your Event",
+      "signIn": "Sign in"
+    },
+    "features": {
+      "heading": "Everything your event needs",
+      "subheading": "From the guest list to the last photo, SeatSnaps has every detail covered — so you can focus on the celebration.",
+      "seatingPlans": {
+        "title": "Seating Plans",
+        "description": "Drag-and-drop table layouts your guests can browse on their phones."
+      },
+      "photoSharing": {
+        "title": "Photo Sharing",
+        "description": "Guests snap and share moments in a collaborative event gallery."
+      },
+      "guestDirectory": {
+        "title": "Guest Directory",
+        "description": "A searchable list so attendees can connect with each other."
+      },
+      "liveBroadcasts": {
+        "title": "Live Broadcasts",
+        "description": "Send real-time announcements and updates to every guest's screen."
+      }
+    },
+    "footer": "All rights reserved.",
+    "scene": {
+      "badge": "A peek inside",
+      "caption": "The whole gang, all in one shot",
+      "heading": "Every moment, every guest",
+      "body": "From the first snap to the last dance, SeatSnaps brings your event together — seating charts your guests love, a shared photo gallery everyone contributes to, and a directory to stay connected long after."
+    },
+    "profileCard": {
+      "plan": "Plan",
+      "credits": "Credits",
+      "creditsLeft": "{count} left",
+      "goToDashboard": "Go to Dashboard",
+      "editProfile": "Edit Profile",
+      "loading": "Loading…",
+      "freeTrial": "Free Trial",
+      "paidPlan": "Paid Plan",
+      "noActivePlan": "No Active Plan"
+    }
+  },
+  "errors": {
+    "somethingWrong": "Something went wrong",
+    "unexpectedError": "An unexpected error occurred. Please try again.",
+    "unexpectedErrorWithMsg": "An unexpected error occurred.",
+    "pageNotFound": "Page not found",
+    "pageNotFoundDesc": "The page you're looking for doesn't exist.",
+    "backToDashboard": "Back to dashboard",
+    "couldNotLoad": "Could not load events",
+    "404": "404"
+  },
+  "dashboard": {
+    "myEvents": "My Events",
+    "myEventsSubtitle": "Events you own or help organise",
+    "noEvents": "No events yet. Create your first event to get started.",
+    "signedInAs": "Signed in as",
+    "loading": "Loading…",
+    "newEvent": "New Event"
+  },
+  "event": {
+    "types": {
+      "wedding": "Wedding",
+      "birthday": "Birthday",
+      "corporate": "Corporate",
+      "other": "Other",
+      "event": "Event"
+    },
+    "tabs": {
+      "overview": "Overview",
+      "team": "Team",
+      "attendees": "Attendees",
+      "seating": "Seating",
+      "photos": "Photos",
+      "theme": "Theme",
+      "schedule": "Schedule",
+      "broadcasts": "Broadcasts"
+    },
+    "backToEvents": "Events",
+    "organizerView": "Organizer View",
+    "overview": {
+      "details": "Details",
+      "description": "Description",
+      "date": "Date",
+      "time": "Time",
+      "location": "Location",
+      "timezone": "Timezone",
+      "seating": "Seating",
+      "rsvp": "RSVP",
+      "ends": "Ends",
+      "assignedSeating": "Assigned seating",
+      "noSeatingPlan": "No seating plan",
+      "pending": "{count} pending",
+      "awaitingApproval": "awaiting approval",
+      "markAsFinished": "Mark as finished",
+      "reopenEvent": "Reopen event",
+      "finished": "Finished",
+      "editEvent": "Edit Event",
+      "saveChanges": "Save changes",
+      "markEventFinished": "Mark event as finished?",
+      "markEventFinishedDesc": "This marks the event as completed. You can still edit it afterwards.",
+      "reopenEventTitle": "Reopen this event?",
+      "reopenEventDesc": "This will mark the event as active again.",
+      "reopen": "Reopen",
+      "form": {
+        "title": "Title",
+        "titleRequired": "Title *",
+        "description": "Description",
+        "descriptionPlaceholder": "A brief description…",
+        "startDate": "Start Date *",
+        "endDate": "End Date",
+        "location": "Location",
+        "locationPlaceholder": "Venue name or address",
+        "timezone": "Timezone",
+        "timezonePlaceholder": "Europe/Stockholm",
+        "type": "Type *",
+        "selectType": "Select type…",
+        "assignedSeating": "Assigned seating",
+        "assignedSeatingDesc": "Attendees will be assigned to specific tables and seats.",
+        "assignedSeatingWarning": "Warning: this event already has {count} table. Disabling seating will orphan existing table data.",
+        "assignedSeatingWarningPlural": "Warning: this event already has {count} tables. Disabling seating will orphan existing table data.",
+        "rsvpSelfReg": "RSVP / Self-Registration",
+        "rsvpSelfRegDesc": "Allow guests to register themselves. New sign-ups appear as pending until approved.",
+        "rsvpQrCode": "QR Code"
+      }
+    },
+    "new": {
+      "pageTitle": "New Event",
+      "createEvent": "Create Event",
+      "creating": "Creating…",
+      "titlePlaceholder": "Wedding Reception",
+      "rsvpSelfReg": "RSVP self-registration",
+      "rsvpSelfRegDesc": "Guests can register themselves via a public RSVP link.",
+      "subtitle": "Fill in the details for your new event"
+    },
+    "team": {
+      "members": "Members",
+      "inviteOrganiser": "Invite Organiser",
+      "inviteTitle": "Invite Organiser",
+      "inviteEmail": "Email address",
+      "inviteExpiry": "Expires in (days)",
+      "sendInvite": "Send Invite",
+      "sending": "Sending…",
+      "copyLink": "Copy link",
+      "pendingInvites": "Pending Invites",
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "expiresAt": "Expires"
+      },
+      "roles": {
+        "owner": "Owner",
+        "organizer": "Organizer"
+      },
+      "statuses": {
+        "accepted": "Accepted",
+        "active": "Active",
+        "pending": "Pending",
+        "expired": "Expired"
+      }
+    },
+    "attendees": {
+      "addAttendee": "Add Attendee",
+      "importCsv": "Import CSV",
+      "exportCsv": "Export CSV",
+      "addTitle": "Add Attendee",
+      "editTitle": "Edit Attendee",
+      "deleteTitle": "Delete attendee?",
+      "deleteDesc": "This action cannot be undone.",
+      "fields": {
+        "name": "Name *",
+        "email": "Email",
+        "groupLabel": "Group / Label",
+        "description": "About",
+        "conversationStarters": "Conversation Starters"
+      },
+      "placeholders": {
+        "name": "Full name",
+        "email": "email@example.com",
+        "groupLabel": "e.g. Family, College Friends",
+        "description": "Short bio or note",
+        "conversationStarters": "One per line, e.g.: Travel\nCoffee\nMusic"
+      },
+      "status": {
+        "all": "All",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "declined": "Declined"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "table": "Table",
+        "seat": "Seat",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "noAttendees": "No attendees yet.",
+      "noAttendeesFiltered": "No attendees match the current filter.",
+      "unassigned": "Unassigned",
+      "showQr": "Show QR",
+      "confirmBulkApprove": "Approve {count} pending attendees?",
+      "confirmBulkDecline": "Decline selected attendees?",
+      "approve": "Approve",
+      "approveAll": "Approve all pending",
+      "decline": "Decline",
+      "bulkActions": "Bulk actions",
+      "selected": "{count} selected",
+      "qrDialogTitle": "Attendee QR Code",
+      "qrScanInstructions": "Scan to join the event"
+    },
+    "seating": {
+      "layout": "Layout",
+      "list": "List",
+      "view": "View:",
+      "addTable": "Add Table",
+      "tableName": "Table name",
+      "capacity": "Capacity",
+      "createTable": "Create Table",
+      "deleteTable": "Delete this table and all its seats?",
+      "assignSeat": "Assign seat",
+      "assignAttendee": "Assign Attendee",
+      "selectAttendee": "Select attendee…",
+      "noUnassigned": "All attendees are assigned.",
+      "unassigned": "Unassigned",
+      "seat": "Seat",
+      "qrPage": {
+        "title": "Attendee QR Codes",
+        "download": "Download All QR Codes",
+        "description": "Each attendee has a unique QR code. Print or share these codes so guests can check in."
+      }
+    },
+    "schedule": {
+      "addItem": "Add Item",
+      "editItem": "Edit Item",
+      "deleteTitle": "Delete schedule item?",
+      "deleteDesc": "This action cannot be undone.",
+      "fields": {
+        "title": "Title *",
+        "description": "Description",
+        "startTime": "Start time *",
+        "endTime": "End time",
+        "location": "Location"
+      },
+      "noItems": "No schedule items yet."
+    },
+    "broadcasts": {
+      "send": "Send Broadcast",
+      "title": "Title",
+      "message": "Message",
+      "sending": "Sending…",
+      "noHistory": "No broadcasts sent yet.",
+      "history": "Broadcast History"
+    },
+    "photos": {
+      "title": "Photos",
+      "approve": "Approve",
+      "reject": "Reject",
+      "noPhotos": "No photos yet.",
+      "pendingModeration": "Pending moderation",
+      "approved": "Approved"
+    },
+    "theme": {
+      "title": "Event Theme",
+      "primaryColor": "Primary Color",
+      "secondaryColor": "Secondary Color",
+      "accentColor": "Accent Color",
+      "textColor": "Text Color",
+      "fontFamily": "Font Family",
+      "buttonRadius": "Button Radius",
+      "headerStyle": "Header Style",
+      "customCss": "Custom CSS",
+      "logoUrl": "Logo URL",
+      "backgroundUrl": "Background URL",
+      "saveTheme": "Save Theme",
+      "resetTheme": "Reset to Default"
+    }
+  },
+  "attendeeApp": {
+    "nav": {
+      "home": "Home",
+      "schedule": "Schedule",
+      "guests": "Guests",
+      "seating": "Seating",
+      "photos": "Photos",
+      "news": "News"
+    },
+    "home": {
+      "welcome": "Welcome, {name}!",
+      "schedule": "Schedule",
+      "happeningNow": "Happening now",
+      "upNext": "Up next",
+      "mySeat": "My Seat",
+      "seat": "Seat {label}",
+      "alsoAtYourTable": "Also at your table",
+      "about": "About",
+      "guest": "Guest"
+    },
+    "schedule": {
+      "title": "Schedule",
+      "noItems": "No schedule yet.",
+      "allDay": "All day"
+    },
+    "guests": {
+      "title": "Guests",
+      "search": "Search guests…",
+      "noGuests": "No guests yet.",
+      "seated": "Seated",
+      "conversationStarters": "Conversation Starters"
+    },
+    "seating": {
+      "title": "Seating",
+      "yourTable": "Your table",
+      "findSeat": "Find your seat",
+      "notAssigned": "You haven't been assigned a seat yet.",
+      "youAreAt": "You are at",
+      "you": "You",
+      "empty": "Empty",
+      "noSeats": "No seats assigned",
+      "noPlan": "No seating plan yet",
+      "yourTableBadge": "Your table",
+      "capacitySeats": "{count} seats"
+    },
+    "photos": {
+      "title": "Photos",
+      "upload": "Upload Photo",
+      "takePhoto": "Take Photo",
+      "noPhotos": "No photos yet. Be the first to share a moment!",
+      "uploading": "Uploading…"
+    },
+    "announcements": {
+      "title": "Announcements",
+      "noAnnouncements": "No announcements yet."
+    },
+    "profile": {
+      "title": "My Profile",
+      "conversationStarters": "Conversation Starters",
+      "about": "About"
+    },
+    "pendingBanner": "Your registration is pending approval.",
+    "highlights": "Highlights",
+    "welcome": {
+      "title": "Welcome to {eventName}!",
+      "subtitle": "Here’s everything you can do today.",
+      "letsGo": "Let’s go!",
+      "findSeat": "Find your seat",
+      "findSeatDesc": "See your table assignment and who’s sitting nearby.",
+      "browseGuests": "Browse guests",
+      "browseGuestsDesc": "Explore the guest directory and discover shared interests.",
+      "viewSchedule": "View the schedule",
+      "viewScheduleDesc": "Stay on top of every moment as the event unfolds.",
+      "uploadPhotos": "Upload photos",
+      "uploadPhotosDesc": "Take pictures and share them — they might make the highlights reel!"
+    }
+  },
+  "join": {
+    "invited": "You're invited",
+    "scanQr": "Scan your personal QR code to join",
+    "notOnList": "Not on the list yet?",
+    "registerAsNew": "Register as new attendee →",
+    "rsvpTitle": "Register for this event",
+    "back": "← Back",
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "aboutYou": "About you",
+      "conversationStarters": "Conversation starters"
+    },
+    "placeholders": {
+      "name": "Your full name",
+      "email": "you@example.com",
+      "aboutYou": "Tell us a bit about yourself",
+      "starter": "e.g. Travel"
+    },
+    "conversationStartersHint": "What do you like to talk about?",
+    "addAnother": "Add another",
+    "registerButton": "Register for Event →",
+    "registering": "Registering…",
+    "successMessage": "You're registered! The organizer will confirm your spot.",
+    "validation": {
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Enter a valid email address",
+      "descriptionTooLong": "Max 200 characters",
+      "registrationFailed": "Registration failed. Please try again."
+    },
+    "invalid": {
+      "title": "Invalid or expired QR code",
+      "description": "This QR code is no longer valid. Please ask an organizer to share a fresh link or QR code.",
+      "goHome": "Go home"
+    },
+    "eventNotFound": "Event Not Found",
+    "eventNotFoundDesc": "This event does not exist or is no longer available."
+  },
+  "organizer": {
+    "myEvents": "My Events",
+    "back": "Back",
+    "nav": {
+      "home": "Home",
+      "attendees": "Attendees",
+      "schedule": "Schedule",
+      "photos": "Photos",
+      "broadcasts": "Broadcasts",
+      "events": "Events",
+      "signOut": "Sign Out"
+    },
+    "dashboard": {
+      "attendees": "Attendees",
+      "checkedIn": "Checked In",
+      "photos": "Photos",
+      "upNext": "Up next",
+      "quickActions": "Quick Actions",
+      "rsvpQrCode": "RSVP QR Code",
+      "showToGuests": "Show to guests to let them register",
+      "copied": "Copied!",
+      "copyLink": "Copy link",
+      "desktopDashboard": "Full desktop dashboard →",
+      "checkinActionLabel": "Check-In Scanner",
+      "checkinDesc": "{checked} / {total} checked in",
+      "photosActionLabel": "Photo Moderation",
+      "photosPendingDesc": "{count} pending review",
+      "photosAllReviewed": "All reviewed",
+      "scheduleActionLabel": "Schedule",
+      "scheduleNext": "Next: {title}",
+      "scheduleEmpty": "No items yet",
+      "scheduleDone": "All done"
+    },
+    "checkin": {
+      "title": "QR Check-In",
+      "subtitle": "Point the camera at an attendee's QR code",
+      "processing": "Checking in…",
+      "success": "Checked in successfully",
+      "failed": "Check-in failed",
+      "hint": "Scan an attendee's personal QR code to check them in instantly.",
+      "cameraDenied": "Camera access denied. Please allow camera permissions and try again.",
+      "tryAgain": "Try again"
+    },
+    "attendees": {
+      "pendingRsvp": "Pending RSVP ({count})",
+      "approveAll": "Approve All",
+      "confirmed": "Confirmed ({count})",
+      "noAttendees": "No attendees yet.",
+      "notYet": "Not yet"
+    },
+    "mobilePhotos": {
+      "title": "Photos",
+      "pending": "Pending",
+      "approved": "Approved",
+      "all": "All",
+      "noPending": "No photos pending review.",
+      "noPhotos": "No photos here."
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "users": "Users",
+    "events": "Events",
+    "overview": "Overview",
+    "columns": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "createdAt": "Created",
+      "status": "Status",
+      "type": "Type",
+      "date": "Date",
+      "owner": "Owner"
+    }
+  },
+  "credits": {
+    "balance": "{count} credit",
+    "balance_plural": "{count} credits",
+    "upgrade": "Upgrade",
+    "managePlan": "Manage Plan",
+    "managePlanCredits": "Manage plan & credits",
+    "free": "Free",
+    "credit": "credit",
+    "creditPlural": "credits",
+    "event": "event",
+    "eventPlural": "events",
+    "buy": "Buy",
+    "planAndCredits": "Plan & Credits",
+    "availableCredits": "Available credits",
+    "exhausted": "Exhausted",
+    "buyCredits": "Buy credits to continue",
+    "buyMoreCredits": "Buy more credits",
+    "purchaseHistory": "Purchase history",
+    "noPurchases": "No purchases yet.",
+    "usedAllCredits": "You've used all your credits. Buy a plan above to create more events.",
+    "outOfCredits": "Out of Credits",
+    "getCredits": "Get Event Credits",
+    "usedAllDesc": "You've used all your event credits. Buy a plan to keep creating events.",
+    "zeroRemaining": "0 credits remaining",
+    "trialUsedNoCredits": "Your free trial has been used and no paid credits are available.",
+    "trialAvailable": "You have a free trial event available! Create your first event at no cost (max 5 attendees).",
+    "loadingPlans": "Loading plans…",
+    "currentBalance": "Current balance:",
+    "outOfEventCredits": "You're out of event credits.",
+    "upgradeToCreate": "Upgrade to create more events.",
+    "dismiss": "Dismiss",
+    "trialWelcome": {
+      "title": "Welcome to SeatSnaps!",
+      "description": "You have a free trial event to explore all features.",
+      "dismiss": "Got it",
+      "starting": "You're starting with a free trial event.",
+      "feature1Title": "1 free event",
+      "feature1Desc": "create your first event at no cost to explore the platform.",
+      "feature2Title": "Up to 5 attendees",
+      "feature2Desc": "your trial event supports a small guest list to get you started.",
+      "feature3Title": "All features included",
+      "feature3Desc": "seating plans, QR codes, schedules, and more.",
+      "upgradeAnytime": "Need more events? You can upgrade to a paid plan anytime.",
+      "letsGo": "Got it, let's go!"
+    },
+    "upgradeBanner": {
+      "title": "You're out of credits",
+      "description": "Purchase credits to create more events.",
+      "cta": "View plans"
+    }
+  },
+  "selectPlan": {
+    "title": "Choose a Plan",
+    "subtitle": "Select a plan to create events",
+    "back": "Back to Dashboard",
+    "choosePlan": "Choose your plan",
+    "chooseDesc": "Get started with a free trial or pick a plan that fits your needs.",
+    "tryForFree": "Try for free",
+    "freeTrial": "Free Trial",
+    "feature1": "1 event",
+    "feature2": "Up to 5 attendees",
+    "feature3": "All features included",
+    "free": "Free",
+    "startFreeTrial": "Start free trial",
+    "starting": "Starting…",
+    "choose": "Choose",
+    "noRealPayment": "No real payment is processed. All plans are immediately activated.",
+    "eventCount": "{count} event",
+    "eventCountPlural": "{count} events"
+  },
+  "checkout": {
+    "title": "Checkout",
+    "processing": "Processing…",
+    "back": "Back",
+    "confirmYourPurchase": "Confirm your purchase",
+    "orderSummary": "Order summary",
+    "eventCredits": "{count} event credit",
+    "eventCreditsPlural": "{count} event credits",
+    "useToCreate": "Use to create and manage events",
+    "simulatedPayment": "Simulated payment",
+    "noRealCharge": "No real charge — credits are granted immediately",
+    "purchaseConfirmed": "Purchase confirmed!",
+    "creditsAdded": "{count} credit added — redirecting to your dashboard…",
+    "creditsAddedPlural": "{count} credits added — redirecting to your dashboard…",
+    "confirmPurchase": "Confirm Purchase — {price} {currency}",
+    "goBack": "Go back",
+    "noRealPayment": "No real payment is processed. All plans are immediately activated.",
+    "purchaseFailed": "Purchase failed. Please try again."
+  },
+  "profile": {
+    "title": "Profile",
+    "displayName": "Display name",
+    "saveChanges": "Save changes",
+    "saving": "Saving…",
+    "profileDetails": "Profile Details",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "updatePassword": "Update Password",
+    "updating": "Updating…",
+    "updatedSuccessfully": "Profile updated successfully.",
+    "passwordChanged": "Password changed successfully.",
+    "backToDashboard": "← Back to Dashboard",
+    "subtitle": "Manage your account details and password",
+    "passwordMinLength": "Min. 8 characters"
+  },
+  "invite": {
+    "title": "You're invited",
+    "accept": "Accept Invitation",
+    "accepting": "Accepting…",
+    "expired": "This invitation has expired or is invalid.",
+    "success": "Invitation accepted! Redirecting…",
+    "invitedTitle": "You're invited",
+    "invitedDesc": "You've been invited to join as an organiser.",
+    "createAccountDesc": "Create an account to join as an organiser.",
+    "createAccount": "Create your account",
+    "createAndAccept": "Create account & accept invite",
+    "creating": "Creating account…",
+    "alreadyHaveAccount": "Already have an account?",
+    "signIn": "Sign in",
+    "role": "Role",
+    "expires": "Invite expires",
+    "loading": "Loading invite…",
+    "invalid": "Invalid or expired invite",
+    "goToLogin": "Go to Login"
+  },
+  "languageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "sv": "Svenska",
+    "de": "Deutsch"
+  },
+  "highlights": {
+    "title": "Highlights",
+    "downloadAll": "Download All",
+    "downloadPhoto": "Download photo",
+    "fullscreen": "Fullscreen",
+    "downloadFailed": "Download failed",
+    "by": "by",
+    "downloadAllHighlights": "Download all highlights"
+  },
+  "photoActions": {
+    "deleteTitle": "Delete photo?",
+    "deleteDesc": "This will permanently remove the photo",
+    "uploadedBy": "uploaded by",
+    "cannotBeUndone": "and cannot be undone.",
+    "deleting": "Deleting…",
+    "deletePermanently": "Delete permanently"
+  },
+  "broadcast": {
+    "reconnecting": "Reconnecting…"
+  },
+  "attend": {
+    "scanTitle": "Scan Invitation QR",
+    "cameraUnavailable": "Camera is not available on this device/browser.",
+    "cameraBlocked": "Camera access was denied. Allow camera access to scan your invitation QR code.",
+    "tryAgain": "Try again",
+    "opening": "Opening your event…",
+    "sessionHint": "If the app opened without your session, scan your invitation QR code here to continue.",
+    "title": "Welcome to SeatSnaps",
+    "scanDesc": "Scan the QR code from your invitation to join your event and access your schedule, seating plan, and more."
+  }
+}

@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { Zap, X } from "lucide-react";
 import { useCredits } from "@/lib/api/credits";
+import { useTranslations } from "next-intl";
 import { PricingTiersDialog } from "@/components/credits/pricing-tiers-dialog";
 
 export function UpgradeBanner() {
   const { data: credits, isLoading } = useCredits();
   const [dismissed, setDismissed] = useState(false);
   const [showPricing, setShowPricing] = useState(false);
+  const t = useTranslations("credits");
 
-  // Only show when trial has been used AND available credits are 0
   if (isLoading || dismissed) return null;
   if (!credits) return null;
   if (!credits.freeTrialUsed || credits.availableCredits > 0) return null;
@@ -32,8 +33,8 @@ export function UpgradeBanner() {
             <Zap className="h-4 w-4" />
           </div>
           <p className="text-sm" style={{ color: "hsl(24 12% 25%)" }}>
-            <span className="font-semibold">You&apos;re out of event credits.</span>{" "}
-            Upgrade to create more events.
+            <span className="font-semibold">{t("outOfEventCredits")}</span>{" "}
+            {t("upgradeToCreate")}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
@@ -43,14 +44,14 @@ export function UpgradeBanner() {
             className="rounded-lg px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-80"
             style={{ background: "hsl(28 65% 44%)", color: "white" }}
           >
-            View plans
+            {t("upgradeBanner.cta")}
           </button>
           <button
             type="button"
             onClick={() => setDismissed(true)}
             className="flex h-7 w-7 items-center justify-center rounded-full transition-colors hover:bg-black/5"
             style={{ color: "hsl(28 8% 50%)" }}
-            aria-label="Dismiss"
+            aria-label={t("dismiss")}
           >
             <X className="h-4 w-4" />
           </button>

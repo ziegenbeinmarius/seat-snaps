@@ -1,6 +1,9 @@
+"use client";
+
 import type { ReactNode } from "react";
 import type { EventResponse } from "@seat-snaps/shared";
 import { getTypeGradient } from "@/lib/event-helpers";
+import { useLocale } from "next-intl";
 
 interface EventHeroStripProps {
   event: EventResponse;
@@ -11,6 +14,7 @@ interface EventHeroStripProps {
 
 export function EventHeroStrip({ event, backButton, action, variant = "desktop" }: EventHeroStripProps) {
   const background = getTypeGradient(event.type, "banner");
+  const locale = useLocale();
 
   if (variant === "mobile") {
     return (
@@ -28,7 +32,7 @@ export function EventHeroStrip({ event, backButton, action, variant = "desktop" 
               {event.title}
             </h1>
             <p className="text-xs opacity-80">
-              {new Date(event.date).toLocaleDateString("en-US", {
+              {new Date(event.date).toLocaleDateString(locale, {
                 weekday: "short",
                 day: "numeric",
                 month: "short",
@@ -46,13 +50,13 @@ export function EventHeroStrip({ event, backButton, action, variant = "desktop" 
     );
   }
 
-  const startDate = new Date(event.date).toLocaleDateString("en-US", {
+  const startDate = new Date(event.date).toLocaleDateString(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
-  const startTime = new Date(event.date).toLocaleTimeString("en-US", {
+  const startTime = new Date(event.date).toLocaleTimeString(locale, {
     hour: "2-digit",
     minute: "2-digit",
   });
@@ -71,7 +75,7 @@ export function EventHeroStrip({ event, backButton, action, variant = "desktop" 
             {event.title}
           </h1>
           <p className="mt-1 text-sm opacity-85">
-            {startDate} at {startTime}
+            {startDate} · {startTime}
           </p>
         </div>
         {backButton}

@@ -1,15 +1,15 @@
-import { notFound, redirect } from "next/navigation";
-import type { Route } from "next";
+import { notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
 
-export async function loadEvent(id: string, fallbackRedirect: Route): Promise<EventResponse> {
+export async function loadEvent(id: string, fallbackRedirect: string): Promise<EventResponse> {
   try {
     return await apiRequest<EventResponse>(`/events/${id}`);
   } catch (err) {
     const message = err instanceof Error ? err.message.toLowerCase() : "";
     if (message.includes("unauthorized")) redirect("/login");
-    if (message.includes("access denied") || message.includes("forbidden")) redirect(fallbackRedirect);
+    if (message.includes("access denied") || message.includes("forbidden")) redirect(fallbackRedirect as never);
     notFound();
   }
 }

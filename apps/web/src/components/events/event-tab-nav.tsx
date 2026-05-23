@@ -1,9 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import type { Route } from "next";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export interface TabLink {
   href: Route;
@@ -17,6 +16,8 @@ interface EventTabNavProps {
 }
 
 function DesktopNav({ links }: { links: TabLink[] }) {
+  // usePathname from @/i18n/navigation strips the locale prefix, so
+  // `pathname.startsWith(href)` works regardless of the active locale.
   const pathname = usePathname();
 
   return (

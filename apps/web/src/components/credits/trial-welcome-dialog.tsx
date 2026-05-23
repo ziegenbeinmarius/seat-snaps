@@ -12,18 +12,18 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useCredits } from "@/lib/api/credits";
+import { useTranslations } from "next-intl";
 
 const DISMISSED_KEY = "seatsnaps_trial_welcome_dismissed";
 
 export function TrialWelcomeDialog() {
   const { data: credits, isLoading } = useCredits();
   const [open, setOpen] = useState(false);
+  const t = useTranslations("credits.trialWelcome");
 
   useEffect(() => {
     if (isLoading || !credits) return;
-    // Don't show if the trial has already been claimed
     if (credits.freeTrialUsed) return;
-    // Don't show if the user is on a paid tier (has credits but never used the trial)
     if (credits.totalCredits > 0) return;
 
     const dismissed = localStorage.getItem(DISMISSED_KEY);
@@ -44,9 +44,9 @@ export function TrialWelcomeDialog() {
           <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full" style={{ background: "hsl(33 40% 92%)" }}>
             <Sparkles className="h-6 w-6" style={{ color: "hsl(28 65% 44%)" }} />
           </div>
-          <DialogTitle className="text-center">Welcome to SeatSnaps!</DialogTitle>
+          <DialogTitle className="text-center">{t("title")}</DialogTitle>
           <DialogDescription className="text-center">
-            You&apos;re starting with a free trial event.
+            {t("starting")}
           </DialogDescription>
         </DialogHeader>
 
@@ -54,13 +54,13 @@ export function TrialWelcomeDialog() {
           <div className="flex items-start gap-3">
             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" style={{ background: "hsl(28 65% 44%)" }}>1</span>
             <p className="text-sm" style={{ color: "hsl(24 12% 20%)" }}>
-              <strong>1 free event</strong> — create your first event at no cost to explore the platform.
+              <strong>{t("feature1Title")}</strong> — {t("feature1Desc")}
             </p>
           </div>
           <div className="flex items-start gap-3">
             <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" style={{ background: "hsl(28 65% 44%)" }}>5</span>
             <p className="text-sm" style={{ color: "hsl(24 12% 20%)" }}>
-              <strong>Up to 5 attendees</strong> — your trial event supports a small guest list to get you started.
+              <strong>{t("feature2Title")}</strong> — {t("feature2Desc")}
             </p>
           </div>
           <div className="flex items-start gap-3">
@@ -68,18 +68,18 @@ export function TrialWelcomeDialog() {
               &#x2713;
             </span>
             <p className="text-sm" style={{ color: "hsl(24 12% 20%)" }}>
-              <strong>All features included</strong> — seating plans, QR codes, schedules, and more.
+              <strong>{t("feature3Title")}</strong> — {t("feature3Desc")}
             </p>
           </div>
         </div>
 
         <p className="text-center text-xs" style={{ color: "hsl(28 8% 50%)" }}>
-          Need more events? You can upgrade to a paid plan anytime.
+          {t("upgradeAnytime")}
         </p>
 
         <DialogFooter className="sm:justify-center">
           <Button onClick={handleDismiss} className="px-8">
-            Got it, let&apos;s go!
+            {t("letsGo")}
           </Button>
         </DialogFooter>
       </DialogContent>

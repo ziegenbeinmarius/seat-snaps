@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useCredits } from "@/lib/api/credits";
+import { useTranslations } from "next-intl";
 import { PlanManagementDialog } from "@/components/credits/plan-management-dialog";
 
 export function CreditBalanceBadge() {
   const { data: credits, isLoading } = useCredits();
   const [open, setOpen] = useState(false);
+  const t = useTranslations("credits");
 
   if (isLoading) {
     return (
@@ -34,9 +36,9 @@ export function CreditBalanceBadge() {
           background: isLow ? "hsl(0 72% 95%)" : "hsl(33 18% 92%)",
           color: isLow ? "hsl(0 65% 44%)" : "hsl(28 65% 44%)",
         }}
-        title="Manage plan & credits"
+        title={t("managePlanCredits")}
       >
-        {available} credit{available !== 1 ? "s" : ""}
+        {available} {available !== 1 ? t("creditPlural") : t("credit")}
       </button>
 
       <PlanManagementDialog open={open} onOpenChange={setOpen} />

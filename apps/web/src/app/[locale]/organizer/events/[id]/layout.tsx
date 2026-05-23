@@ -1,0 +1,51 @@
+import type { ReactNode } from "react";
+import { Link } from "@/i18n/navigation";
+import { ArrowLeft, LogOut } from "lucide-react";
+import { EventHeroStrip } from "@/components/events/event-hero-strip";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { loadEvent } from "@/lib/load-event";
+import { setRequestLocale } from "next-intl/server";
+
+interface Props {
+  children: ReactNode;
+  params: Promise<{ id: string; locale: string }>;
+}
+
+export default async function OrganizerEventLayout({ children, params }: Props) {
+  const { id, locale } = await params;
+  setRequestLocale(locale);
+  const event = await loadEvent(id, "/organizer");
+
+  return (
+    <div>
+      <EventHeroStrip
+        event={event}
+        variant="mobile"
+        backButton={
+          <Link
+            href="/organizer"
+            className="flex h-8 w-8 items-center justify-center rounded-full"
+            style={{ background: "rgba(255,255,255,0.2)" }}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+        }
+        action={
+          <div className="flex items-center gap-2">
+            <LanguageSwitcher />
+            <Link
+              href="/logout"
+              className="flex h-8 w-8 items-center justify-center rounded-full opacity-70 hover:opacity-100"
+              style={{ background: "rgba(255,255,255,0.2)" }}
+              title="Sign Out"
+            >
+              <LogOut className="h-4 w-4" />
+            </Link>
+          </div>
+        }
+      />
+
+      <div className="px-4 py-4">{children}</div>
+    </div>
+  );
+}
