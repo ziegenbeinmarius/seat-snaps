@@ -15,6 +15,8 @@ export const events = pgTable("events", {
   isFinished: boolean("is_finished").notNull().default(false),
   rsvpEnabled: boolean("rsvp_enabled").notNull().default(false),
   settings: jsonb("settings"),
+  isFreeTrial: boolean("is_free_trial").notNull().default(false),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });

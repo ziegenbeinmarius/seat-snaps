@@ -49,6 +49,7 @@ export class AttendeesService implements IAttendeeService {
 
   async create(eventId: string, data: CreateAttendeeInput, userId: string): Promise<Attendee> {
     await this.requireMember(eventId, userId);
+    await this.enforceTrialAttendeeCap(eventId);
     if (data.email) {
       const existing = await this.attendeeRepository.findByEventAndEmail(eventId, data.email);
       if (existing) throw new ConflictException("An attendee with this email already exists for this event");
@@ -69,6 +70,7 @@ export class AttendeesService implements IAttendeeService {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
     if (!event.rsvpEnabled) throw new ForbiddenException("RSVP is not enabled for this event");
+    await this.enforceTrialAttendeeCap(eventId);
 
     const existing = await this.attendeeRepository.findByEventAndEmail(eventId, data.email);
     if (existing) throw new ConflictException("An attendee with this email is already registered for this event");
@@ -195,5 +197,18 @@ export class AttendeesService implements IAttendeeService {
     if (!event) throw new NotFoundException("Event not found");
     const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
+  }
+
+  private static readonly FREE_TRIAL_MAX_ATTENDEES = 5;
+
+  private async enforceTrialAttendeeCap(eventId: string): Promise<void> {
+    const event = await this.eventRepository.findById(eventId);
+    if (!event?.isFreeTrial) return;
+    const attendees = await this.attendeeRepository.findByEventId(eventId);
+    if (attendees.length >= AttendeesService.FREE_TRIAL_MAX_ATTENDEES) {
+      throw new BadRequestException(
+        `Free trial events are limited to ${AttendeesService.FREE_TRIAL_MAX_ATTENDEES} attendees. Please upgrade to add more.`,
+      );
+    }
   }
 }

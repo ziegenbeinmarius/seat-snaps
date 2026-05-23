@@ -20,6 +20,8 @@ import { ThemesModule } from "./themes/themes.module";
 import { AdminModule } from "./admin/admin.module";
 import { BroadcastsModule } from "./broadcasts/broadcasts.module";
 import { PushSubscriptionsModule } from "./push-subscriptions/push-subscriptions.module";
+import { CreditsModule } from "./credits/credits.module";
+import { PaymentsModule } from "./payments/payments.module";
 import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
 
 @Module({
@@ -45,6 +47,8 @@ import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
     AdminModule,
     BroadcastsModule,
     PushSubscriptionsModule,
+    CreditsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -21,6 +21,7 @@ export interface IEventService {
   create(data: CreateEventInput, userId: string): Promise<Event>;
   update(id: string, data: UpdateEventInput, userId: string): Promise<Event>;
   delete(id: string, userId: string): Promise<void>;
+  reactivate(id: string, userId: string): Promise<Event>;
 }
 
 export const EVENT_SERVICE = Symbol("IEventService");

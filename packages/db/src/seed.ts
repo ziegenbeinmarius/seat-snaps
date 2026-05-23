@@ -3,7 +3,7 @@ import { config as loadEnv } from "dotenv";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { createDb } from "./index.js";
-import { users, events, eventMemberships, attendees, tables, seats } from "./schema/index.js";
+import { users, events, eventMemberships, attendees, tables, seats, pricingTiers, userCredits } from "./schema/index.js";
 
 const envCandidates = [
   resolve(process.cwd(), ".env"),
@@ -47,6 +47,25 @@ async function seed() {
     .returning();
 
   console.log(`Created users: ${alice.name}, ${bob.name}`);
+
+  // Pricing tiers
+  await db.insert(pricingTiers).values([
+    { name: "Starter", eventCount: 2, priceSek: 499, currency: "SEK" },
+    { name: "Pro", eventCount: 5, priceSek: 999, currency: "SEK" },
+    { name: "Business", eventCount: 20, priceSek: 1999, currency: "SEK" },
+  ]);
+
+  console.log("Created pricing tiers");
+
+  // Give Alice some credits (simulating a purchase)
+  await db.insert(userCredits).values({
+    userId: alice.id,
+    totalCredits: 5,
+    usedCredits: 1,
+    freeTrialUsed: true,
+  });
+
+  console.log("Created user credits for Alice");
 
   // Event
   const [event] = await db

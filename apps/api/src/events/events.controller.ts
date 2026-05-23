@@ -83,4 +83,9 @@ export class EventsController {
   deleteEvent(@Param("id") id: string, @CurrentUser() user: SessionUser) {
     return this.eventsService.delete(id, user.id);
   }
+
+  @Post(":id/reactivate")
+  reactivateEvent(@Param("id") id: string, @CurrentUser() user: SessionUser) {
+    return this.eventsService.reactivate(id, user.id);
+  }
 }

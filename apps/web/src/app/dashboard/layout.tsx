@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { requireAuth } from "@/lib/require-auth";
 import { APP_BACKGROUND } from "@/lib/event-helpers";
+import { CreditBalanceBadge } from "@/components/credits/credit-balance-badge";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireAuth();
@@ -29,6 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
             SeatSnaps
           </Link>
           <div className="flex items-center gap-3">
+            <CreditBalanceBadge />
             {session.user?.isAdmin && (
               <Link
                 href="/admin"

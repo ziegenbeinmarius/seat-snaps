@@ -1,4 +1,4 @@
-import { eq, inArray } from "@seat-snaps/db";
+import { eq, inArray, isNull } from "@seat-snaps/db";
 import type { Database, Event, NewEvent } from "@seat-snaps/db";
 import { events, eventMemberships } from "@seat-snaps/db";
 import type { IEventRepository, EventFilters, UpdateEventData } from "../../domain/repositories/IEventRepository";
@@ -28,7 +28,10 @@ export class DrizzleEventRepository implements IEventRepository {
     if (memberships.length === 0) return [];
 
     const eventIds = memberships.map((m) => m.eventId);
-    return this.db.select().from(events).where(inArray(events.id, eventIds));
+    return this.db
+      .select()
+      .from(events)
+      .where(inArray(events.id, eventIds));
   }
 
   async create(data: NewEvent): Promise<Event> {
@@ -48,5 +51,22 @@ export class DrizzleEventRepository implements IEventRepository {
 
   async delete(id: string): Promise<void> {
     await this.db.delete(events).where(eq(events.id, id));
+  }
+
+  async softDelete(id: string): Promise<void> {
+    await this.db
+      .update(events)
+      .set({ deletedAt: new Date(), updatedAt: new Date() })
+      .where(eq(events.id, id));
+  }
+
+  async reactivate(id: string): Promise<Event> {
+    const result = await this.db
+      .update(events)
+      .set({ deletedAt: null, updatedAt: new Date() })
+      .where(eq(events.id, id))
+      .returning();
+    if (!result[0]) throw new Error(`Event ${id} not found`);
+    return result[0];
   }
 }

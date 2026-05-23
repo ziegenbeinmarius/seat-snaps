@@ -8,3 +8,5 @@ export * from "./photo.schema.js";
 export * from "./theme.schema.js";
 export * from "./admin.schema.js";
 export * from "./broadcast.schema.js";
+export * from "./credit.schema.js";
+export * from "./payment.schema.js";

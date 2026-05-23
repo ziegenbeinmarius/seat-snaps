@@ -11,3 +11,6 @@ export * from "./DrizzleAttendeeSessionRepository";
 export * from "./DrizzleScheduleItemRepository";
 export * from "./DrizzleEventThemeRepository";
 export * from "./DrizzlePushSubscriptionRepository";
+export * from "./DrizzleUserCreditRepository";
+export * from "./DrizzlePaymentRepository";
+export * from "./DrizzlePricingTierRepository";

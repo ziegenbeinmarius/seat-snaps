@@ -14,6 +14,9 @@ import {
   DrizzleEventThemeRepository,
   DrizzleBroadcastRepository,
   DrizzlePushSubscriptionRepository,
+  DrizzleUserCreditRepository,
+  DrizzlePaymentRepository,
+  DrizzlePricingTierRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
@@ -29,6 +32,9 @@ import {
   EVENT_THEME_REPOSITORY,
   BROADCAST_REPOSITORY,
   PUSH_SUBSCRIPTION_REPOSITORY,
+  USER_CREDIT_REPOSITORY,
+  PAYMENT_REPOSITORY,
+  PRICING_TIER_REPOSITORY,
 } from "../domain/repositories";
 
 export const DB_PROVIDER = Symbol("DATABASE");
@@ -110,6 +116,21 @@ export const DB_PROVIDER = Symbol("DATABASE");
       useFactory: (db: ReturnType<typeof createDb>) => new DrizzlePushSubscriptionRepository(db),
       inject: [DB_PROVIDER],
     },
+    {
+      provide: USER_CREDIT_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleUserCreditRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: PAYMENT_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzlePaymentRepository(db),
+      inject: [DB_PROVIDER],
+    },
+    {
+      provide: PRICING_TIER_REPOSITORY,
+      useFactory: (db: ReturnType<typeof createDb>) => new DrizzlePricingTierRepository(db),
+      inject: [DB_PROVIDER],
+    },
   ],
   exports: [
     DB_PROVIDER,
@@ -126,6 +147,9 @@ export const DB_PROVIDER = Symbol("DATABASE");
     EVENT_THEME_REPOSITORY,
     BROADCAST_REPOSITORY,
     PUSH_SUBSCRIPTION_REPOSITORY,
+    USER_CREDIT_REPOSITORY,
+    PAYMENT_REPOSITORY,
+    PRICING_TIER_REPOSITORY,
   ],
 })
 export class DatabaseModule {}

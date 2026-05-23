@@ -11,10 +11,15 @@ import { photos } from "./photos.js";
 import { broadcasts } from "./broadcasts.js";
 import { eventThemes } from "./event-themes.js";
 import { pushSubscriptions } from "./push-subscriptions.js";
+import { userCredits } from "./user-credits.js";
+import { payments } from "./payments.js";
+import { pricingTiers } from "./pricing-tiers.js";
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   memberships: many(eventMemberships),
   broadcasts: many(broadcasts),
+  credits: one(userCredits, { fields: [users.id], references: [userCredits.userId] }),
+  payments: many(payments),
 }));
 
 export const eventsRelations = relations(events, ({ many, one }) => ({
@@ -84,4 +89,17 @@ export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one })
     references: [attendeeSessions.id],
   }),
   user: one(users, { fields: [pushSubscriptions.userId], references: [users.id] }),
+}));
+
+export const userCreditsRelations = relations(userCredits, ({ one }) => ({
+  user: one(users, { fields: [userCredits.userId], references: [users.id] }),
+}));
+
+export const paymentsRelations = relations(payments, ({ one }) => ({
+  user: one(users, { fields: [payments.userId], references: [users.id] }),
+  tier: one(pricingTiers, { fields: [payments.tierId], references: [pricingTiers.id] }),
+}));
+
+export const pricingTiersRelations = relations(pricingTiers, ({ many }) => ({
+  payments: many(payments),
 }));
