@@ -11,4 +11,7 @@ export * from "./broadcasts.js";
 export * from "./event-themes.js";
 export * from "./schedule-items.js";
 export * from "./push-subscriptions.js";
+export * from "./user-credits.js";
+export * from "./pricing-tiers.js";
+export * from "./payments.js";
 export * from "./relations.js";

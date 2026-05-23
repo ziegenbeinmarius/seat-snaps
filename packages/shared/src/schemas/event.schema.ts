@@ -33,6 +33,8 @@ export const EventResponseSchema = z.object({
   hasSeating: z.boolean(),
   isFinished: z.boolean(),
   rsvpEnabled: z.boolean(),
+  isFreeTrial: z.boolean(),
+  deletedAt: z.coerce.date().nullable(),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });

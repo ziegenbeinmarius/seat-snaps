@@ -11,3 +11,6 @@ export * from "./IAttendeeSessionRepository";
 export * from "./IScheduleItemRepository";
 export * from "./IEventThemeRepository";
 export * from "./IPushSubscriptionRepository";
+export * from "./IUserCreditRepository";
+export * from "./IPaymentRepository";
+export * from "./IPricingTierRepository";
