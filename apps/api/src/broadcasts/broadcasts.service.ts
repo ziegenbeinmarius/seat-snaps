@@ -29,10 +29,11 @@ export class BroadcastsService implements IBroadcastService {
   ) {}
 
   async create(eventId: string, data: CreateBroadcastInput, userId: string): Promise<BroadcastWithCount> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Not a member of this event");
 
     const broadcast = await this.broadcastRepository.create({

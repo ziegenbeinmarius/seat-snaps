@@ -118,6 +118,14 @@ function createInMemoryAttendeeRepo() {
       Object.assign(a, data, { updatedAt: new Date() });
       return a;
     }),
+    findByIds: vi.fn(async (ids: string[]) =>
+      ids.map(id => attendees.get(id)).filter(Boolean)),
+    bulkCreate: vi.fn(async (items: Record<string, unknown>[]) =>
+      items.map(data => {
+        const a = { id: randomUUID(), status: "confirmed", tableId: null, seatId: null, checkedInAt: null, createdAt: new Date(), updatedAt: new Date(), ...data };
+        attendees.set(a.id as string, a);
+        return a;
+      })),
     bulkUpdateStatus: vi.fn(async (ids: string[], status: string) =>
       ids.map(id => { const a = attendees.get(id); if (a) a["status"] = status; return a; })),
     delete: vi.fn(async (id: string) => { attendees.delete(id); }),
@@ -147,6 +155,8 @@ function createInMemorySeatRepo() {
     findById: vi.fn(async (id: string) => seats.get(id) ?? null),
     findByTableId: vi.fn(async (tableId: string) => [...seats.values()].filter(s => s["tableId"] === tableId)),
     findByEventId: vi.fn(async (eventId: string) => [...seats.values()].filter(s => s["eventId"] === eventId)),
+    findByAttendeeId: vi.fn(async (attendeeId: string) =>
+      [...seats.values()].find(s => s["attendeeId"] === attendeeId) ?? null),
     assignAttendee: vi.fn(async (seatId: string, attendeeId: string) => {
       const s = seats.get(seatId)!; s["attendeeId"] = attendeeId; return s;
     }),
@@ -157,6 +167,11 @@ function createInMemorySeatRepo() {
       const s = { id: randomUUID(), ...data, createdAt: new Date() };
       seats.set(s.id as string, s); return s;
     }),
+    bulkCreate: vi.fn(async (items: Record<string, unknown>[]) =>
+      items.map(data => {
+        const s = { id: randomUUID(), ...data, createdAt: new Date() };
+        seats.set(s.id as string, s); return s;
+      })),
     update: vi.fn(async (id: string, data: Record<string, unknown>) => { const s = seats.get(id)!; Object.assign(s, data); return s; }),
     delete: vi.fn(async (id: string) => { seats.delete(id); }),
   };

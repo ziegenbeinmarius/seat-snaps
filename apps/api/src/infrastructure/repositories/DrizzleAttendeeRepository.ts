@@ -11,6 +11,11 @@ export class DrizzleAttendeeRepository implements IAttendeeRepository {
     return result[0] ?? null;
   }
 
+  async findByIds(ids: string[]): Promise<Attendee[]> {
+    if (ids.length === 0) return [];
+    return this.db.select().from(attendees).where(inArray(attendees.id, ids));
+  }
+
   async findByQrToken(token: string): Promise<Attendee | null> {
     const result = await this.db
       .select()
@@ -36,6 +41,11 @@ export class DrizzleAttendeeRepository implements IAttendeeRepository {
   async create(data: NewAttendee): Promise<Attendee> {
     const result = await this.db.insert(attendees).values(data).returning();
     return result[0];
+  }
+
+  async bulkCreate(data: NewAttendee[]): Promise<Attendee[]> {
+    if (data.length === 0) return [];
+    return this.db.insert(attendees).values(data).returning();
   }
 
   async update(id: string, data: UpdateAttendeeData): Promise<Attendee> {
