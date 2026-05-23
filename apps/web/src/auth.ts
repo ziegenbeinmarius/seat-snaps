@@ -136,7 +136,8 @@ const nextAuth: NextAuthResult = NextAuth({
               body: JSON.stringify({
                 email: user.email,
                 name: user.name,
-                avatarUrl: user.image ?? undefined,
+                // Omit avatarUrl entirely when absent so the DTO receives no key
+                ...(user.image ? { avatarUrl: user.image } : {}),
               }),
             });
             if (res.ok) {
@@ -153,8 +154,14 @@ const nextAuth: NextAuthResult = NextAuth({
               token.checkedAt = Math.floor(Date.now() / 1000);
               return token;
             }
-          } catch {
-            return token;
+            // Non-2xx from the OAuth endpoint — log and abort the sign-in so we
+            // never produce a JWT with token.id = undefined.
+            console.error("[auth][google] oauth endpoint returned", res.status, await res.text().catch(() => ""));
+            return null;
+          } catch (err) {
+            // Network failure — same: abort rather than store a broken token.
+            console.error("[auth][google] oauth endpoint unreachable", err);
+            return null;
           }
         }
 
