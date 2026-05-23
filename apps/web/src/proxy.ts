@@ -14,13 +14,6 @@ const proxy = auth(async (req: NextRequest & { auth: unknown }) => {
   const hasValidSession = session?.user?.id;
   const pathname = nextUrl.pathname;
 
-  // QR-token join routes are Route Handlers, not pages — skip locale rewriting.
-  const isQrJoinRoute =
-    /^(?:\/(sv|de|en))?\/join\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathname);
-  if (isQrJoinRoute) {
-    return NextResponse.next();
-  }
-
   // Detect locale prefix — with localePrefix:"as-needed" English has no prefix
   const localeMatch = pathname.match(/^\/(sv|de|en)(\/|$)/);
   const activeLocale = localeMatch ? localeMatch[1] : "en";
