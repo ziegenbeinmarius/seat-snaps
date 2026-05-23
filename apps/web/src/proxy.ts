@@ -1,6 +1,5 @@
-import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextProxy, NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 
@@ -8,13 +7,24 @@ const PROTECTED = ["/dashboard", "/organizer", "/select-plan"];
 
 const intlProxy = createIntlMiddleware(routing);
 
-const proxy = auth(async (req: NextRequest & { auth: unknown }) => {
+// Heuristic: presence of a NextAuth session-token cookie (any name variant).
+// We don't verify the JWT in Edge middleware — verification happens server-side
+// via auth() in pages/layouts. We just gate the redirect on "looks logged in".
+function hasSessionCookie(req: NextRequest): boolean {
+  const cookies = req.cookies;
+  return (
+    cookies.has("authjs.session-token") ||
+    cookies.has("__Secure-authjs.session-token") ||
+    cookies.has("__Host-authjs.session-token") ||
+    cookies.has("next-auth.session-token") ||
+    cookies.has("__Secure-next-auth.session-token")
+  );
+}
+
+export default function proxy(req: NextRequest) {
   const { nextUrl } = req;
-  const session = req.auth as { user?: { id?: string } } | null;
-  const hasValidSession = session?.user?.id;
   const pathname = nextUrl.pathname;
 
-  // Detect locale prefix — with localePrefix:"as-needed" English has no prefix
   const localeMatch = pathname.match(/^\/(sv|de|en)(\/|$)/);
   const activeLocale = localeMatch ? localeMatch[1] : "en";
   const localeSegment = activeLocale !== "en" ? `/${activeLocale}` : "";
@@ -22,7 +32,7 @@ const proxy = auth(async (req: NextRequest & { auth: unknown }) => {
 
   const isProtected = PROTECTED.some((p) => pathnameWithoutLocale.startsWith(p));
 
-  if (isProtected && !hasValidSession) {
+  if (isProtected && !hasSessionCookie(req)) {
     const loginUrl = new URL(`${localeSegment}/login`, nextUrl);
     const callback = pathnameWithoutLocale;
     if (callback.startsWith("/") && !callback.startsWith("//")) {
@@ -32,9 +42,7 @@ const proxy = auth(async (req: NextRequest & { auth: unknown }) => {
   }
 
   return intlProxy(req);
-});
-
-export default proxy as unknown as NextProxy;
+}
 
 export const config = {
   matcher: ["/((?!api|_next|.*\\..*).*)"],
