@@ -15,6 +15,14 @@ const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
 
   // Strip locale prefix to check if the pathname is a protected route
   const pathname = nextUrl.pathname;
+
+  // Explicitly redirect bare root to /en so the [locale] segment is always present.
+  // next-intl's internal rewrite can be bypassed when wrapped inside auth(); this
+  // explicit redirect guarantees `/` always lands on the English landing page.
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/en", nextUrl));
+  }
+
   // Remove locale prefix (e.g. /sv/dashboard → /dashboard)
   const pathnameWithoutLocale = pathname.replace(/^\/(sv|de)/, "") || "/";
 
