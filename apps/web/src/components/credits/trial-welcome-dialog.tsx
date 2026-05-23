@@ -21,7 +21,10 @@ export function TrialWelcomeDialog() {
 
   useEffect(() => {
     if (isLoading || !credits) return;
+    // Don't show if the trial has already been claimed
     if (credits.freeTrialUsed) return;
+    // Don't show if the user is on a paid tier (has credits but never used the trial)
+    if (credits.totalCredits > 0) return;
 
     const dismissed = localStorage.getItem(DISMISSED_KEY);
     if (!dismissed) {
