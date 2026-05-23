@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { usePricingTiers, useCheckout } from "@/lib/api/payments";
+import { usePricingTiers } from "@/lib/api/payments";
 import { useCredits } from "@/lib/api/credits";
 
 interface Props {
@@ -12,19 +13,13 @@ interface Props {
 }
 
 export function PricingTiersDialog({ open, onOpenChange }: Props) {
+  const router = useRouter();
   const { data: tiers, isLoading } = usePricingTiers();
   const { data: credits } = useCredits();
-  const checkout = useCheckout();
-  const [processingTierId, setProcessingTierId] = useState<string | null>(null);
 
-  const handleCheckout = async (tierId: string) => {
-    setProcessingTierId(tierId);
-    try {
-      await checkout.mutateAsync({ tierId });
-      onOpenChange(false);
-    } finally {
-      setProcessingTierId(null);
-    }
+  const handleBuy = (tierId: string) => {
+    onOpenChange(false);
+    router.push(`/checkout?tierId=${encodeURIComponent(tierId)}`);
   };
 
   return (
@@ -76,10 +71,9 @@ export function PricingTiersDialog({ open, onOpenChange }: Props) {
                     </span>
                     <Button
                       size="sm"
-                      disabled={processingTierId !== null}
-                      onClick={() => handleCheckout(tier.id)}
+                      onClick={() => handleBuy(tier.id)}
                     >
-                      {processingTierId === tier.id ? "Processing..." : "Buy"}
+                      Buy
                     </Button>
                   </div>
                 </div>

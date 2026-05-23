@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useClaimTrial } from "@/lib/api/credits";
-import { useCheckout } from "@/lib/api/payments";
 import type { PricingTierResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -15,7 +14,6 @@ interface Props {
 export function SelectPlanClient({ tiers }: Props) {
   const router = useRouter();
   const claimTrial = useClaimTrial();
-  const checkout = useCheckout();
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleTrialSelect = async () => {
@@ -29,15 +27,8 @@ export function SelectPlanClient({ tiers }: Props) {
     }
   };
 
-  const handleTierSelect = async (tierId: string) => {
-    setProcessingId(tierId);
-    try {
-      await checkout.mutateAsync({ tierId });
-      router.push("/dashboard");
-    } catch (err: unknown) {
-      console.error("Failed to checkout", err);
-      setProcessingId(null);
-    }
+  const handleTierSelect = (tierId: string) => {
+    router.push(`/checkout?tierId=${encodeURIComponent(tierId)}`);
   };
 
   const isProcessing = processingId !== null;
@@ -137,7 +128,7 @@ export function SelectPlanClient({ tiers }: Props) {
                   disabled={isProcessing}
                   onClick={() => handleTierSelect(tier.id)}
                 >
-                  {processingId === tier.id ? "Processing…" : "Choose"}
+                  Choose
                 </Button>
               </div>
             </div>
