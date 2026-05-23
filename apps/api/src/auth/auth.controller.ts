@@ -14,6 +14,7 @@ import type { SessionUser } from "@seat-snaps/shared";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { ValidateDto } from "./dto/validate.dto";
+import { OAuthUserDto } from "./dto/oauth-user.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { Public } from "./decorators/public.decorator";
@@ -50,6 +51,14 @@ export class AuthController {
     const user = await this.authService.validateCredentials(dto.email, dto.password);
     if (!user) throw new UnauthorizedException("Invalid credentials");
     return user;
+  }
+
+  @Public()
+  @Throttle({ short: { ttl: 60_000, limit: 5 }, long: { ttl: 600_000, limit: 20 } })
+  @Post("oauth")
+  @HttpCode(HttpStatus.OK)
+  async oauthUser(@Body() dto: OAuthUserDto) {
+    return this.authService.findOrCreateOAuthUser(dto);
   }
 
   @Throttle({ short: { ttl: 60_000, limit: 3 }, long: { ttl: 600_000, limit: 10 } })

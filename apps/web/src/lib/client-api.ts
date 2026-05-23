@@ -32,6 +32,11 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
   );
 
   if (!res.ok) {
+    if (res.status === 401 && typeof window !== "undefined") {
+      window.location.href = "/login";
+      return new Promise<T>(() => {});
+    }
+
     const err = await res.json().catch(() => ({}));
     const message = Array.isArray((err as { message?: string | string[] }).message)
       ? (err as { message: string[] }).message.join(", ")

@@ -1,5 +1,6 @@
 import NextAuth, { type DefaultSession, type NextAuthResult } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import type { JWT } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
 import { config as loadEnv } from "dotenv";
@@ -70,6 +71,10 @@ const nextAuth: NextAuthResult = NextAuth({
     },
   },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
     Credentials({
       async authorize(credentials) {
         const parsed = LoginSchema.safeParse(credentials);
@@ -120,8 +125,39 @@ const nextAuth: NextAuthResult = NextAuth({
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
+        if (account?.provider === "google") {
+          const apiUrl = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
+          try {
+            const res = await fetch(`${apiUrl}/api/auth/oauth`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                email: user.email,
+                name: user.name,
+                avatarUrl: user.image ?? undefined,
+              }),
+            });
+            if (res.ok) {
+              const dbUser = (await res.json()) as {
+                id: string;
+                role?: string | null;
+                isAdmin?: boolean;
+                tokenVersion?: number;
+              };
+              token.id = dbUser.id;
+              token.role = dbUser.role ?? null;
+              token.isAdmin = dbUser.isAdmin ?? false;
+              token.tokenVersion = dbUser.tokenVersion ?? 0;
+              token.checkedAt = Math.floor(Date.now() / 1000);
+              return token;
+            }
+          } catch {
+            return token;
+          }
+        }
+
         token.id = user.id;
         token.role = user.role ?? null;
         token.isAdmin = user.isAdmin ?? false;

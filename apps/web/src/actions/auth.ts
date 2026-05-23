@@ -104,6 +104,10 @@ export async function updateProfileAction(formData: FormData): Promise<ActionRes
   }
 }
 
+export async function googleSignInAction(): Promise<void> {
+  await signIn("google", { redirectTo: "/dashboard" });
+}
+
 export async function logoutAction(): Promise<void> {
   try {
     // Auth.js v5: signOut clears the session cookie then throws NEXT_REDIRECT.
