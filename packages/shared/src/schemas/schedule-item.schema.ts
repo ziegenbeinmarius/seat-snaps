@@ -27,8 +27,6 @@ export type ScheduleItemResponse = z.infer<typeof ScheduleItemResponseSchema>;
 
 export const CreateAttendeeSessionSchema = z.object({
   qrToken: z.string().optional(),
-  attendeeId: z.string().uuid().optional(),
-  eventId: z.string().uuid().optional(),
   deviceFingerprint: z.string().optional(),
 });
 export type CreateAttendeeSessionInput = z.infer<typeof CreateAttendeeSessionSchema>;

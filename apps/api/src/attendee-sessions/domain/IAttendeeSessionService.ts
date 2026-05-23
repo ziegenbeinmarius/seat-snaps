@@ -10,11 +10,6 @@ export interface IAttendeeSessionService {
     qrToken: string,
     deviceFingerprint?: string,
   ): Promise<AttendeeSessionWithAttendee>;
-  createFromAttendeeId(
-    attendeeId: string,
-    eventId: string,
-    deviceFingerprint?: string,
-  ): Promise<AttendeeSessionWithAttendee>;
   getByToken(token: string): Promise<AttendeeSessionWithAttendee>;
   updateSelf(
     attendeeId: string,

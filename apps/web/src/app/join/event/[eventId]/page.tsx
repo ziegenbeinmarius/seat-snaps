@@ -1,4 +1,4 @@
-import type { AttendeeResponse, EventResponse } from "@seat-snaps/shared";
+import type { EventResponse } from "@seat-snaps/shared";
 import { JoinEventClient } from "./join-event-client";
 
 const API_URL = process.env.INTERNAL_API_URL ?? "http://localhost:3001";
@@ -17,13 +17,9 @@ export default async function JoinEventPage({ params }: Props) {
   const { eventId } = await params;
 
   let event: EventResponse;
-  let attendees: AttendeeResponse[];
 
   try {
-    [event, attendees] = await Promise.all([
-      fetchPublic<EventResponse>(`/events/${eventId}/info`),
-      fetchPublic<AttendeeResponse[]>(`/events/${eventId}/attendees/public`),
-    ]);
+    event = await fetchPublic<EventResponse>(`/events/${eventId}/info`);
   } catch {
     return (
       <main
@@ -45,7 +41,6 @@ export default async function JoinEventPage({ params }: Props) {
   return (
     <JoinEventClient
       eventId={eventId}
-      attendees={attendees}
       eventTitle={event.title}
       rsvpEnabled={event.rsvpEnabled}
     />

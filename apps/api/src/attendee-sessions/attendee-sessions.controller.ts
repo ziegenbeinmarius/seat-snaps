@@ -8,7 +8,7 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  BadRequestException,
+  UnauthorizedException,
 } from "@nestjs/common";
 import { randomBytes } from "node:crypto";
 import { Throttle } from "@nestjs/throttler";
@@ -34,18 +34,10 @@ export class AttendeeSessionsController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateAttendeeSessionDto, @Res() reply: FastifyReply) {
-    let result: AttendeeSessionWithAttendee;
-    if (dto.qrToken) {
-      result = await this.service.createFromQrToken(dto.qrToken, dto.deviceFingerprint);
-    } else if (dto.attendeeId && dto.eventId) {
-      result = await this.service.createFromAttendeeId(
-        dto.attendeeId,
-        dto.eventId,
-        dto.deviceFingerprint,
-      );
-    } else {
-      throw new BadRequestException("Provide either qrToken or attendeeId with eventId");
+    if (!dto.qrToken) {
+      throw new UnauthorizedException("A valid QR token is required to create a session");
     }
+    const result = await this.service.createFromQrToken(dto.qrToken, dto.deviceFingerprint);
 
     reply.setCookie(ATTENDEE_SESSION_COOKIE, result.session.token, {
       httpOnly: true,
