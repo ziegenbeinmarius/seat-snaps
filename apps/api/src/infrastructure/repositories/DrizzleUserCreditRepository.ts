@@ -1,4 +1,4 @@
-import { eq, sql } from "@seat-snaps/db";
+import { and, eq, sql } from "@seat-snaps/db";
 import type { Database, UserCredit, NewUserCredit } from "@seat-snaps/db";
 import { userCredits } from "@seat-snaps/db";
 import type { IUserCreditRepository } from "../../domain/repositories/IUserCreditRepository";
@@ -54,5 +54,23 @@ export class DrizzleUserCreditRepository implements IUserCreditRepository {
       .returning();
     if (!result[0]) throw new Error(`UserCredit for user ${userId} not found`);
     return result[0];
+  }
+
+  async grantTrialAtomically(userId: string): Promise<boolean> {
+    const result = await this.db
+      .update(userCredits)
+      .set({
+        totalCredits: sql`${userCredits.totalCredits} + 1`,
+        freeTrialUsed: true,
+        updatedAt: new Date(),
+      })
+      .where(
+        and(
+          eq(userCredits.userId, userId),
+          eq(userCredits.freeTrialUsed, false),
+        ),
+      )
+      .returning();
+    return result.length > 0;
   }
 }

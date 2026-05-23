@@ -6,6 +6,7 @@ export interface IUserCreditRepository {
   incrementCredits(userId: string, amount: number): Promise<UserCredit>;
   consumeCredit(userId: string): Promise<UserCredit>;
   markFreeTrialUsed(userId: string): Promise<UserCredit>;
+  grantTrialAtomically(userId: string): Promise<boolean>;
 }
 
 export const USER_CREDIT_REPOSITORY = Symbol("IUserCreditRepository");
