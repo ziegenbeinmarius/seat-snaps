@@ -39,7 +39,8 @@ export class EventsController {
         hasSeating: dto.hasSeating,
         rsvpEnabled: dto.rsvpEnabled,
       },
-      user.id
+      user.id,
+      user.isAdmin === true,
     );
   }
 

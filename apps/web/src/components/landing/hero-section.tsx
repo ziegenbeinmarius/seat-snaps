@@ -1,15 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { LandingProfileCard } from "@/components/landing/landing-profile-card";
-import type { CreditBalanceResponse } from "@seat-snaps/shared";
 
 interface HeroSectionProps {
   user?: { name?: string | null; email?: string | null } | null;
-  credits?: CreditBalanceResponse | null;
 }
 
-export function HeroSection({ user, credits }: HeroSectionProps) {
+export function HeroSection({ user }: HeroSectionProps) {
   const isLoggedIn = !!user;
 
   return (
@@ -57,12 +54,13 @@ export function HeroSection({ user, credits }: HeroSectionProps) {
       </p>
 
       {isLoggedIn ? (
-        <div className="landing-animate delay-300 mt-6 w-full sm:mt-8" data-animate="fade-up">
-          <LandingProfileCard
-            name={user?.name ?? ""}
-            email={user?.email ?? ""}
-            credits={credits ?? null}
-          />
+        <div data-animate="fade-up" className="landing-animate delay-300 mt-6 flex items-center gap-4 sm:mt-8">
+          <Button size="lg" className="animate-glow" asChild>
+            <Link href="/dashboard">Go to Dashboard</Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/dashboard/profile">My Profile</Link>
+          </Button>
         </div>
       ) : (
         <div data-animate="fade-up" className="landing-animate delay-300 mt-6 flex items-center gap-4 sm:mt-8">

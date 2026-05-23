@@ -58,19 +58,23 @@ export class EventsService implements IEventService {
     return event;
   }
 
-  async create(data: CreateEventInput, userId: string): Promise<Event> {
-    // Auto-grant free trial credit if eligible
-    const granted = await this.creditsService.grantFreeTrialIfEligible(userId);
-    const isFreeTrial = granted;
+  async create(data: CreateEventInput, userId: string, isAdmin = false): Promise<Event> {
+    let isFreeTrial = false;
 
-    const hasCredits = await this.creditsService.hasAvailableCredits(userId);
-    if (!hasCredits) {
-      throw new BadRequestException(
-        "No available event credits. Please purchase a plan to create events.",
-      );
+    if (!isAdmin) {
+      // Auto-grant free trial credit if eligible
+      const granted = await this.creditsService.grantFreeTrialIfEligible(userId);
+      isFreeTrial = granted;
+
+      const hasCredits = await this.creditsService.hasAvailableCredits(userId);
+      if (!hasCredits) {
+        throw new BadRequestException(
+          "No available event credits. Please purchase a plan to create events.",
+        );
+      }
+
+      await this.creditsService.consumeCredit(userId);
     }
-
-    await this.creditsService.consumeCredit(userId);
 
     const event = await this.eventRepository.create({
       title: data.title,
