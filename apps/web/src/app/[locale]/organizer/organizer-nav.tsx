@@ -5,8 +5,10 @@ import { CalendarDays, Camera, LogOut, Users, Calendar, Home, Megaphone } from "
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export function OrganizerNav() {
+  const t = useTranslations("organizer.nav");
   // usePathname from @/i18n/navigation returns the locale-stripped pathname,
   // so active-state matching works for all locales.
   const pathname = usePathname();
@@ -21,31 +23,31 @@ export function OrganizerNav() {
         {
           href: eventBase as Route,
           icon: Home,
-          label: "Home",
+          label: t("home"),
           active: pathname === eventBase,
         },
         {
           href: `${eventBase}/attendees` as Route,
           icon: Users,
-          label: "Attendees",
+          label: t("attendees"),
           active: pathname.includes("/attendees"),
         },
         {
           href: `${eventBase}/schedule` as Route,
           icon: Calendar,
-          label: "Schedule",
+          label: t("schedule"),
           active: pathname.includes("/schedule"),
         },
         {
           href: `${eventBase}/photos` as Route,
           icon: Camera,
-          label: "Photos",
+          label: t("photos"),
           active: pathname.includes("/photos"),
         },
         {
            href: `${eventBase}/broadcasts` as Route,
            icon: Megaphone,
-           label: "Broadcasts",
+           label: t("broadcasts"),
            active: pathname.includes("/broadcasts"),
         }
       ]
@@ -53,13 +55,13 @@ export function OrganizerNav() {
         {
           href: "/organizer" as Route,
           icon: CalendarDays,
-          label: "Events",
+          label: t("events"),
           active: true,
         },
         {
           href: "/logout" as Route,
           icon: LogOut,
-          label: "Sign Out",
+          label: t("signOut"),
           active: false,
         },
       ];

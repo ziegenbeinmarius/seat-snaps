@@ -9,6 +9,7 @@ import { DeletePhotoDialog } from "@/components/photos/delete-photo-dialog";
 import type { PhotoResponse } from "@seat-snaps/shared";
 import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 import { Card, CardContent } from "@/components/ui/card";
+import { useTranslations } from "next-intl";
 
 interface Props {
   eventId: string;
@@ -17,6 +18,7 @@ interface Props {
 type MobileFilter = "pending" | "all" | "approved";
 
 export function MobilePhotosPanel({ eventId }: Props) {
+  const t = useTranslations("organizer.mobilePhotos");
   const {
     photos,
     counts,
@@ -68,9 +70,9 @@ export function MobilePhotosPanel({ eventId }: Props) {
   };
 
   const filterTabs: { key: MobileFilter; label: string; count: number }[] = [
-    { key: "pending", label: "Pending", count: mobileCounts.pending },
-    { key: "approved", label: "Approved", count: mobileCounts.approved },
-    { key: "all", label: "All", count: mobileCounts.all },
+    { key: "pending", label: t("pending"), count: mobileCounts.pending },
+    { key: "approved", label: t("approved"), count: mobileCounts.approved },
+    { key: "all", label: t("all"), count: mobileCounts.all },
   ];
 
   if (isLoading) {
@@ -83,7 +85,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
 
   return (
     <div className="space-y-4">
-      <MobilePageHeading variant="organizer">Photos</MobilePageHeading>
+      <MobilePageHeading variant="organizer">{t("title")}</MobilePageHeading>
       <div className="flex gap-2">
         {filterTabs.map(({ key, label, count }) => (
           <button
@@ -125,7 +127,7 @@ export function MobilePhotosPanel({ eventId }: Props) {
         <Card>
           <CardContent className="py-16 text-center">
             <p className="text-sm text-muted-foreground">
-              {filter === "pending" ? "No photos pending review." : "No photos here."}
+              {filter === "pending" ? t("noPending") : t("noPhotos")}
             </p>
           </CardContent>
         </Card>

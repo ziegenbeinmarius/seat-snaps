@@ -6,12 +6,14 @@ import { useSocket } from "@/components/broadcast/socket-provider";
 import { usePublicTables } from "@/lib/api/tables";
 import { useCurrentAttendee, useEventAttendeesPublic } from "@/lib/api/attendee-session";
 import { RoomLayout } from "./room-layout";
+import { useTranslations } from "next-intl";
 
 interface Props {
   eventId: string;
 }
 
 export function SeatingLive({ eventId }: Props) {
+  const t = useTranslations("attendeeApp.seating");
   const qc = useQueryClient();
   const { seatingUpdateAt } = useSocket();
 
@@ -32,7 +34,7 @@ export function SeatingLive({ eventId }: Props) {
   if (tables.length === 0) {
     return (
       <div className="glass-card flex flex-col items-center justify-center rounded-2xl py-16 text-center">
-        <p className="event-body event-card-muted-text">No seating plan yet</p>
+        <p className="event-body event-card-muted-text">{t("noPlan")}</p>
       </div>
     );
   }
@@ -72,13 +74,13 @@ export function SeatingLive({ eventId }: Props) {
                     className="ml-2 rounded-full px-2 py-0.5 text-xs font-medium text-white"
                     style={{ background: "var(--event-primary)" }}
                   >
-                    Your table
+                    {t("yourTableBadge")}
                   </span>
                 )}
               </h3>
               {table.capacity && (
                 <span className="event-body text-xs event-card-muted-text">
-                  {table.capacity} seats
+                  {t("capacitySeats", { count: table.capacity })}
                 </span>
               )}
             </div>
@@ -125,7 +127,7 @@ export function SeatingLive({ eventId }: Props) {
                               : "var(--event-card-muted)",
                         }}
                       >
-                        {isMySeat ? "You" : occupantName ?? "Empty"}
+                        {isMySeat ? t("you") : occupantName ?? t("empty")}
                       </div>
                     </div>
                   );

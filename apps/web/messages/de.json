@@ -382,7 +382,8 @@
       "mySeat": "Mein Platz",
       "seat": "Platz {label}",
       "alsoAtYourTable": "Auch an Ihrem Tisch",
-      "about": "Über"
+      "about": "Über",
+      "guest": "Gast"
     },
     "schedule": {
       "title": "Zeitplan",
@@ -404,7 +405,10 @@
       "youAreAt": "Sie sitzen an",
       "you": "Sie",
       "empty": "Leer",
-      "noSeats": "Keine Plätze zugewiesen"
+      "noSeats": "Keine Plätze zugewiesen",
+      "noPlan": "Noch kein Sitzplan",
+      "yourTableBadge": "Ihr Tisch",
+      "capacitySeats": "{count} Plätze"
     },
     "photos": {
       "title": "Fotos",
@@ -423,7 +427,20 @@
       "about": "Über"
     },
     "pendingBanner": "Ihre Anmeldung wartet auf Genehmigung.",
-    "highlights": "Highlights"
+    "highlights": "Highlights",
+    "welcome": {
+      "title": "Willkommen bei {eventName}!",
+      "subtitle": "Hier ist alles, was Sie heute tun können.",
+      "letsGo": "Los geht’s!",
+      "findSeat": "Platz finden",
+      "findSeatDesc": "Sehen Sie Ihre Tischzuweisung und wer in der Nähe sitzt.",
+      "browseGuests": "Gäste durchsuchen",
+      "browseGuestsDesc": "Erkunden Sie das Gästeverzeichnis und entdecken Sie gemeinsame Interessen.",
+      "viewSchedule": "Zeitplan ansehen",
+      "viewScheduleDesc": "Behalten Sie jeden Moment des Events im Blick.",
+      "uploadPhotos": "Fotos hochladen",
+      "uploadPhotosDesc": "Machen Sie Bilder und teilen Sie sie — sie könnten in die Highlights kommen!"
+    }
   },
   "join": {
     "invited": "Sie sind eingeladen",
@@ -460,7 +477,9 @@
       "title": "Ungültiger oder abgelaufener QR-Code",
       "description": "Dieser QR-Code ist nicht mehr gültig. Bitten Sie einen Veranstalter, einen neuen Link oder QR-Code zu teilen.",
       "goHome": "Zur Startseite"
-    }
+    },
+    "eventNotFound": "Event nicht gefunden",
+    "eventNotFoundDesc": "Dieses Event existiert nicht oder ist nicht mehr verfügbar."
   },
   "invite": {
     "title": "Sie wurden eingeladen beizutreten",
@@ -484,7 +503,61 @@
   },
   "organizer": {
     "myEvents": "Meine Events",
-    "back": "Zurück"
+    "back": "Zurück",
+    "nav": {
+      "home": "Start",
+      "attendees": "Teilnehmer",
+      "schedule": "Zeitplan",
+      "photos": "Fotos",
+      "broadcasts": "Ankündigungen",
+      "events": "Events",
+      "signOut": "Abmelden"
+    },
+    "dashboard": {
+      "attendees": "Teilnehmer",
+      "checkedIn": "Eingecheckt",
+      "photos": "Fotos",
+      "upNext": "Als nächstes",
+      "quickActions": "Schnellzugriff",
+      "rsvpQrCode": "RSVP-QR-Code",
+      "showToGuests": "Gästen zeigen, damit sie sich registrieren",
+      "copied": "Kopiert!",
+      "copyLink": "Link kopieren",
+      "desktopDashboard": "Vollständiges Dashboard →",
+      "checkinActionLabel": "Check-In-Scanner",
+      "checkinDesc": "{checked} / {total} eingecheckt",
+      "photosActionLabel": "Foto-Moderation",
+      "photosPendingDesc": "{count} ausstehend",
+      "photosAllReviewed": "Alle geprüft",
+      "scheduleActionLabel": "Zeitplan",
+      "scheduleNext": "Weiter: {title}",
+      "scheduleEmpty": "Noch keine Einträge",
+      "scheduleDone": "Alles erledigt"
+    },
+    "checkin": {
+      "title": "QR-Check-in",
+      "subtitle": "Kamera auf den QR-Code des Teilnehmers richten",
+      "processing": "Wird eingecheckt…",
+      "success": "Erfolgreich eingecheckt",
+      "failed": "Check-in fehlgeschlagen",
+      "hint": "QR-Code des Teilnehmers scannen, um ihn sofort einzuchecken.",
+      "cameraDenied": "Kamerazugriff verweigert. Bitte Kamerazugriff erlauben und erneut versuchen.",
+      "tryAgain": "Erneut versuchen"
+    },
+    "attendees": {
+      "pendingRsvp": "Ausstehende RSVPs ({count})",
+      "approveAll": "Alle bestätigen",
+      "confirmed": "Bestätigt ({count})",
+      "noAttendees": "Noch keine Teilnehmer.",
+      "notYet": "Noch nicht"
+    },
+    "mobilePhotos": {
+      "pending": "Ausstehend",
+      "approved": "Genehmigt",
+      "all": "Alle",
+      "noPending": "Keine Fotos zur Überprüfung.",
+      "noPhotos": "Keine Fotos hier."
+    }
   },
   "admin": {
     "title": "Admin",
@@ -558,6 +631,8 @@
     "cameraBlocked": "Kamerazugriff wurde verweigert. Erlauben Sie den Kamerazugriff, um Ihren Einladungs-QR-Code zu scannen.",
     "tryAgain": "Erneut versuchen",
     "opening": "Ihr Event wird geöffnet…",
-    "sessionHint": "Falls die App ohne Ihre Sitzung geöffnet wurde, scannen Sie hier Ihren Einladungs-QR-Code."
+    "sessionHint": "Falls die App ohne Ihre Sitzung geöffnet wurde, scannen Sie hier Ihren Einladungs-QR-Code.",
+    "title": "Willkommen bei SeatSnaps",
+    "scanDesc": "Scannen Sie den QR-Code Ihrer Einladung, um Ihrem Event beizutreten und auf Zeitplan, Sitzplan und mehr zuzugreifen."
   }
 }

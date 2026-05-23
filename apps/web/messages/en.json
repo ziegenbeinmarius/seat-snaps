@@ -382,7 +382,8 @@
       "mySeat": "My Seat",
       "seat": "Seat {label}",
       "alsoAtYourTable": "Also at your table",
-      "about": "About"
+      "about": "About",
+      "guest": "Guest"
     },
     "schedule": {
       "title": "Schedule",
@@ -404,7 +405,10 @@
       "youAreAt": "You are at",
       "you": "You",
       "empty": "Empty",
-      "noSeats": "No seats assigned"
+      "noSeats": "No seats assigned",
+      "noPlan": "No seating plan yet",
+      "yourTableBadge": "Your table",
+      "capacitySeats": "{count} seats"
     },
     "photos": {
       "title": "Photos",
@@ -423,7 +427,20 @@
       "about": "About"
     },
     "pendingBanner": "Your registration is pending approval.",
-    "highlights": "Highlights"
+    "highlights": "Highlights",
+    "welcome": {
+      "title": "Welcome to {eventName}!",
+      "subtitle": "Here’s everything you can do today.",
+      "letsGo": "Let’s go!",
+      "findSeat": "Find your seat",
+      "findSeatDesc": "See your table assignment and who’s sitting nearby.",
+      "browseGuests": "Browse guests",
+      "browseGuestsDesc": "Explore the guest directory and discover shared interests.",
+      "viewSchedule": "View the schedule",
+      "viewScheduleDesc": "Stay on top of every moment as the event unfolds.",
+      "uploadPhotos": "Upload photos",
+      "uploadPhotosDesc": "Take pictures and share them — they might make the highlights reel!"
+    }
   },
   "join": {
     "invited": "You're invited",
@@ -460,11 +477,67 @@
       "title": "Invalid or expired QR code",
       "description": "This QR code is no longer valid. Please ask an organizer to share a fresh link or QR code.",
       "goHome": "Go home"
-    }
+    },
+    "eventNotFound": "Event Not Found",
+    "eventNotFoundDesc": "This event does not exist or is no longer available."
   },
   "organizer": {
     "myEvents": "My Events",
-    "back": "Back"
+    "back": "Back",
+    "nav": {
+      "home": "Home",
+      "attendees": "Attendees",
+      "schedule": "Schedule",
+      "photos": "Photos",
+      "broadcasts": "Broadcasts",
+      "events": "Events",
+      "signOut": "Sign Out"
+    },
+    "dashboard": {
+      "attendees": "Attendees",
+      "checkedIn": "Checked In",
+      "photos": "Photos",
+      "upNext": "Up next",
+      "quickActions": "Quick Actions",
+      "rsvpQrCode": "RSVP QR Code",
+      "showToGuests": "Show to guests to let them register",
+      "copied": "Copied!",
+      "copyLink": "Copy link",
+      "desktopDashboard": "Full desktop dashboard →",
+      "checkinActionLabel": "Check-In Scanner",
+      "checkinDesc": "{checked} / {total} checked in",
+      "photosActionLabel": "Photo Moderation",
+      "photosPendingDesc": "{count} pending review",
+      "photosAllReviewed": "All reviewed",
+      "scheduleActionLabel": "Schedule",
+      "scheduleNext": "Next: {title}",
+      "scheduleEmpty": "No items yet",
+      "scheduleDone": "All done"
+    },
+    "checkin": {
+      "title": "QR Check-In",
+      "subtitle": "Point the camera at an attendee's QR code",
+      "processing": "Checking in…",
+      "success": "Checked in successfully",
+      "failed": "Check-in failed",
+      "hint": "Scan an attendee's personal QR code to check them in instantly.",
+      "cameraDenied": "Camera access denied. Please allow camera permissions and try again.",
+      "tryAgain": "Try again"
+    },
+    "attendees": {
+      "pendingRsvp": "Pending RSVP ({count})",
+      "approveAll": "Approve All",
+      "confirmed": "Confirmed ({count})",
+      "noAttendees": "No attendees yet.",
+      "notYet": "Not yet"
+    },
+    "mobilePhotos": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "all": "All",
+      "noPending": "No photos pending review.",
+      "noPhotos": "No photos here."
+    }
   },
   "admin": {
     "title": "Admin",
@@ -558,6 +631,8 @@
     "cameraBlocked": "Camera access was denied. Allow camera access to scan your invitation QR code.",
     "tryAgain": "Try again",
     "opening": "Opening your event…",
-    "sessionHint": "If the app opened without your session, scan your invitation QR code here to continue."
+    "sessionHint": "If the app opened without your session, scan your invitation QR code here to continue.",
+    "title": "Welcome to SeatSnaps",
+    "scanDesc": "Scan the QR code from your invitation to join your event and access your schedule, seating plan, and more."
   }
 }

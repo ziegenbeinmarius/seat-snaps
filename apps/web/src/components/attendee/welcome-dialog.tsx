@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { useTranslations } from "next-intl";
 
 interface Props {
   eventId: string;
@@ -23,36 +24,38 @@ function storageKey(eventId: string) {
   return `seatsnaps-welcomed-${eventId}`;
 }
 
-const allFeatures = [
-  {
-    icon: MapPin,
-    label: "Find your seat",
-    desc: "See your table assignment and who's sitting nearby.",
-    requiresSeating: true,
-  },
-  {
-    icon: Users,
-    label: "Browse guests",
-    desc: "Explore the guest directory and discover shared interests.",
-    requiresSeating: false,
-  },
-  {
-    icon: Calendar,
-    label: "View the schedule",
-    desc: "Stay on top of every moment as the event unfolds.",
-    requiresSeating: false,
-  },
-  {
-    icon: Camera,
-    label: "Upload photos",
-    desc: "Take pictures and share them — they might make the highlights reel!",
-    requiresSeating: false,
-  },
-];
-
 export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }: Props) {
-  const features = allFeatures.filter((f) => !f.requiresSeating || hasSeating);
+  const t = useTranslations("attendeeApp.welcome");
   const [open, setOpen] = useState(false);
+
+  const allFeatures = [
+    {
+      icon: MapPin,
+      label: t("findSeat"),
+      desc: t("findSeatDesc"),
+      requiresSeating: true,
+    },
+    {
+      icon: Users,
+      label: t("browseGuests"),
+      desc: t("browseGuestsDesc"),
+      requiresSeating: false,
+    },
+    {
+      icon: Calendar,
+      label: t("viewSchedule"),
+      desc: t("viewScheduleDesc"),
+      requiresSeating: false,
+    },
+    {
+      icon: Camera,
+      label: t("uploadPhotos"),
+      desc: t("uploadPhotosDesc"),
+      requiresSeating: false,
+    },
+  ];
+
+  const features = allFeatures.filter((f) => !f.requiresSeating || hasSeating);
 
   useEffect(() => {
     if (!active) return;
@@ -86,11 +89,11 @@ export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }
           </span>
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-bold text-white">
-              Welcome to {eventName}!
+              {t("title", { eventName })}
             </DialogTitle>
           </DialogHeader>
           <p className="mt-1 text-center text-sm text-white/85">
-            Here&apos;s everything you can do today.
+            {t("subtitle")}
           </p>
         </div>
 
@@ -126,7 +129,7 @@ export function WelcomeDialog({ eventId, eventName, hasSeating, active, onDone }
             className="w-full text-white"
             style={{ background: "var(--event-primary, #B96B28)" }}
           >
-            Let&apos;s go!
+            {t("letsGo")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -7,6 +7,7 @@ import type { AttendeeResponse } from "@seat-snaps/shared";
 import { CheckCircle2, Clock, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   eventId: string;
@@ -14,6 +15,9 @@ interface Props {
 }
 
 export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
+  const t = useTranslations("organizer.attendees");
+  const tOrg = useTranslations("organizer.dashboard");
+  const locale = useLocale();
   const { data: attendees = initialAttendees } = useAttendees(eventId);
   const updateStatusMutation = useUpdateAttendeeStatus(eventId);
   const bulkStatusMutation = useBulkUpdateAttendeeStatus(eventId);
@@ -42,11 +46,11 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
         variant="organizer"
         action={
           <span className="text-sm text-[hsl(28_8%_52%)]">
-            {checkedIn} / {attendees.length} checked in
+            {tOrg("checkinDesc", { checked: checkedIn, total: attendees.length })}
           </span>
         }
       >
-        Attendees
+        {tOrg("attendees")}
       </MobilePageHeading>
 
       {/* Pending RSVP section */}
@@ -54,7 +58,7 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-semibold text-amber-800">
-              Pending RSVP ({pendingAttendees.length})
+              {t("pendingRsvp", { count: pendingAttendees.length })}
             </h3>
             <Button
               size="sm"
@@ -63,7 +67,7 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
               onClick={handleApproveAll}
               disabled={bulkStatusMutation.isPending}
             >
-              Approve All
+              {t("approveAll")}
             </Button>
           </div>
           <div className="space-y-2">
@@ -112,14 +116,14 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
       {nonPendingAttendees.length === 0 && pendingAttendees.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center text-sm text-[hsl(28_8%_52%)]">
-            No attendees yet.
+            {t("noAttendees")}
           </CardContent>
         </Card>
       ) : nonPendingAttendees.length > 0 ? (
         <div className="space-y-2">
           {pendingAttendees.length > 0 && (
             <h3 className="text-sm font-semibold text-[hsl(28_8%_52%)]">
-              Confirmed ({nonPendingAttendees.filter((a) => a.status === "confirmed").length})
+              {t("confirmed", { count: nonPendingAttendees.filter((a) => a.status === "confirmed").length })}
             </h3>
           )}
           {nonPendingAttendees.map((a) => (
@@ -147,7 +151,7 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
                   {a.checkedInAt ? (
                     <span className="flex items-center gap-1 text-xs text-[hsl(28_65%_44%)]">
                       <CheckCircle2 className="h-4 w-4" />
-                      {new Date(a.checkedInAt).toLocaleTimeString("en-US", {
+                      {new Date(a.checkedInAt).toLocaleTimeString(locale, {
                         hour: "numeric",
                         minute: "2-digit",
                       })}
@@ -155,7 +159,7 @@ export function OrganizerAttendeesPanel({ eventId, initialAttendees }: Props) {
                   ) : (
                     <span className="flex items-center gap-1 text-xs text-[hsl(28_8%_65%)]">
                       <Clock className="h-4 w-4" />
-                      Not yet
+                      {t("notYet")}
                     </span>
                   )}
                 </div>

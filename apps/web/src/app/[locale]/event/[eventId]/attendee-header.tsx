@@ -3,6 +3,7 @@
 import { Link } from "@/i18n/navigation";
 import { UserRound } from "lucide-react";
 import type { Route } from "next";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 interface Props {
   name: string;
@@ -24,12 +25,13 @@ export function AttendeeHeader({ name, eventId }: Props) {
     >
       <Link
         href={profileHref}
-        className="flex items-center gap-2 min-w-0 hover:opacity-70 transition-opacity"
+        className="flex items-center gap-2 min-w-0 flex-1 hover:opacity-70 transition-opacity"
         style={{ color: "var(--event-active-color, #a07850)" }}
       >
         <UserRound className="h-4 w-4 shrink-0" />
         <span className="text-sm font-medium truncate">{name}</span>
       </Link>
+      <LanguageSwitcher />
     </header>
   );
 }

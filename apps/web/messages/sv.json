@@ -382,7 +382,8 @@
       "mySeat": "Min plats",
       "seat": "Plats {label}",
       "alsoAtYourTable": "Också vid ditt bord",
-      "about": "Om"
+      "about": "Om",
+      "guest": "Gäst"
     },
     "schedule": {
       "title": "Schema",
@@ -404,7 +405,10 @@
       "youAreAt": "Du sitter vid",
       "you": "Du",
       "empty": "Tom",
-      "noSeats": "Inga platser tilldelade"
+      "noSeats": "Inga platser tilldelade",
+      "noPlan": "Ingen placeringsplan ännu",
+      "yourTableBadge": "Ditt bord",
+      "capacitySeats": "{count} platser"
     },
     "photos": {
       "title": "Foton",
@@ -423,7 +427,20 @@
       "about": "Om"
     },
     "pendingBanner": "Din registrering väntar på godkännande.",
-    "highlights": "Höjdpunkter"
+    "highlights": "Höjdpunkter",
+    "welcome": {
+      "title": "Välkommen till {eventName}!",
+      "subtitle": "Här är allt du kan göra idag.",
+      "letsGo": "Kör igång!",
+      "findSeat": "Hitta din plats",
+      "findSeatDesc": "Se din bordstilldelning och vem som sitter i närheten.",
+      "browseGuests": "Bläddra bland gäster",
+      "browseGuestsDesc": "Utforska gästkatalogen och upptäck gemensamma intressen.",
+      "viewSchedule": "Se schemat",
+      "viewScheduleDesc": "Håll koll på varje ögonblick när evenemanget utspelas.",
+      "uploadPhotos": "Ladda upp foton",
+      "uploadPhotosDesc": "Ta bilder och dela dem — de kanske hamnar i höjdpunkterna!"
+    }
   },
   "join": {
     "invited": "Du är inbjuden",
@@ -460,7 +477,9 @@
       "title": "Ogiltig eller utgången QR-kod",
       "description": "Denna QR-kod är inte längre giltig. Be en arrangör dela en ny länk eller QR-kod.",
       "goHome": "Gå hem"
-    }
+    },
+    "eventNotFound": "Evenemang hittades inte",
+    "eventNotFoundDesc": "Det här evenemanget finns inte eller är inte längre tillgängligt."
   },
   "invite": {
     "title": "Du är inbjuden att gå med",
@@ -484,7 +503,61 @@
   },
   "organizer": {
     "myEvents": "Mina evenemang",
-    "back": "Tillbaka"
+    "back": "Tillbaka",
+    "nav": {
+      "home": "Hem",
+      "attendees": "Deltagare",
+      "schedule": "Schema",
+      "photos": "Foton",
+      "broadcasts": "Meddelanden",
+      "events": "Evenemang",
+      "signOut": "Logga ut"
+    },
+    "dashboard": {
+      "attendees": "Deltagare",
+      "checkedIn": "Incheckade",
+      "photos": "Foton",
+      "upNext": "Härnäst",
+      "quickActions": "Snabbåtgärder",
+      "rsvpQrCode": "RSVP QR-kod",
+      "showToGuests": "Visa för gäster så att de kan registrera sig",
+      "copied": "Kopierat!",
+      "copyLink": "Kopiera länk",
+      "desktopDashboard": "Fullständig dashboard →",
+      "checkinActionLabel": "Incheckningsskanner",
+      "checkinDesc": "{checked} / {total} incheckade",
+      "photosActionLabel": "Fotomoderering",
+      "photosPendingDesc": "{count} väntar granskning",
+      "photosAllReviewed": "Alla granskade",
+      "scheduleActionLabel": "Schema",
+      "scheduleNext": "Näst: {title}",
+      "scheduleEmpty": "Inga inlägg ännu",
+      "scheduleDone": "Allt klart"
+    },
+    "checkin": {
+      "title": "QR-incheckning",
+      "subtitle": "Rikta kameran mot deltagarens QR-kod",
+      "processing": "Checkar in…",
+      "success": "Incheckning lyckades",
+      "failed": "Incheckning misslyckades",
+      "hint": "Skanna deltagarens personliga QR-kod för att checka in dem direkt.",
+      "cameraDenied": "Kameratillgång nekades. Tillåt kameratillgång och försök igen.",
+      "tryAgain": "Försök igen"
+    },
+    "attendees": {
+      "pendingRsvp": "Väntande OSA ({count})",
+      "approveAll": "Godkänn alla",
+      "confirmed": "Bekräftade ({count})",
+      "noAttendees": "Inga deltagare ännu.",
+      "notYet": "Inte ännu"
+    },
+    "mobilePhotos": {
+      "pending": "Väntande",
+      "approved": "Godkända",
+      "all": "Alla",
+      "noPending": "Inga foton att granska.",
+      "noPhotos": "Inga foton här."
+    }
   },
   "admin": {
     "title": "Admin",
@@ -558,6 +631,8 @@
     "cameraBlocked": "Kameraåtkomst nekades. Tillåt kameraåtkomst för att skanna din inbjudnings-QR-kod.",
     "tryAgain": "Försök igen",
     "opening": "Öppnar ditt evenemang…",
-    "sessionHint": "Om appen öppnades utan din session, skanna din inbjudnings-QR-kod här för att fortsätta."
+    "sessionHint": "Om appen öppnades utan din session, skanna din inbjudnings-QR-kod här för att fortsätta.",
+    "title": "Välkommen till SeatSnaps",
+    "scanDesc": "Skanna QR-koden från din inbjudan för att gå med i ditt evenemang och få tillgång till schema, bordsplacering och mer."
   }
 }

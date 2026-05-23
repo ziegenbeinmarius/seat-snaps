@@ -3,13 +3,21 @@ import { redirect } from "@/i18n/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { QrCode } from "lucide-react";
 import { AttendScanner } from "./attend-scanner";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = {
   title: "SeatSnaps",
   manifest: "/manifest-attendee.json",
 };
 
-export default async function AttendPage() {
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function AttendPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("attend");
   const attendee = await getCurrentAttendee();
 
   if (attendee) {
@@ -44,12 +52,11 @@ export default async function AttendPage() {
             color: "hsl(24 12% 20%)",
           }}
         >
-          Welcome to SeatSnaps
+          {t("title")}
         </h1>
 
         <p className="text-sm leading-relaxed" style={{ color: "hsl(28 8% 52%)" }}>
-          Scan the QR code from your invitation to join your event and access your schedule,
-          seating plan, and more.
+          {t("scanDesc")}
         </p>
 
         <AttendScanner />

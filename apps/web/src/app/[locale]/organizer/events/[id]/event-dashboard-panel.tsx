@@ -7,12 +7,15 @@ import { useEvent } from "@/lib/api/events";
 import { useOrganizerPhotos } from "@/lib/api/photos";
 import { useScheduleItems } from "@/lib/api/schedule";
 import { QrCode, Camera, Calendar, Users, CheckCircle, Clock, Copy, Check } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   eventId: string;
 }
 
 export function EventDashboardPanel({ eventId }: Props) {
+  const t = useTranslations("organizer.dashboard");
+  const locale = useLocale();
   const { data: attendees = [], isLoading: loadingAttendees } = useAttendees(eventId);
   const { data: event } = useEvent(eventId);
   const { data: photos = [], isLoading: loadingPhotos } = useOrganizerPhotos(eventId);
@@ -47,16 +50,16 @@ export function EventDashboardPanel({ eventId }: Props) {
     {
       href: `/organizer/events/${eventId}/checkin`,
       icon: QrCode,
-      label: "Check-In Scanner",
-      description: `${checkedIn} / ${attendees.length} checked in`,
+      label: t("checkinActionLabel"),
+      description: t("checkinDesc", { checked: checkedIn, total: attendees.length }),
       color: "hsl(28 65% 44%)",
       bg: "rgba(180, 120, 60, 0.1)",
     },
     {
       href: `/organizer/events/${eventId}/photos`,
       icon: Camera,
-      label: "Photo Moderation",
-      description: pendingPhotos > 0 ? `${pendingPhotos} pending review` : "All reviewed",
+      label: t("photosActionLabel"),
+      description: pendingPhotos > 0 ? t("photosPendingDesc", { count: pendingPhotos }) : t("photosAllReviewed"),
       color: "hsl(260 50% 55%)",
       bg: "rgba(100, 60, 180, 0.1)",
       badge: pendingPhotos > 0 ? pendingPhotos : undefined,
@@ -64,12 +67,12 @@ export function EventDashboardPanel({ eventId }: Props) {
     {
       href: `/organizer/events/${eventId}/schedule`,
       icon: Calendar,
-      label: "Schedule",
+      label: t("scheduleActionLabel"),
       description: upcomingItem
-        ? `Next: ${upcomingItem.title}`
+        ? t("scheduleNext", { title: upcomingItem.title })
         : scheduleItems.length === 0
-          ? "No items yet"
-          : "All done",
+          ? t("scheduleEmpty")
+          : t("scheduleDone"),
       color: "hsl(200 65% 45%)",
       bg: "rgba(30, 120, 180, 0.1)",
     },
@@ -81,18 +84,18 @@ export function EventDashboardPanel({ eventId }: Props) {
       <div className="grid grid-cols-3 gap-3">
         <StatCard
           icon={Users}
-          label="Attendees"
+          label={t("attendees")}
           value={loadingAttendees ? "—" : attendees.length.toString()}
         />
         <StatCard
           icon={CheckCircle}
-          label="Checked In"
+          label={t("checkedIn")}
           value={loadingAttendees ? "—" : checkedIn.toString()}
           highlight={checkedIn > 0}
         />
         <StatCard
           icon={Camera}
-          label="Photos"
+          label={t("photos")}
           value={loadingPhotos ? "—" : photos.length.toString()}
         />
       </div>
@@ -106,13 +109,13 @@ export function EventDashboardPanel({ eventId }: Props) {
           <Clock className="h-5 w-5 shrink-0" style={{ color: "hsl(200 65% 45%)" }} />
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium" style={{ color: "hsl(200 65% 38%)" }}>
-              Up next
+              {t("upNext")}
             </p>
             <p className="truncate text-sm font-semibold" style={{ color: "hsl(24 12% 20%)" }}>
               {upcomingItem.title}
             </p>
             <p className="text-xs" style={{ color: "hsl(28 8% 52%)" }}>
-              {new Date(upcomingItem.startTime).toLocaleTimeString("en-US", {
+              {new Date(upcomingItem.startTime).toLocaleTimeString(locale, {
                 hour: "numeric",
                 minute: "2-digit",
               })}
@@ -124,7 +127,7 @@ export function EventDashboardPanel({ eventId }: Props) {
       {/* Quick actions */}
       <div className="space-y-3">
         <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "hsl(28 8% 55%)" }}>
-          Quick Actions
+          {t("quickActions")}
         </p>
         {quickActions.map(({ href, icon: Icon, label, description, color, bg, badge }) => (
           <Link key={href} href={{ pathname: href }} className="block">
@@ -172,7 +175,7 @@ export function EventDashboardPanel({ eventId }: Props) {
           }}
         >
           <p className="text-xs font-semibold uppercase tracking-wide" style={{ color: "hsl(28 8% 55%)" }}>
-            RSVP QR Code
+            {t("rsvpQrCode")}
           </p>
           <div className="flex items-start gap-4">
             <img
@@ -182,7 +185,7 @@ export function EventDashboardPanel({ eventId }: Props) {
             />
             <div className="min-w-0 flex-1 space-y-2">
               <p className="text-sm font-medium" style={{ color: "hsl(24 12% 20%)" }}>
-                Show to guests to let them register
+                {t("showToGuests")}
               </p>
               <code
                 className="block truncate rounded border px-2 py-1 text-xs"
@@ -201,9 +204,9 @@ export function EventDashboardPanel({ eventId }: Props) {
                 }}
               >
                 {copiedRsvp ? (
-                  <><Check className="h-3.5 w-3.5" />Copied!</>
+                  <><Check className="h-3.5 w-3.5" />{t("copied")}</>
                 ) : (
-                  <><Copy className="h-3.5 w-3.5" />Copy link</>
+                  <><Copy className="h-3.5 w-3.5" />{t("copyLink")}</>
                 )}
               </button>
             </div>
@@ -218,7 +221,7 @@ export function EventDashboardPanel({ eventId }: Props) {
           className="text-xs underline-offset-2 hover:underline"
           style={{ color: "hsl(28 8% 55%)" }}
         >
-          Full desktop dashboard →
+          {t("desktopDashboard")}
         </Link>
       </div>
     </div>

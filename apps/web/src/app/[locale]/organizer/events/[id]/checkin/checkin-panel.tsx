@@ -5,6 +5,7 @@ import jsQR from "jsqr";
 import { useCheckinByQrToken } from "@/lib/api/attendees";
 import { CheckCircle, XCircle, Camera, Loader2, UserCheck } from "lucide-react";
 import type { AttendeeResponse } from "@seat-snaps/shared";
+import { useTranslations } from "next-intl";
 
 interface Props {
   eventId: string;
@@ -18,6 +19,7 @@ type ScanState =
   | { type: "error"; message: string };
 
 export function CheckinPanel({ eventId }: Props) {
+  const t = useTranslations("organizer.checkin");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -60,7 +62,7 @@ export function CheckinPanel({ eventId }: Props) {
       const attendee = await checkinRef.current.mutateAsync(token);
       setState({ type: "success", attendee });
     } catch (err) {
-      setState({ type: "error", message: (err as Error).message ?? "Check-in failed" });
+      setState({ type: "error", message: (err as Error).message ?? t("failed") });
     }
 
     setTimeout(() => {
@@ -68,7 +70,7 @@ export function CheckinPanel({ eventId }: Props) {
       lastScannedRef.current = "";
       setState({ type: "scanning" });
     }, 3000);
-  }, []);
+  }, [t]);
 
   const handleQrCodeRef = useRef(handleQrCode);
   useEffect(() => { handleQrCodeRef.current = handleQrCode; });
@@ -111,7 +113,7 @@ export function CheckinPanel({ eventId }: Props) {
           video: { facingMode: "environment" },
         });
         if (!active) {
-          stream.getTracks().forEach((t) => t.stop());
+          stream.getTracks().forEach((tr) => tr.stop());
           return;
         }
         streamRef.current = stream;
@@ -122,7 +124,7 @@ export function CheckinPanel({ eventId }: Props) {
         setState({ type: "scanning" });
         rafRef.current = requestAnimationFrame(scan);
       } catch {
-        if (active) setCameraError("Camera access denied. Please allow camera permissions and try again.");
+        if (active) setCameraError(t("cameraDenied"));
       }
     }
 
@@ -130,9 +132,9 @@ export function CheckinPanel({ eventId }: Props) {
     return () => {
       active = false;
       cancelAnimationFrame(rafRef.current);
-      streamRef.current?.getTracks().forEach((t) => t.stop());
+      streamRef.current?.getTracks().forEach((tr) => tr.stop());
     };
-  }, [scan, retryCount]);
+  }, [scan, retryCount, t]);
 
   const overlay = state.type !== "idle" && state.type !== "scanning";
 
@@ -140,10 +142,10 @@ export function CheckinPanel({ eventId }: Props) {
     <div className="space-y-4">
       <div className="text-center">
         <h2 className="text-lg font-semibold" style={{ color: "hsl(24 12% 20%)" }}>
-          QR Check-In
+          {t("title")}
         </h2>
         <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
-          Point the camera at an attendee's QR code
+          {t("subtitle")}
         </p>
       </div>
 
@@ -164,7 +166,7 @@ export function CheckinPanel({ eventId }: Props) {
             className="rounded-xl px-5 py-2.5 text-sm font-medium text-white"
             style={{ background: "hsl(28 65% 44%)" }}
           >
-            Try again
+            {t("tryAgain")}
           </button>
         </div>
       ) : (
@@ -196,7 +198,7 @@ export function CheckinPanel({ eventId }: Props) {
               {state.type === "processing" && (
                 <>
                   <Loader2 className="h-12 w-12 animate-spin text-white" />
-                  <p className="text-sm font-medium text-white">Checking in…</p>
+                  <p className="text-sm font-medium text-white">{t("processing")}</p>
                 </>
               )}
               {state.type === "success" && (
@@ -207,7 +209,7 @@ export function CheckinPanel({ eventId }: Props) {
                     {state.attendee.groupLabel && (
                       <p className="text-sm text-white/70">{state.attendee.groupLabel}</p>
                     )}
-                    <p className="mt-1 text-xs text-green-400">Checked in successfully</p>
+                    <p className="mt-1 text-xs text-green-400">{t("success")}</p>
                   </div>
                 </>
               )}
@@ -215,7 +217,7 @@ export function CheckinPanel({ eventId }: Props) {
                 <>
                   <XCircle className="h-16 w-16 text-red-400" />
                   <div className="text-center">
-                    <p className="text-base font-medium text-white">Check-in failed</p>
+                    <p className="text-base font-medium text-white">{t("failed")}</p>
                     <p className="text-sm text-white/70">{state.message}</p>
                   </div>
                 </>
@@ -232,7 +234,7 @@ export function CheckinPanel({ eventId }: Props) {
       >
         <UserCheck className="h-5 w-5 shrink-0" style={{ color: "hsl(28 65% 44%)" }} />
         <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
-          Scan an attendee's personal QR code to check them in instantly.
+          {t("hint")}
         </p>
       </div>
     </div>
