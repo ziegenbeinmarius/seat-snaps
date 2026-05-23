@@ -23,6 +23,14 @@ const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
     return NextResponse.redirect(new URL("/en", nextUrl));
   }
 
+  // Skip intl middleware for QR-token join routes — these are Route Handlers, not pages,
+  // so next-intl's middleware can't match them and returns a 404. Let Next.js handle them directly.
+  const isQrJoinRoute =
+    /^\/join\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pathname);
+  if (isQrJoinRoute) {
+    return NextResponse.next();
+  }
+
   // Detect locale prefix — with localePrefix:"as-needed" English has no prefix
   const localeMatch = pathname.match(/^\/(sv|de|en)(\/|$)/);
   const activeLocale = localeMatch ? localeMatch[1] : "en";
