@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Link, redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { RegisterForm } from "@/components/auth/register-form";
 import { getTranslations, setRequestLocale } from "next-intl/server";

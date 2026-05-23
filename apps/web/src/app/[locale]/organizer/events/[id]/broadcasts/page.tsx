@@ -1,4 +1,4 @@
-import { BroadcastsPanel } from "@/app/dashboard/events/[id]/broadcasts/broadcasts-panel";
+import { BroadcastsPanel } from "@/app/[locale]/dashboard/events/[id]/broadcasts/broadcasts-panel";
 import { MobilePageHeading } from "@/components/mobile/mobile-page-heading";
 
 interface Props {

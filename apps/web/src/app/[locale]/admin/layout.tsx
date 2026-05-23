@@ -1,6 +1,7 @@
 import React from "react";
 import { requireAuth } from "@/lib/require-auth";
-import { Link, redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export default async function AdminLayout({

@@ -1,4 +1,5 @@
-import { redirect } from "@/i18n/navigation";
+import type { Route } from "next";
+import { redirect } from "next/navigation";
 import { SeatingLive } from "./seating-live";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -17,7 +18,7 @@ export default async function SeatingPage({ params }: Props) {
   if (res.ok) {
     const info = (await res.json()) as { hasSeating: boolean };
     if (!info.hasSeating) {
-      redirect(`/event/${eventId}`);
+      redirect(`/event/${eventId}` as Route);
     }
   }
 

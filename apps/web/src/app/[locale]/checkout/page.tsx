@@ -1,17 +1,22 @@
 import type { Metadata } from "next";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/require-auth";
 import { apiRequest } from "@/lib/api";
 import type { PricingTierResponse } from "@seat-snaps/shared";
 import { CheckoutClient } from "./checkout-client";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = { title: "Checkout — SeatSnaps" };
 
 interface Props {
   searchParams: Promise<{ tierId?: string }>;
+  params: Promise<{ locale: string }>;
 }
 
-export default async function CheckoutPage({ searchParams }: Props) {
+export default async function CheckoutPage({ searchParams, params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("checkout");
   await requireAuth();
 
   const { tierId } = await searchParams;
@@ -40,7 +45,6 @@ export default async function CheckoutPage({ searchParams }: Props) {
       }}
     >
       <div className="w-full max-w-md space-y-8">
-        {/* Header */}
         <div className="text-center space-y-2">
           <h1
             className="text-4xl font-semibold tracking-tight"
@@ -55,7 +59,7 @@ export default async function CheckoutPage({ searchParams }: Props) {
             className="text-2xl font-medium"
             style={{ color: "hsl(24 12% 20%)" }}
           >
-            Confirm your purchase
+            {t("confirmYourPurchase")}
           </p>
         </div>
 

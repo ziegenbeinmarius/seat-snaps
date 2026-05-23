@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -26,26 +27,29 @@ export function DeletePhotoDialog({
   onConfirm,
   onCancel,
 }: DeletePhotoDialogProps) {
+  const t = useTranslations("photoActions");
+  const tCommon = useTranslations("common");
+
   return (
     <AlertDialog open={open} onOpenChange={(o) => { if (!o) onCancel(); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete photo?</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            This will permanently remove the photo
+            {t("deleteDesc")}
             {attendeeName && (
               <>
-                {" "}uploaded by{" "}
+                {" "}{t("uploadedBy")}{" "}
                 <span className="font-medium text-foreground">{attendeeName}</span>
               </>
             )}{" "}
-            and cannot be undone.
+            {t("cannotBeUndone")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>{tCommon("cancel")}</AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} disabled={isPending}>
-            {isPending ? "Deleting…" : "Delete permanently"}
+            {isPending ? t("deleting") : t("deletePermanently")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

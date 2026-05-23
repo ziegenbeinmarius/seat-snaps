@@ -8,9 +8,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { useCredits } from "@/lib/api/credits";
 import { usePricingTiers, usePaymentHistory } from "@/lib/api/payments";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Props {
   open: boolean;
@@ -22,6 +22,8 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
   const { data: credits } = useCredits();
   const { data: tiers } = usePricingTiers();
   const { data: history } = usePaymentHistory();
+  const t = useTranslations("credits");
+  const locale = useLocale();
 
   const handleBuy = (tierId: string) => {
     onOpenChange(false);
@@ -36,11 +38,10 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Plan &amp; Credits</DialogTitle>
+          <DialogTitle>{t("planAndCredits")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5">
-          {/* Credit balance card */}
           <div
             className="rounded-xl px-5 py-4 space-y-1"
             style={{
@@ -50,14 +51,14 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
           >
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium" style={{ color: "hsl(28 8% 45%)" }}>
-                Available credits
+                {t("availableCredits")}
               </p>
               {isExhausted && (
                 <span
                   className="rounded-full px-2.5 py-0.5 text-xs font-semibold"
                   style={{ background: "hsl(0 72% 92%)", color: "hsl(0 65% 40%)" }}
                 >
-                  Exhausted
+                  {t("exhausted")}
                 </span>
               )}
             </div>
@@ -72,15 +73,14 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
             </p>
           </div>
 
-          {/* Upgrade options */}
           {tiers && tiers.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "hsl(28 8% 50%)" }}>
-                {isExhausted ? "Buy credits to continue" : "Buy more credits"}
+                {isExhausted ? t("buyCredits") : t("buyMoreCredits")}
               </p>
               <div className="grid gap-2">
                 {tiers
-                  .filter((t) => t.active)
+                  .filter((tier) => tier.active)
                   .sort((a, b) => a.eventCount - b.eventCount)
                   .map((tier) => (
                     <button
@@ -102,7 +102,7 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
                             {tier.name}
                           </p>
                           <p className="text-xs" style={{ color: "hsl(28 8% 50%)" }}>
-                            {tier.eventCount} event{tier.eventCount !== 1 ? "s" : ""}
+                            {tier.eventCount !== 1 ? t("eventPlural", { count: tier.eventCount }) : t("event", { count: tier.eventCount })}
                           </p>
                         </div>
                       </div>
@@ -118,11 +118,10 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
             </div>
           )}
 
-          {/* Purchase history */}
           {history && history.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: "hsl(28 8% 50%)" }}>
-                Purchase history
+                {t("purchaseHistory")}
               </p>
               <div className="space-y-1.5">
                 {history.slice(0, 5).map((payment) => (
@@ -138,10 +137,10 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
                       />
                       <div>
                         <p className="text-xs font-medium" style={{ color: "hsl(24 12% 25%)" }}>
-                          +{payment.creditsGranted} credit{payment.creditsGranted !== 1 ? "s" : ""}
+                          +{payment.creditsGranted} {payment.creditsGranted !== 1 ? t("creditPlural") : t("credit")}
                         </p>
                         <p className="text-xs" style={{ color: "hsl(28 8% 55%)" }}>
-                          {new Date(payment.createdAt).toLocaleDateString("en-US", {
+                          {new Date(payment.createdAt).toLocaleDateString(locale, {
                             day: "numeric",
                             month: "short",
                             year: "numeric",
@@ -177,7 +176,7 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
 
           {history && history.length === 0 && (
             <p className="text-center text-xs" style={{ color: "hsl(28 8% 55%)" }}>
-              No purchases yet.
+              {t("noPurchases")}
             </p>
           )}
 
@@ -191,7 +190,7 @@ export function PlanManagementDialog({ open, onOpenChange }: Props) {
             >
               <Zap className="mt-0.5 h-4 w-4 shrink-0" style={{ color: "hsl(38 80% 40%)" }} />
               <p className="text-xs" style={{ color: "hsl(38 50% 30%)" }}>
-                You&apos;ve used all your credits. Buy a plan above to create more events.
+                {t("usedAllCredits")}
               </p>
             </div>
           )}

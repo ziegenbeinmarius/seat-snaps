@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/navigation";
 import { Sparkles, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useClaimTrial } from "@/lib/api/credits";
+import { useTranslations } from "next-intl";
 import type { PricingTierResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 export function SelectPlanClient({ tiers }: Props) {
   const router = useRouter();
   const claimTrial = useClaimTrial();
+  const t = useTranslations("selectPlan");
   const [processingId, setProcessingId] = useState<string | null>(null);
 
   const handleTrialSelect = async () => {
@@ -44,12 +46,11 @@ export function SelectPlanClient({ tiers }: Props) {
           backdropFilter: "blur(12px)",
         }}
       >
-        {/* "Most popular for starters" badge */}
         <span
           className="absolute -top-3 left-6 rounded-full px-3 py-0.5 text-xs font-semibold"
           style={{ background: "hsl(28 65% 44%)", color: "white" }}
         >
-          Try for free
+          {t("tryForFree")}
         </span>
 
         <div className="flex items-start gap-4 flex-1">
@@ -61,14 +62,10 @@ export function SelectPlanClient({ tiers }: Props) {
           </div>
           <div className="space-y-1">
             <p className="font-semibold text-lg" style={{ color: "hsl(24 12% 20%)" }}>
-              Free Trial
+              {t("freeTrial")}
             </p>
             <ul className="space-y-1">
-              {[
-                "1 event",
-                "Up to 5 attendees",
-                "All features included",
-              ].map((feature) => (
+              {[t("feature1"), t("feature2"), t("feature3")].map((feature) => (
                 <li key={feature} className="flex items-center gap-2 text-sm" style={{ color: "hsl(28 8% 40%)" }}>
                   <Check className="h-3.5 w-3.5 shrink-0" style={{ color: "hsl(142 40% 45%)" }} />
                   {feature}
@@ -80,7 +77,7 @@ export function SelectPlanClient({ tiers }: Props) {
 
         <div className="flex flex-col items-end gap-3 shrink-0">
           <span className="text-2xl font-bold" style={{ color: "hsl(24 12% 20%)" }}>
-            Free
+            {t("free")}
           </span>
           <Button
             onClick={handleTrialSelect}
@@ -88,7 +85,7 @@ export function SelectPlanClient({ tiers }: Props) {
             style={{ background: "hsl(28 65% 44%)", color: "white" }}
             className="hover:opacity-90"
           >
-            {processingId === "trial" ? "Starting…" : "Start free trial"}
+            {processingId === "trial" ? t("starting") : t("startFreeTrial")}
           </Button>
         </div>
       </div>
@@ -111,7 +108,7 @@ export function SelectPlanClient({ tiers }: Props) {
                   {tier.name}
                 </p>
                 <p className="text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-                  {tier.eventCount} event{tier.eventCount !== 1 ? "s" : ""}
+                  {tier.eventCount !== 1 ? t("eventCountPlural", { count: tier.eventCount }) : t("eventCount", { count: tier.eventCount })}
                 </p>
               </div>
               <div className="space-y-3">
@@ -128,7 +125,7 @@ export function SelectPlanClient({ tiers }: Props) {
                   disabled={isProcessing}
                   onClick={() => handleTierSelect(tier.id)}
                 >
-                  Choose
+                  {t("choose")}
                 </Button>
               </div>
             </div>
@@ -137,7 +134,7 @@ export function SelectPlanClient({ tiers }: Props) {
       )}
 
       <p className="text-center text-xs" style={{ color: "hsl(28 8% 52%)" }}>
-        No real payment is processed. All plans are immediately activated.
+        {t("noRealPayment")}
       </p>
     </div>
   );

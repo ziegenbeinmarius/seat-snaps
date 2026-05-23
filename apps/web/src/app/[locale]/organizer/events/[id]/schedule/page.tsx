@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { SchedulePanel } from "@/app/dashboard/events/[id]/schedule/schedule-panel";
+import { SchedulePanel } from "@/app/[locale]/dashboard/events/[id]/schedule/schedule-panel";
 import { loadEvent } from "@/lib/load-event";
 
 export const metadata: Metadata = { title: "Schedule — Organizer" };

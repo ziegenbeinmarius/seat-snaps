@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { Loader2, QrCode, RefreshCcw } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 type ScannerState = "idle" | "starting" | "scanning" | "found" | "error";
 type ErrorKey = "cameraUnavailable" | "cameraBlocked";
@@ -25,6 +25,8 @@ function extractJoinToken(text: string): string | null {
 
 export function AttendScanner() {
   const t = useTranslations("attend");
+  const locale = useLocale();
+  const localePrefix = locale !== "en" ? `/${locale}` : "";
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -69,13 +71,13 @@ export function AttendScanner() {
         navigatingRef.current = true;
         setState("found");
         stopCamera();
-        window.location.href = `/join/${token}`;
+        window.location.href = `${localePrefix}/join/${token}`;
         return;
       }
     }
 
     rafRef.current = requestAnimationFrame(scanLoop);
-  }, [stopCamera]);
+  }, [stopCamera, localePrefix]);
 
   useEffect(() => {
     let active = true;

@@ -6,6 +6,7 @@ import { CheckCircle, Calendar, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useCheckout } from "@/lib/api/payments";
+import { useTranslations } from "next-intl";
 import type { PricingTierResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -15,25 +16,24 @@ interface Props {
 export function CheckoutClient({ tier }: Props) {
   const router = useRouter();
   const checkout = useCheckout();
+  const t = useTranslations("checkout");
   const [succeeded, setSucceeded] = useState(false);
 
   const handleConfirm = async () => {
     try {
       await checkout.mutateAsync({ tierId: tier.id });
       setSucceeded(true);
-      // Brief success state before redirecting
       setTimeout(() => {
         router.push("/dashboard");
       }, 1500);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Purchase failed. Please try again.";
+      const message = err instanceof Error ? err.message : t("purchaseFailed");
       toast.error(message);
     }
   };
 
   return (
     <div className="space-y-4">
-      {/* Order summary card */}
       <div
         className="rounded-2xl p-6 space-y-5"
         style={{
@@ -46,10 +46,9 @@ export function CheckoutClient({ tier }: Props) {
           className="text-sm font-semibold uppercase tracking-wider"
           style={{ color: "hsl(28 8% 52%)" }}
         >
-          Order summary
+          {t("orderSummary")}
         </h2>
 
-        {/* Tier name */}
         <div className="flex items-center justify-between">
           <span
             className="text-lg font-semibold"
@@ -76,7 +75,6 @@ export function CheckoutClient({ tier }: Props) {
           style={{ borderColor: "hsl(33 18% 88%)" }}
         />
 
-        {/* Credits detail */}
         <div className="space-y-3">
           <div className="flex items-center gap-3">
             <div
@@ -90,10 +88,10 @@ export function CheckoutClient({ tier }: Props) {
                 className="text-sm font-medium"
                 style={{ color: "hsl(24 12% 20%)" }}
               >
-                {tier.eventCount} event credit{tier.eventCount !== 1 ? "s" : ""}
+                {tier.eventCount !== 1 ? t("eventCreditsPlural", { count: tier.eventCount }) : t("eventCredits", { count: tier.eventCount })}
               </p>
               <p className="text-xs" style={{ color: "hsl(28 8% 52%)" }}>
-                Use to create and manage events
+                {t("useToCreate")}
               </p>
             </div>
           </div>
@@ -110,17 +108,16 @@ export function CheckoutClient({ tier }: Props) {
                 className="text-sm font-medium"
                 style={{ color: "hsl(24 12% 20%)" }}
               >
-                Simulated payment
+                {t("simulatedPayment")}
               </p>
               <p className="text-xs" style={{ color: "hsl(28 8% 52%)" }}>
-                No real charge — credits are granted immediately
+                {t("noRealCharge")}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Action area */}
       {succeeded ? (
         <div
           className="rounded-2xl p-5 flex items-center gap-3"
@@ -138,10 +135,10 @@ export function CheckoutClient({ tier }: Props) {
               className="text-sm font-semibold"
               style={{ color: "hsl(142 40% 30%)" }}
             >
-              Purchase confirmed!
+              {t("purchaseConfirmed")}
             </p>
             <p className="text-xs" style={{ color: "hsl(142 30% 40%)" }}>
-              {tier.eventCount} credit{tier.eventCount !== 1 ? "s" : ""} added — redirecting to your dashboard…
+              {tier.eventCount !== 1 ? t("creditsAddedPlural", { count: tier.eventCount }) : t("creditsAdded", { count: tier.eventCount })}
             </p>
           </div>
         </div>
@@ -153,7 +150,7 @@ export function CheckoutClient({ tier }: Props) {
             onClick={handleConfirm}
             disabled={checkout.isPending}
           >
-            {checkout.isPending ? "Processing…" : `Confirm Purchase — ${tier.priceSek} ${tier.currency}`}
+            {checkout.isPending ? t("processing") : t("confirmPurchase", { price: tier.priceSek, currency: tier.currency })}
           </Button>
           <Button
             variant="ghost"
@@ -162,13 +159,13 @@ export function CheckoutClient({ tier }: Props) {
             onClick={() => router.back()}
             disabled={checkout.isPending}
           >
-            Go back
+            {t("goBack")}
           </Button>
         </div>
       )}
 
       <p className="text-center text-xs" style={{ color: "hsl(28 8% 56%)" }}>
-        No real payment is processed. All plans are immediately activated.
+        {t("noRealPayment")}
       </p>
     </div>
   );

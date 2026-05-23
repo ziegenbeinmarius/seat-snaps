@@ -1,6 +1,6 @@
 "use server";
 
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { signIn } from "@/auth";
 import { apiRequest } from "@/lib/api";
 import { AcceptWithRegistrationSchema } from "@seat-snaps/shared";

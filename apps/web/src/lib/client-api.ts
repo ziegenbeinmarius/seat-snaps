@@ -33,7 +33,9 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
 
   if (!res.ok) {
     if (res.status === 401 && typeof window !== "undefined") {
-      window.location.href = "/login";
+      const localeMatch = window.location.pathname.match(/^\/(sv|de)(\/|$)/);
+      const prefix = localeMatch ? `/${localeMatch[1]}` : "";
+      window.location.href = `${prefix}/login`;
       return new Promise<T>(() => {});
     }
 

@@ -1,16 +1,23 @@
 import type { Metadata } from "next";
-import { redirect } from "@/i18n/navigation";
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/require-auth";
 import { apiRequest } from "@/lib/api";
 import type { CreditBalanceResponse, PricingTierResponse } from "@seat-snaps/shared";
 import { SelectPlanClient } from "./select-plan-client";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = { title: "Choose your plan — SeatSnaps" };
 
-export default async function SelectPlanPage() {
+interface Props {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function SelectPlanPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("selectPlan");
   await requireAuth();
 
-  // If the user already has credits (returning user or already chose a plan), skip to dashboard
   let credits: CreditBalanceResponse | null = null;
   try {
     credits = await apiRequest<CreditBalanceResponse>("/credits");
@@ -29,7 +36,6 @@ export default async function SelectPlanPage() {
     // If tiers can't be loaded, we still show the free trial option
   }
 
-  // Sort by eventCount ascending
   const sortedTiers = [...tiers].sort((a, b) => a.eventCount - b.eventCount);
 
   return (
@@ -40,7 +46,6 @@ export default async function SelectPlanPage() {
       }}
     >
       <div className="w-full max-w-2xl space-y-8">
-        {/* Header */}
         <div className="text-center space-y-2">
           <h1
             className="text-4xl font-semibold tracking-tight"
@@ -55,10 +60,10 @@ export default async function SelectPlanPage() {
             className="text-2xl font-medium"
             style={{ color: "hsl(24 12% 20%)" }}
           >
-            Choose your plan
+            {t("choosePlan")}
           </p>
           <p className="text-sm" style={{ color: "hsl(28 8% 52%)" }}>
-            Get started with a free trial or pick a plan that fits your needs.
+            {t("chooseDesc")}
           </p>
         </div>
 

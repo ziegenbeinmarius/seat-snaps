@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { redirect } from "@/i18n/navigation";
+import type { Route } from "next";
+import { redirect } from "next/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { QrCode } from "lucide-react";
 import { AttendScanner } from "./attend-scanner";
@@ -21,7 +22,7 @@ export default async function AttendPage({ params }: Props) {
   const attendee = await getCurrentAttendee();
 
   if (attendee) {
-    redirect(`/event/${attendee.eventId}`);
+    redirect(`/event/${attendee.eventId}` as Route);
   }
 
   return (

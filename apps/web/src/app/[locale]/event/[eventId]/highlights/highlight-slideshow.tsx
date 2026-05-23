@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, Maximize2, X, Download, Loader2 } from "luci
 import JSZip from "jszip";
 import { toast } from "sonner";
 import { useHighlightPhotos } from "@/lib/api/photos";
+import { useTranslations } from "next-intl";
 import type { PhotoResponse } from "@seat-snaps/shared";
 
 interface Props {
@@ -19,6 +20,7 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
   const [fullscreen, setFullscreen] = useState(false);
   const [paused, setPaused] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const t = useTranslations("highlights");
 
   const total = photos.length;
 
@@ -36,9 +38,9 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
       a.click();
       URL.revokeObjectURL(url);
     } catch {
-      toast.error("Download failed");
+      toast.error(t("downloadFailed"));
     }
-  }, []);
+  }, [t]);
 
   const downloadAll = useCallback(async () => {
     if (photos.length === 0) return;
@@ -64,13 +66,12 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
       a.download = "highlights.zip";
       a.click();
       URL.revokeObjectURL(url);
-      toast.success(`Downloaded ${photos.length} highlights`);
     } catch {
-      toast.error("Download failed");
+      toast.error(t("downloadFailed"));
     } finally {
       setIsDownloading(false);
     }
-  }, [photos]);
+  }, [photos, t]);
 
   const next = useCallback(() => setCurrent((c) => (c + 1) % total), [total]);
   const prev = useCallback(() => setCurrent((c) => (c - 1 + total) % total), [total]);
@@ -81,7 +82,6 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
     return () => clearInterval(id);
   }, [total, paused, fullscreen, next, autoAdvanceMs]);
 
-  // Reset index when photos change
   useEffect(() => {
     setCurrent(0);
   }, [total]);
@@ -102,7 +102,6 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
     <>
       <div className="glass-card rounded-2xl overflow-hidden">
         <div className="relative">
-          {/* Slide image */}
           <div
             className="relative aspect-video bg-black cursor-pointer"
             onClick={() => setFullscreen(true)}
@@ -119,21 +118,20 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
               <button
                 className="rounded-full bg-black/30 p-1.5 text-white backdrop-blur-sm"
                 onClick={(e) => { e.stopPropagation(); void downloadPhoto(photo); }}
-                title="Download photo"
+                title={t("downloadPhoto")}
               >
                 <Download className="h-4 w-4" />
               </button>
               <button
                 className="rounded-full bg-black/30 p-1.5 text-white backdrop-blur-sm"
                 onClick={(e) => { e.stopPropagation(); setFullscreen(true); }}
-                title="Fullscreen"
+                title={t("fullscreen")}
               >
                 <Maximize2 className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          {/* Controls */}
           {total > 1 && (
             <>
               <button
@@ -151,7 +149,6 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
             </>
           )}
 
-          {/* Dot indicators */}
           {total > 1 && (
             <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
               {photos.map((_, i) => (
@@ -170,11 +167,11 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
         <div className="flex items-center justify-between px-4 py-3">
           <div>
             <h2 className="event-body text-xs font-semibold uppercase tracking-widest event-card-muted-text">
-              Highlights
+              {t("title")}
             </h2>
             <p className="event-body mt-0.5 text-sm event-card-desc">
               {photo?.attendeeName && (
-                <span className="text-xs event-card-muted-text">by {photo.attendeeName}</span>
+                <span className="text-xs event-card-muted-text">{t("by")} {photo.attendeeName}</span>
               )}
             </p>
           </div>
@@ -182,19 +179,18 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
             className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-xs text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20 disabled:opacity-50"
             onClick={() => void downloadAll()}
             disabled={isDownloading}
-            title="Download all highlights"
+            title={t("downloadAllHighlights")}
           >
             {isDownloading ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
               <Download className="h-3.5 w-3.5" />
             )}
-            Download All
+            {t("downloadAll")}
           </button>
         </div>
       </div>
 
-      {/* Fullscreen overlay */}
       {fullscreen && (
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black"
@@ -204,7 +200,7 @@ export function HighlightSlideshow({ eventId, autoAdvanceMs = 4000 }: Props) {
             <button
               className="rounded-full bg-white/10 p-2 text-white"
               onClick={(e) => { e.stopPropagation(); void downloadPhoto(photo); }}
-              title="Download photo"
+              title={t("downloadPhoto")}
             >
               <Download className="h-6 w-6" />
             </button>

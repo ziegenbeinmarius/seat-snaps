@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
-import { redirect } from "@/i18n/navigation";
+import type { Route } from "next";
+import { redirect } from "next/navigation";
 import { getCurrentAttendee, getAttendeeSessionToken } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";
 import { AttendeeHeader } from "./attendee-header";
@@ -87,12 +88,12 @@ export default async function AttendeeLayout({ children, params }: Props) {
   ]);
 
   if (!attendee) {
-    redirect(`/join/event/${eventId}`);
+    redirect(`/join/event/${eventId}` as Route);
     return null;
   }
 
   if (attendee.eventId !== eventId) {
-    redirect(`/event/${attendee.eventId}`);
+    redirect(`/event/${attendee.eventId}` as Route);
     return null;
   }
 

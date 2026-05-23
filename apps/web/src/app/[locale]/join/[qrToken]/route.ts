@@ -18,9 +18,10 @@ function redirectTo(path: string) {
 
 export async function GET(
   _request: Request,
-  context: { params: Promise<{ qrToken: string }> },
+  context: { params: Promise<{ locale: string; qrToken: string }> },
 ) {
-  const { qrToken } = await context.params;
+  const { locale, qrToken } = await context.params;
+  const localePrefix = locale !== "en" ? `/${locale}` : "";
 
   let session: AttendeeSessionResponse;
   try {
@@ -32,15 +33,15 @@ export async function GET(
     });
 
     if (!res.ok) {
-      return redirectTo("/join/invalid");
+      return redirectTo(`${localePrefix}/join/invalid`);
     }
 
     session = (await res.json()) as AttendeeSessionResponse;
   } catch {
-    return redirectTo("/join/invalid");
+    return redirectTo(`${localePrefix}/join/invalid`);
   }
 
-  const response = redirectTo(`/event/${session.eventId}`);
+  const response = redirectTo(`${localePrefix}/event/${session.eventId}`);
   response.cookies.set("attendee-session", session.token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
