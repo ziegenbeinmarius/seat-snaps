@@ -32,15 +32,30 @@ export class TablesService implements ITableService {
 
   async listForEvent(eventId: string, userId: string): Promise<TableWithSeats[]> {
     await this.requireMember(eventId, userId);
-    const tables = await this.tableRepository.findByEventId(eventId);
-    return Promise.all(tables.map((t) => this.withSeats(t)));
+    return this.listTablesWithSeats(eventId);
   }
 
   async listPublic(eventId: string): Promise<TableWithSeats[]> {
     const event = await this.eventRepository.findById(eventId);
     if (!event) throw new NotFoundException("Event not found");
-    const tables = await this.tableRepository.findByEventId(eventId);
-    return Promise.all(tables.map((t) => this.withSeats(t)));
+    return this.listTablesWithSeats(eventId);
+  }
+
+  private async listTablesWithSeats(eventId: string): Promise<TableWithSeats[]> {
+    const [tables, allSeats] = await Promise.all([
+      this.tableRepository.findByEventId(eventId),
+      this.seatRepository.findByEventId(eventId),
+    ]);
+    const seatsByTable = new Map<string, typeof allSeats>();
+    for (const seat of allSeats) {
+      let arr = seatsByTable.get(seat.tableId);
+      if (!arr) {
+        arr = [];
+        seatsByTable.set(seat.tableId, arr);
+      }
+      arr.push(seat);
+    }
+    return tables.map((t) => ({ ...t, seats: seatsByTable.get(t.id) ?? [] }));
   }
 
   async getById(tableId: string, eventId: string, userId: string): Promise<TableWithSeats> {
@@ -66,15 +81,14 @@ export class TablesService implements ITableService {
     });
 
     if (data.capacity && data.capacity > 0) {
-      for (let i = 1; i <= data.capacity; i++) {
-        await this.seatRepository.create({
-          tableId: table.id,
-          eventId,
-          label: `Seat ${i}`,
-          position: i,
-          attendeeId: null,
-        });
-      }
+      const seatData = Array.from({ length: data.capacity }, (_, i) => ({
+        tableId: table.id,
+        eventId,
+        label: `Seat ${i + 1}`,
+        position: i + 1,
+        attendeeId: null,
+      }));
+      await this.seatRepository.bulkCreate(seatData);
     }
 
     this.broadcastGateway.emitSeatingUpdate(eventId);
@@ -155,9 +169,11 @@ export class TablesService implements ITableService {
   }
 
   private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
   }
 }

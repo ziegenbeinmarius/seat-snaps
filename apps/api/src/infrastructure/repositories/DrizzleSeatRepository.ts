@@ -19,6 +19,15 @@ export class DrizzleSeatRepository implements ISeatRepository {
     return this.db.select().from(seats).where(eq(seats.eventId, eventId));
   }
 
+  async findByAttendeeId(attendeeId: string): Promise<Seat | null> {
+    const result = await this.db
+      .select()
+      .from(seats)
+      .where(eq(seats.attendeeId, attendeeId))
+      .limit(1);
+    return result[0] ?? null;
+  }
+
   async assignAttendee(seatId: string, attendeeId: string): Promise<Seat> {
     const result = await this.db
       .update(seats)
@@ -42,6 +51,11 @@ export class DrizzleSeatRepository implements ISeatRepository {
   async create(data: NewSeat): Promise<Seat> {
     const result = await this.db.insert(seats).values(data).returning();
     return result[0];
+  }
+
+  async bulkCreate(data: NewSeat[]): Promise<Seat[]> {
+    if (data.length === 0) return [];
+    return this.db.insert(seats).values(data).returning();
   }
 
   async update(id: string, data: UpdateSeatData): Promise<Seat> {
