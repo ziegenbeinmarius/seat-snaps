@@ -13,6 +13,8 @@ import type { IAttendeeRepository } from "../domain/repositories/IAttendeeReposi
 import { ATTENDEE_REPOSITORY } from "../domain/repositories/IAttendeeRepository";
 import type { IEventMembershipRepository } from "../domain/repositories/IEventMembershipRepository";
 import { EVENT_MEMBERSHIP_REPOSITORY } from "../domain/repositories/IEventMembershipRepository";
+import type { IUserRepository } from "../domain/repositories/IUserRepository";
+import { USER_REPOSITORY } from "../domain/repositories/IUserRepository";
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"];
 
@@ -33,6 +35,8 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly attendeeRepository: IAttendeeRepository,
     @Inject(EVENT_MEMBERSHIP_REPOSITORY)
     private readonly membershipRepository: IEventMembershipRepository,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
   ) {}
 
   async handleConnection(socket: Socket) {
@@ -85,9 +89,15 @@ export class EventGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ): Promise<{ eventId: string; tableId: string | null } | null> {
     // Try organizer JWT
     try {
-      const payload = this.jwtService.verify<{ id?: string }>(token);
+      const payload = this.jwtService.verify<{ id?: string; tokenVersion?: number }>(token);
       const userId = payload?.id;
       if (userId && queriedEventId) {
+        const user = await this.userRepository.findById(userId);
+        if (!user) return null;
+
+        const jwtVersion = typeof payload.tokenVersion === "number" ? payload.tokenVersion : 0;
+        if (jwtVersion < (user.tokenVersion ?? 0)) return null;
+
         const membership = await this.membershipRepository.findByUserAndEvent(userId, queriedEventId);
         if (membership) return { eventId: queriedEventId, tableId: null };
       }
