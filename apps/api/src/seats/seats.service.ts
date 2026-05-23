@@ -41,9 +41,8 @@ export class SeatsService implements ISeatService {
     const attendee = await this.attendeeRepository.findById(attendeeId);
     if (!attendee || attendee.eventId !== eventId) throw new NotFoundException("Attendee not found");
 
-    const allSeats = await this.seatRepository.findByEventId(eventId);
-    const alreadySeated = allSeats.find((s) => s.attendeeId === attendeeId);
-    if (alreadySeated) throw new ConflictException("Attendee is already assigned to a seat");
+    const existingSeat = await this.seatRepository.findByAttendeeId(attendeeId);
+    if (existingSeat) throw new ConflictException("Attendee is already assigned to a seat");
 
     const updated = await this.seatRepository.assignAttendee(seatId, attendeeId);
     await this.attendeeRepository.update(attendeeId, {
@@ -74,9 +73,11 @@ export class SeatsService implements ISeatService {
   }
 
   private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
   }
 }

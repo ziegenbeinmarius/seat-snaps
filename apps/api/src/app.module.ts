@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common";
-import { APP_GUARD } from "@nestjs/core";
+import { APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ThrottlerModule } from "@nestjs/throttler";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -23,6 +23,7 @@ import { PushSubscriptionsModule } from "./push-subscriptions/push-subscriptions
 import { CreditsModule } from "./credits/credits.module";
 import { PaymentsModule } from "./payments/payments.module";
 import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
+import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { FastifyThrottlerGuard } from "./common/guards/fastify-throttler.guard";
   providers: [
     AppService,
     { provide: APP_GUARD, useClass: FastifyThrottlerGuard },
+    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor },
   ],
 })
 export class AppModule {}

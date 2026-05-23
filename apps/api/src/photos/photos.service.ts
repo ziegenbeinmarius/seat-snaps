@@ -214,9 +214,11 @@ export class PhotosService implements IPhotoService {
   }
 
   private async requireOrganizer(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
   }
 

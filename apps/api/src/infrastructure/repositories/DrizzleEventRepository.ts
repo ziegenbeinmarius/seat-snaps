@@ -1,4 +1,4 @@
-import { eq, inArray, isNull } from "@seat-snaps/db";
+import { eq, and, isNull } from "@seat-snaps/db";
 import type { Database, Event, NewEvent } from "@seat-snaps/db";
 import { events, eventMemberships } from "@seat-snaps/db";
 import type { IEventRepository, EventFilters, UpdateEventData } from "../../domain/repositories/IEventRepository";
@@ -20,18 +20,29 @@ export class DrizzleEventRepository implements IEventRepository {
   }
 
   async findByMemberId(userId: string): Promise<Event[]> {
-    const memberships = await this.db
-      .select({ eventId: eventMemberships.eventId })
-      .from(eventMemberships)
-      .where(eq(eventMemberships.userId, userId));
-
-    if (memberships.length === 0) return [];
-
-    const eventIds = memberships.map((m) => m.eventId);
-    return this.db
-      .select()
+    const rows = await this.db
+      .select({
+        id: events.id,
+        title: events.title,
+        description: events.description,
+        date: events.date,
+        endDate: events.endDate,
+        location: events.location,
+        timezone: events.timezone,
+        type: events.type,
+        hasSeating: events.hasSeating,
+        isFinished: events.isFinished,
+        rsvpEnabled: events.rsvpEnabled,
+        settings: events.settings,
+        isFreeTrial: events.isFreeTrial,
+        deletedAt: events.deletedAt,
+        createdAt: events.createdAt,
+        updatedAt: events.updatedAt,
+      })
       .from(events)
-      .where(inArray(events.id, eventIds));
+      .innerJoin(eventMemberships, eq(events.id, eventMemberships.eventId))
+      .where(and(eq(eventMemberships.userId, userId), isNull(events.deletedAt)));
+    return rows;
   }
 
   async create(data: NewEvent): Promise<Event> {

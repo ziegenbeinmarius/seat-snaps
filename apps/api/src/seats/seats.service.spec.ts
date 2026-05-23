@@ -75,9 +75,11 @@ describe("SeatsService", () => {
       findById: vi.fn(),
       findByTableId: vi.fn(),
       findByEventId: vi.fn(),
+      findByAttendeeId: vi.fn(),
       assignAttendee: vi.fn(),
       unassignAttendee: vi.fn(),
       create: vi.fn(),
+      bulkCreate: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),
     };
@@ -142,7 +144,7 @@ describe("SeatsService", () => {
     it("assigns attendee to seat and updates denormalized fields", async () => {
       seatRepo.findById.mockResolvedValue(makeSeat());
       attendeeRepo.findById.mockResolvedValue(makeAttendee());
-      seatRepo.findByEventId.mockResolvedValue([makeSeat()]);
+      seatRepo.findByAttendeeId.mockResolvedValue(null);
       seatRepo.assignAttendee.mockResolvedValue(makeSeat({ attendeeId: "att-1" }));
       attendeeRepo.update.mockResolvedValue(makeAttendee());
 
@@ -167,7 +169,7 @@ describe("SeatsService", () => {
     it("throws ConflictException when attendee already has a seat", async () => {
       seatRepo.findById.mockResolvedValue(makeSeat());
       attendeeRepo.findById.mockResolvedValue(makeAttendee());
-      seatRepo.findByEventId.mockResolvedValue([makeSeat({ id: "seat-2", attendeeId: "att-1" })]);
+      seatRepo.findByAttendeeId.mockResolvedValue(makeSeat({ id: "seat-2", attendeeId: "att-1" }));
 
       await expect(
         service.assign("seat-1", "evt-1", "att-1", "user-1"),
