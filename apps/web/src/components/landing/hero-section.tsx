@@ -1,8 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { KoalaMascot } from "@/components/landing/koala-mascot";
 import { useTranslations } from "next-intl";
 
 interface HeroSectionProps {
@@ -45,16 +45,7 @@ export function HeroSection({ user }: HeroSectionProps) {
       </div>
 
       <div data-animate="fade-up" className="landing-animate">
-        <div className="animate-float mb-3 sm:mb-6">
-          <Image
-            src="/images/koala-mascot.png"
-            alt="SeatSnaps Koala mascot with a retro camera"
-            width={240}
-            height={411}
-            className="h-auto w-auto max-h-[22vh] sm:max-h-[28vh] md:max-h-[32vh] lg:max-h-[36vh]"
-            priority
-          />
-        </div>
+        <KoalaMascot />
       </div>
 
       <h1
