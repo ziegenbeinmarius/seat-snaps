@@ -6,9 +6,9 @@ import { apiRequest } from "@/lib/api";
 import { APP_BACKGROUND } from "@/lib/event-helpers";
 import { CreditBalanceBadge } from "@/components/credits/credit-balance-badge";
 import { TrialWelcomeDialog } from "@/components/credits/trial-welcome-dialog";
-import { LanguageSwitcher } from "@/components/language-switcher";
+import { SettingsDropdown } from "@/components/settings-dropdown";
 import type { CreditBalanceResponse } from "@seat-snaps/shared";
-import { getTranslations, setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
 
 export default async function DashboardLayout({
   children,
@@ -21,7 +21,6 @@ export default async function DashboardLayout({
   setRequestLocale(locale);
 
   const session = await requireAuth();
-  const t = await getTranslations("nav");
 
   try {
     const credits = await apiRequest<CreditBalanceResponse>("/credits");
@@ -55,27 +54,14 @@ export default async function DashboardLayout({
             SeatSnaps
           </Link>
           <div className="flex items-center gap-3">
-            <LanguageSwitcher />
             <CreditBalanceBadge />
-            {session.user?.isAdmin && (
-              <Link
-                href="/admin"
-                className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-                style={{ color: "hsl(28 65% 44%)", border: "1px solid hsl(33 18% 82%)" }}
-              >
-                {t("admin")}
-              </Link>
-            )}
-            <span className="text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-              {session.user?.name}
-            </span>
-            <Link
-              href="/logout"
-              className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-              style={{ color: "hsl(28 65% 44%)", border: "1px solid hsl(33 18% 82%)" }}
-            >
-              {t("signOut")}
-            </Link>
+            <SettingsDropdown
+              userName={session.user?.name}
+              isAdmin={session.user?.isAdmin ?? false}
+              showProfile
+              profileHref="/dashboard/profile"
+              showSignOut
+            />
           </div>
         </div>
       </header>
