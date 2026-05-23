@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Manages device sessions for attendees. Created when an attendee scans a QR code or manually selects their name. Provides the `AttendeeSessionGuard` and `@CurrentAttendee()` decorator.
+Manages device sessions for attendees. Created when an attendee scans a QR code. Provides the `AttendeeSessionGuard` and `@CurrentAttendee()` decorator.
 
 ## Files
 
@@ -16,12 +16,14 @@ Manages device sessions for attendees. Created when an attendee scans a QR code 
 
 ## Endpoints
 
-- `POST /api/attendee-sessions` (public) — Create session from qrToken or attendeeId+eventId; sets HTTP-only cookie
+- `POST /api/attendee-sessions` (public, rate-limited) — Create session via `qrToken` only; returns `{ token, attendeeId, eventId, name, csrfToken }` + sets HTTP-only cookie
 - `GET /api/attendee-sessions/me` (attendee session) — Get current attendee from session token
+- `PATCH /api/attendee-sessions/me` (attendee session + CSRF) — Update own description / conversation starters
 
 ## Patterns
 
-- Session flow: QR scan → `POST /api/attendee-sessions { qrToken }` → returns `{ token, attendeeId, eventId, name }` + sets `attendee-session` cookie (90-day TTL)
-- Manual join: `POST { attendeeId, eventId }` (attendee selects name from public list)
+- Only `qrToken` is accepted; the old `attendeeId + eventId` path has been removed (IDOR fix)
+- Session flow: QR scan → `POST /api/attendee-sessions { qrToken }` → returns session data + sets `attendee-session` cookie (90-day TTL)
+- RSVP flow auto-creates a session via `createFromQrToken(attendee.qrToken)` in the attendees controller
 - Guard reads cookie first, falls back to Bearer header
 - `@fastify/cookie` must be registered in `main.ts`

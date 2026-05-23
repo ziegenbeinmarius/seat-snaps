@@ -31,19 +31,6 @@ export class AttendeeSessionsService implements IAttendeeSessionService {
     return this.issueSession(attendee, deviceFingerprint);
   }
 
-  async createFromAttendeeId(
-    attendeeId: string,
-    eventId: string,
-    deviceFingerprint?: string,
-  ): Promise<AttendeeSessionWithAttendee> {
-    const attendee = await this.attendeeRepository.findById(attendeeId);
-    if (!attendee || attendee.eventId !== eventId) {
-      throw new NotFoundException("Attendee not found for this event");
-    }
-
-    return this.issueSession(attendee, deviceFingerprint);
-  }
-
   private async issueSession(
     attendee: Attendee,
     deviceFingerprint?: string,

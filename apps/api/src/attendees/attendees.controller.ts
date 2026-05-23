@@ -56,7 +56,7 @@ export class AttendeesController {
     @Res() reply: FastifyReply,
   ) {
     const attendee = await this.attendeesService.createFromRsvp(eventId, dto);
-    const result = await this.sessionService.createFromAttendeeId(attendee.id, eventId);
+    const result = await this.sessionService.createFromQrToken(attendee.qrToken);
 
     reply.setCookie(ATTENDEE_SESSION_COOKIE, result.session.token, {
       httpOnly: true,
