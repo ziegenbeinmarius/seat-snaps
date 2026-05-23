@@ -3,22 +3,7 @@ import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import type { JWT } from "next-auth/jwt";
 import jwt from "jsonwebtoken";
-import { config as loadEnv } from "dotenv";
-import { existsSync } from "node:fs";
-import { resolve } from "node:path";
 import { LoginSchema } from "@seat-snaps/shared";
-
-const envCandidates = [
-  resolve(process.cwd(), ".env"),
-  resolve(process.cwd(), "../../.env"),
-];
-
-for (const envPath of envCandidates) {
-  if (existsSync(envPath)) {
-    loadEnv({ path: envPath });
-    break;
-  }
-}
 
 const authSecret =
   process.env.AUTH_SECRET

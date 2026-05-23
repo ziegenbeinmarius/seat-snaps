@@ -14,3 +14,5 @@ export * from "./DrizzlePushSubscriptionRepository";
 export * from "./DrizzleUserCreditRepository";
 export * from "./DrizzlePaymentRepository";
 export * from "./DrizzlePricingTierRepository";
+export * from "./CachingEventRepository";
+export * from "./CachingEventMembershipRepository";

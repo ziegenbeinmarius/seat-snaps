@@ -34,7 +34,7 @@ async function bootstrap() {
   await app.register(fastifyCookie as never);
   await app.register(helmet as never);
 
-  app.useWebSocketAdapter(new IoAdapter(app));
+  app.useWebSocketAdapter(new IoAdapter(app) as any);
 
   app.enableCors({
     origin: process.env.ALLOWED_ORIGINS?.split(",") ?? ["http://localhost:3005"],

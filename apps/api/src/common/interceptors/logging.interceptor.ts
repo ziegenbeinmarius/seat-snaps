@@ -4,7 +4,7 @@ import type { FastifyRequest } from "fastify";
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
-  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest<FastifyRequest>();
     const start = performance.now();
 

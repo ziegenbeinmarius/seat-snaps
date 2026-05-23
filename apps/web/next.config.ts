@@ -1,9 +1,7 @@
 import type { NextConfig } from "next";
 import { loadEnvConfig } from "@next/env";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 loadEnvConfig(resolve(__dirname, "../.."));
 
 function toOrigin(value?: string): string | null {
@@ -95,12 +93,8 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  webpack: (config) => {
-    config.resolve.extensionAlias = {
-      ".js": [".ts", ".tsx", ".js", ".jsx"],
-      ".jsx": [".tsx", ".jsx"],
-    };
-    return config;
+  turbopack: {
+    resolveExtensions: [".ts", ".tsx", ".js", ".jsx"],
   },
 };
 
