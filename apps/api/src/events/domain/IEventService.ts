@@ -18,7 +18,7 @@ export interface IEventService {
   listForUser(userId: string): Promise<Event[]>;
   getPublicInfo(id: string): Promise<PublicEventInfo>;
   getById(id: string, userId: string): Promise<Event>;
-  create(data: CreateEventInput, userId: string): Promise<Event>;
+  create(data: CreateEventInput, userId: string, isAdmin?: boolean): Promise<Event>;
   update(id: string, data: UpdateEventInput, userId: string): Promise<Event>;
   delete(id: string, userId: string): Promise<void>;
   reactivate(id: string, userId: string): Promise<Event>;
