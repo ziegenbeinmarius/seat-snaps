@@ -3,6 +3,7 @@ import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
 import { NewEventDialog } from "@/components/events/new-event-dialog";
 import { EventCard } from "@/components/events/event-card";
+import { UpgradeBanner } from "@/components/credits/upgrade-banner";
 
 interface EventListPageProps {
   variant: "desktop" | "mobile";
@@ -137,6 +138,8 @@ export async function EventListPage({ variant, eventHrefPrefix }: EventListPageP
   return (
     <div className={isDesktop ? "space-y-8" : "px-4 py-6"}>
       {isDesktop ? <DesktopHeader /> : <MobileHeader />}
+
+      <UpgradeBanner />
 
       {error ? (
         <ErrorState message={error} variant={variant} />
