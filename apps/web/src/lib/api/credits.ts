@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreditBalanceResponse } from "@seat-snaps/shared";
 import { clientFetch } from "@/lib/client-api";
 
@@ -10,5 +10,16 @@ export function useCredits() {
   return useQuery<CreditBalanceResponse>({
     queryKey: ["credits"],
     queryFn: () => fetchApi("/credits"),
+  });
+}
+
+export function useClaimTrial() {
+  const qc = useQueryClient();
+  return useMutation<CreditBalanceResponse, Error, void>({
+    mutationFn: () =>
+      fetchApi("/credits/trial", { method: "POST" }),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["credits"] });
+    },
   });
 }

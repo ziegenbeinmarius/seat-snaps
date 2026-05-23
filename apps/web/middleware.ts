@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextMiddleware, NextRequest } from "next/server";
 
 
-const PROTECTED = ["/dashboard", "/organizer"];
+const PROTECTED = ["/dashboard", "/organizer", "/select-plan"];
 
 const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
   const { nextUrl } = req;
