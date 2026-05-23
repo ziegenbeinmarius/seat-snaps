@@ -31,3 +31,16 @@ export const LoginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 export type LoginInput = z.infer<typeof LoginSchema>;
+
+export const UpdateProfileSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").optional(),
+  email: z.string().email("Invalid email address").optional(),
+});
+export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
+
+export const UserProfileResponseSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  name: z.string(),
+});
+export type UserProfileResponse = z.infer<typeof UserProfileResponseSchema>;

@@ -29,7 +29,7 @@ export function CreditBalanceBadge() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition-opacity hover:opacity-80"
+        className="inline-flex cursor-pointer items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium transition-opacity hover:opacity-80"
         style={{
           background: isLow ? "hsl(0 72% 95%)" : "hsl(33 18% 92%)",
           color: isLow ? "hsl(0 65% 44%)" : "hsl(28 65% 44%)",

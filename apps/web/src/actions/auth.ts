@@ -1,11 +1,12 @@
 "use server";
 
 import { signIn, signOut } from "@/auth";
-import { RegisterSchema } from "@seat-snaps/shared";
+import { RegisterSchema, ChangePasswordSchema, UpdateProfileSchema } from "@seat-snaps/shared";
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { apiRequest } from "@/lib/api";
 
 export type ActionResult = { error: string } | { success: true };
 
@@ -56,6 +57,50 @@ export async function loginAction(formData: FormData): Promise<ActionResult> {
       return { error: "Invalid email or password" };
     }
     throw err;
+  }
+}
+
+export async function changePasswordAction(formData: FormData): Promise<ActionResult> {
+  const raw = {
+    currentPassword: formData.get("currentPassword"),
+    newPassword: formData.get("newPassword"),
+  };
+
+  const parsed = ChangePasswordSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.errors[0]?.message ?? "Invalid input" };
+  }
+
+  try {
+    await apiRequest("/auth/change-password", {
+      method: "POST",
+      body: JSON.stringify(parsed.data),
+    });
+    return { success: true };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Failed to change password" };
+  }
+}
+
+export async function updateProfileAction(formData: FormData): Promise<ActionResult> {
+  const raw = {
+    name: formData.get("name") || undefined,
+    email: formData.get("email") || undefined,
+  };
+
+  const parsed = UpdateProfileSchema.safeParse(raw);
+  if (!parsed.success) {
+    return { error: parsed.error.errors[0]?.message ?? "Invalid input" };
+  }
+
+  try {
+    await apiRequest("/auth/me", {
+      method: "PATCH",
+      body: JSON.stringify(parsed.data),
+    });
+    return { success: true };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : "Failed to update profile" };
   }
 }
 

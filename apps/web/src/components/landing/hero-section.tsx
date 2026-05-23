@@ -1,8 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { LandingProfileCard } from "@/components/landing/landing-profile-card";
+import type { CreditBalanceResponse } from "@seat-snaps/shared";
 
-export function HeroSection() {
+interface HeroSectionProps {
+  user?: { name?: string | null; email?: string | null } | null;
+  credits?: CreditBalanceResponse | null;
+}
+
+export function HeroSection({ user, credits }: HeroSectionProps) {
+  const isLoggedIn = !!user;
+
   return (
     <section className="relative flex h-[100svh] flex-col items-center justify-center px-6 pt-20 pb-12 text-center overflow-hidden">
       {/* Decorative background circles */}
@@ -47,14 +56,24 @@ export function HeroSection() {
         Seating plans, photo sharing, and a guest directory — all in one place.
       </p>
 
-      <div data-animate="fade-up" className="landing-animate delay-300 mt-6 flex items-center gap-4 sm:mt-8">
-        <Button size="lg" className="animate-glow" asChild>
-          <Link href="/register">Create Your Event</Link>
-        </Button>
-        <Button size="lg" variant="outline" asChild>
-          <Link href="/login">Sign in</Link>
-        </Button>
-      </div>
+      {isLoggedIn ? (
+        <div className="landing-animate delay-300 mt-6 w-full sm:mt-8" data-animate="fade-up">
+          <LandingProfileCard
+            name={user?.name ?? ""}
+            email={user?.email ?? ""}
+            credits={credits ?? null}
+          />
+        </div>
+      ) : (
+        <div data-animate="fade-up" className="landing-animate delay-300 mt-6 flex items-center gap-4 sm:mt-8">
+          <Button size="lg" className="animate-glow" asChild>
+            <Link href="/register">Create Your Event</Link>
+          </Button>
+          <Button size="lg" variant="outline" asChild>
+            <Link href="/login">Sign in</Link>
+          </Button>
+        </div>
+      )}
 
       {/* Scroll hint */}
       <div className="landing-animate delay-500 animate-bob absolute bottom-6 sm:bottom-8" data-animate="fade-up">

@@ -6,6 +6,7 @@ import {
   HttpStatus,
   UnauthorizedException,
   Get,
+  Patch,
   Param,
 } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
@@ -14,6 +15,7 @@ import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { ValidateDto } from "./dto/validate.dto";
 import { ChangePasswordDto } from "./dto/change-password.dto";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { Public } from "./decorators/public.decorator";
 import { CurrentUser } from "./decorators/current-user.decorator";
 
@@ -55,5 +57,15 @@ export class AuthController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async changePassword(@CurrentUser() user: SessionUser, @Body() dto: ChangePasswordDto) {
     await this.authService.changePassword(user.id, dto.currentPassword, dto.newPassword);
+  }
+
+  @Get("me")
+  async getMe(@CurrentUser() user: SessionUser) {
+    return this.authService.getProfile(user.id);
+  }
+
+  @Patch("me")
+  async updateMe(@CurrentUser() user: SessionUser, @Body() dto: UpdateProfileDto) {
+    return this.authService.updateProfile(user.id, dto);
   }
 }
