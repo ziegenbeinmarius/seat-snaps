@@ -28,7 +28,7 @@ export default async function HomePage({
 
   return (
     <main className="landing-bg">
-      <LandingHeader isLoggedIn={isLoggedIn} />
+      <LandingHeader isLoggedIn={isLoggedIn} user={session?.user ?? null} />
       <LandingShell>
         <HeroSection user={session?.user ?? null} />
         <SectionDivider variant="wave" />
