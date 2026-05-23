@@ -257,10 +257,10 @@
 
 /* ─── Easter egg: koala camera-flash animations ─────────────────────────── */
 
-/* Full-screen white flash — instant onset, slow fade */
+/* Oval camera flash — instant onset, slow fade; gradient bg handles the oval shape */
 @keyframes camera-flash {
   0%   { opacity: 0; }
-  6%   { opacity: 0.92; }
+  5%   { opacity: 1; }
   100% { opacity: 0; }
 }
 

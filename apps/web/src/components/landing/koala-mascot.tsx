@@ -76,10 +76,16 @@ export function KoalaMascot() {
 
   return (
     <div className="relative inline-block mb-3 sm:mb-6">
-      {/* ── Full-screen flash overlay ──────────────────────────────────── */}
+      {/* ── Full-screen flash overlay (oval radial gradient, fading edges) ── */}
       {flashing && (
         <div
-          className="pointer-events-none fixed inset-0 z-[9999] bg-white animate-camera-flash"
+          className="pointer-events-none fixed inset-0 z-[9999] animate-camera-flash"
+          style={{
+            /* Ellipse centered where the koala sits (~38% down the viewport).
+               White core fades smoothly to fully transparent — no hard rectangular edge. */
+            background:
+              "radial-gradient(ellipse 80% 62% at 50% 38%, rgba(255,255,255,0.97) 0%, rgba(255,255,255,0.72) 32%, rgba(255,255,255,0.22) 64%, transparent 84%)",
+          }}
           aria-hidden="true"
         />
       )}
