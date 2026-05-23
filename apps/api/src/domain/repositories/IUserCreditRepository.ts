@@ -5,6 +5,7 @@ export interface IUserCreditRepository {
   create(data: NewUserCredit): Promise<UserCredit>;
   incrementCredits(userId: string, amount: number): Promise<UserCredit>;
   consumeCredit(userId: string): Promise<UserCredit>;
+  consumeCreditAtomically(userId: string): Promise<boolean>;
   markFreeTrialUsed(userId: string): Promise<UserCredit>;
   grantTrialAtomically(userId: string): Promise<boolean>;
 }

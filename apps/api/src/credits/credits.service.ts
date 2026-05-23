@@ -40,11 +40,11 @@ export class CreditsService implements ICreditsService {
   }
 
   async consumeCredit(userId: string): Promise<void> {
-    const credit = await this.creditRepository.findByUserId(userId);
-    if (!credit || credit.totalCredits - credit.usedCredits <= 0) {
+    await this.ensureCreditsExist(userId);
+    const consumed = await this.creditRepository.consumeCreditAtomically(userId);
+    if (!consumed) {
       throw new BadRequestException("No available event credits");
     }
-    await this.creditRepository.consumeCredit(userId);
   }
 
   async grantFreeTrialIfEligible(userId: string): Promise<boolean> {
