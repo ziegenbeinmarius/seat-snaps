@@ -18,9 +18,6 @@ async function proxyRequest(
 
   const headers: Record<string, string> = {};
 
-  const contentType = request.headers.get("content-type");
-  if (contentType) headers["Content-Type"] = contentType;
-
   const jwt = await getSessionToken();
   if (jwt) headers["Authorization"] = `Bearer ${jwt}`;
 
@@ -36,10 +33,18 @@ async function proxyRequest(
   const xsrfHeader = request.headers.get(XSRF_HEADER);
   if (xsrfHeader) headers[XSRF_HEADER] = xsrfHeader;
 
-  const body =
+  // Read body only for methods that can carry one. Treat a zero-byte buffer as
+  // "no body" so we never forward Content-Type: application/json with an empty
+  // body — Fastify's JSON parser rejects that combination.
+  const rawBuffer =
     request.method !== "GET" && request.method !== "HEAD"
       ? await request.arrayBuffer()
       : undefined;
+  const body = rawBuffer?.byteLength ? rawBuffer : undefined;
+
+  // Only forward Content-Type when there is actually a body to describe.
+  const contentType = request.headers.get("content-type");
+  if (contentType && body !== undefined) headers["Content-Type"] = contentType;
 
   const upstream = await fetch(url.toString(), {
     method: request.method,

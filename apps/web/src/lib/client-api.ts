@@ -10,8 +10,11 @@ export async function clientFetch<T>(path: string, label: string, init?: Request
   const url = `/api/proxy${path}`;
   const method = init?.method ?? "GET";
 
+  // Only set Content-Type: application/json when there is a body — Fastify's
+  // JSON parser rejects requests that declare JSON content but send an empty body.
+  const hasBody = init?.body != null;
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    ...(hasBody ? { "Content-Type": "application/json" } : {}),
     ...(init?.headers as Record<string, string>),
   };
 
