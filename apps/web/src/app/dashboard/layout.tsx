@@ -1,12 +1,24 @@
 import React from "react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/require-auth";
+import { apiRequest } from "@/lib/api";
 import { APP_BACKGROUND } from "@/lib/event-helpers";
 import { CreditBalanceBadge } from "@/components/credits/credit-balance-badge";
 import { TrialWelcomeDialog } from "@/components/credits/trial-welcome-dialog";
+import type { CreditBalanceResponse } from "@seat-snaps/shared";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireAuth();
+
+  try {
+    const credits = await apiRequest<CreditBalanceResponse>("/credits");
+    if (credits.totalCredits === 0 && !credits.freeTrialUsed) {
+      redirect("/select-plan");
+    }
+  } catch {
+    // If credits can't be fetched, allow access rather than blocking
+  }
 
   return (
     <div
