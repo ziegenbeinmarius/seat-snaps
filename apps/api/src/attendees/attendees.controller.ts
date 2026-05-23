@@ -126,6 +126,10 @@ export class AttendeesController {
     @CurrentUser() user: SessionUser,
   ) {
     if (!body.csv) throw new BadRequestException("csv field is required");
+    const MAX_CSV_BYTES = 1_048_576; // 1 MB
+    if (Buffer.byteLength(body.csv, "utf8") > MAX_CSV_BYTES) {
+      throw new BadRequestException("CSV payload exceeds the 1 MB limit");
+    }
     return this.attendeesService.bulkImport(eventId, body.csv, user.id);
   }
 

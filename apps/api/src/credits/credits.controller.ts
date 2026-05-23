@@ -1,4 +1,5 @@
 import { Controller, Get, Post, ConflictException } from "@nestjs/common";
+import { Throttle } from "@nestjs/throttler";
 import { CreditsService } from "./credits.service";
 import { CurrentUser } from "../auth/decorators/current-user.decorator";
 import type { SessionUser } from "@seat-snaps/shared";
@@ -12,6 +13,7 @@ export class CreditsController {
     return this.creditsService.getBalance(user.id);
   }
 
+  @Throttle({ short: { ttl: 60_000, limit: 3 }, long: { ttl: 600_000, limit: 10 } })
   @Post("trial")
   async claimTrial(@CurrentUser() user: SessionUser) {
     const granted = await this.creditsService.grantFreeTrialIfEligible(user.id);
