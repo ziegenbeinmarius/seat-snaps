@@ -13,6 +13,7 @@ import { PRICING_TIER_REPOSITORY } from "../domain/repositories/IPricingTierRepo
 import { CreditsService } from "../credits/credits.service";
 import type { IPaymentService } from "./domain/IPaymentService";
 import type { PricingTierResponse, PaymentResponse } from "@seat-snaps/shared";
+import type { Payment } from "@seat-snaps/db";
 
 /**
  * PAYMENTS_MODE controls the payment flow:
@@ -143,18 +144,7 @@ export class PaymentsService implements IPaymentService {
     return payments.map((p) => this.toResponse(p));
   }
 
-  private toResponse(p: {
-    id: string;
-    userId: string;
-    tierId: string;
-    amount: number;
-    currency: string;
-    status: string;
-    creditsGranted: number;
-    paymentProvider: string | null;
-    providerPaymentId: string | null;
-    createdAt: Date;
-  }): PaymentResponse {
+  private toResponse(p: Payment): PaymentResponse {
     return {
       id: p.id,
       userId: p.userId,
