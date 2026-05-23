@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { NewEventForm } from "./new-event-form";
+import { NewEventForm } from "@/components/events/new-event-form";
 
 export const metadata: Metadata = { title: "New Event" };
 

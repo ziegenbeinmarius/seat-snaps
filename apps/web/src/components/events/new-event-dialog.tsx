@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { NewEventForm } from "@/app/dashboard/events/new/new-event-form";
+import { NewEventForm } from "@/components/events/new-event-form";
 import { PricingTiersDialog } from "@/components/credits/pricing-tiers-dialog";
 import { useCredits } from "@/lib/api/credits";
 
