@@ -105,7 +105,7 @@ export async function updateProfileAction(formData: FormData): Promise<ActionRes
 }
 
 export async function googleSignInAction(): Promise<void> {
-  await signIn("google", { redirectTo: "/dashboard" });
+  await signIn("google", { redirectTo: "/select-plan" });
 }
 
 export async function logoutAction(): Promise<void> {
