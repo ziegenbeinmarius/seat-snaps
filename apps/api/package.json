@@ -11,6 +11,9 @@
     "start": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
     "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "clean": "rm -rf dist"
   },
   "dependencies": {
@@ -44,6 +47,8 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.9",
     "@nestjs/schematics": "^10.2.3",
+    "@nestjs/testing": "^10.4.22",
+    "@swc/core": "^1.15.33",
     "@types/bcryptjs": "^3.0.0",
     "@types/node": "^20.17.0",
     "@types/qrcode": "^1.5.6",
@@ -52,6 +57,8 @@
     "prettier": "^3.4.2",
     "ts-loader": "^9.5.1",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "unplugin-swc": "^1.5.9",
+    "vitest": "^2.1.9"
   }
 }
