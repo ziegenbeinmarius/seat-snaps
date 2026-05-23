@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Route } from "next";
-import { CalendarDays, CheckCircle2, MapPin } from "lucide-react";
+import { CalendarDays, CheckCircle2, MapPin, Sparkles } from "lucide-react";
 import type { EventResponse } from "@seat-snaps/shared";
 import { getTypeGradient, getTypeLabel } from "@/lib/event-helpers";
 
@@ -25,6 +25,22 @@ function TypeBadge({ type }: { type: string }) {
   );
 }
 
+function TrialBadge() {
+  return (
+    <span
+      className="flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+      style={{
+        background: "hsl(43 90% 93%)",
+        color: "hsl(38 80% 35%)",
+        border: "1px solid hsl(43 60% 78%)",
+      }}
+    >
+      <Sparkles className="h-3 w-3" />
+      Trial
+    </span>
+  );
+}
+
 function GridCard({ event, href }: Omit<EventCardProps, "variant">) {
   return (
     <Link href={href as Route} className="group block">
@@ -43,6 +59,7 @@ function GridCard({ event, href }: Omit<EventCardProps, "variant">) {
             </h2>
             <div className="flex shrink-0 flex-col items-end gap-1">
               <TypeBadge type={event.type} />
+              {event.isFreeTrial && <TrialBadge />}
               {event.isFinished && (
                 <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                   <CheckCircle2 className="h-3 w-3" />
@@ -90,6 +107,7 @@ function ListCard({ event, href }: Omit<EventCardProps, "variant">) {
             </h2>
             <div className="flex shrink-0 flex-col items-end gap-1">
               <TypeBadge type={event.type} />
+              {event.isFreeTrial && <TrialBadge />}
               {event.isFinished && (
                 <span className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                   <CheckCircle2 className="h-3 w-3" />
