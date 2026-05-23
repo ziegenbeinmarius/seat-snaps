@@ -1,12 +1,15 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { registerAction, googleSignInAction } from "@/actions/auth";
 import type { ActionResult } from "@/actions/auth";
 
 const initialState: ActionResult | null = null;
 
 export function RegisterForm() {
+  const t = useTranslations("auth.register");
+  const tCommon = useTranslations("common");
   const [state, formAction, pending] = useActionState(
     async (_prev: ActionResult | null, formData: FormData) => registerAction(formData),
     initialState,
@@ -37,7 +40,7 @@ export function RegisterForm() {
               fill="#EA4335"
             />
           </svg>
-          Sign up with Google
+          {t("signUpWithGoogle")}
         </button>
       </form>
 
@@ -46,7 +49,7 @@ export function RegisterForm() {
           <div className="w-full border-t border-input" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
+          <span className="bg-background px-2 text-muted-foreground">{tCommon("or")}</span>
         </div>
       </div>
 
@@ -59,7 +62,7 @@ export function RegisterForm() {
 
         <div className="space-y-1">
           <label htmlFor="name" className="text-sm font-medium text-foreground">
-            Name
+            {t("nameLabel")}
           </label>
           <input
             id="name"
@@ -68,13 +71,13 @@ export function RegisterForm() {
             required
             autoComplete="name"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Your name"
+            placeholder={t("namePlaceholder")}
           />
         </div>
 
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email
+            {t("emailLabel")}
           </label>
           <input
             id="email"
@@ -83,13 +86,13 @@ export function RegisterForm() {
             required
             autoComplete="email"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="you@example.com"
+            placeholder={t("emailPlaceholder")}
           />
         </div>
 
         <div className="space-y-1">
           <label htmlFor="password" className="text-sm font-medium text-foreground">
-            Password
+            {t("passwordLabel")}
           </label>
           <input
             id="password"
@@ -99,7 +102,7 @@ export function RegisterForm() {
             autoComplete="new-password"
             minLength={8}
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="Min. 8 characters"
+            placeholder={t("passwordPlaceholder")}
           />
         </div>
 
@@ -108,7 +111,7 @@ export function RegisterForm() {
           disabled={pending}
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
         >
-          {pending ? "Creating account..." : "Create account"}
+          {pending ? t("creatingAccount") : t("createAccount")}
         </button>
       </form>
     </div>

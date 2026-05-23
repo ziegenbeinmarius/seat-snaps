@@ -1,12 +1,15 @@
 "use client";
 
 import { useActionState } from "react";
+import { useTranslations } from "next-intl";
 import { loginAction, googleSignInAction } from "@/actions/auth";
 import type { ActionResult } from "@/actions/auth";
 
 const initialState: ActionResult | null = null;
 
 export function LoginForm() {
+  const t = useTranslations("auth.login");
+  const tCommon = useTranslations("common");
   const [state, formAction, pending] = useActionState(
     async (_prev: ActionResult | null, formData: FormData) => loginAction(formData),
     initialState,
@@ -37,7 +40,7 @@ export function LoginForm() {
               fill="#EA4335"
             />
           </svg>
-          Sign in with Google
+          {t("signInWithGoogle")}
         </button>
       </form>
 
@@ -46,7 +49,7 @@ export function LoginForm() {
           <div className="w-full border-t border-input" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">or</span>
+          <span className="bg-background px-2 text-muted-foreground">{tCommon("or")}</span>
         </div>
       </div>
 
@@ -59,7 +62,7 @@ export function LoginForm() {
 
         <div className="space-y-1">
           <label htmlFor="email" className="text-sm font-medium text-foreground">
-            Email
+            {t("emailLabel")}
           </label>
           <input
             id="email"
@@ -68,13 +71,13 @@ export function LoginForm() {
             required
             autoComplete="email"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="you@example.com"
+            placeholder={t("emailPlaceholder")}
           />
         </div>
 
         <div className="space-y-1">
           <label htmlFor="password" className="text-sm font-medium text-foreground">
-            Password
+            {t("passwordLabel")}
           </label>
           <input
             id="password"
@@ -83,7 +86,7 @@ export function LoginForm() {
             required
             autoComplete="current-password"
             className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-            placeholder="••••••••"
+            placeholder={t("passwordPlaceholder")}
           />
         </div>
 
@@ -92,7 +95,7 @@ export function LoginForm() {
           disabled={pending}
           className="w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50"
         >
-          {pending ? "Signing in..." : "Sign in"}
+          {pending ? t("signingIn") : t("signIn")}
         </button>
       </form>
     </div>

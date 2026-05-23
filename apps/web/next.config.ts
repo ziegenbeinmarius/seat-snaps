@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 import { loadEnvConfig } from "@next/env";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import createNextIntlPlugin from "next-intl/plugin";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 loadEnvConfig(resolve(__dirname, "../.."));
@@ -104,4 +105,6 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+
+export default withNextIntl(nextConfig);

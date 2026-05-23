@@ -1,0 +1,517 @@
+{
+  "common": {
+    "save": "Speichern",
+    "saving": "Speichert…",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "back": "Zurück",
+    "loading": "Lädt…",
+    "tryAgain": "Erneut versuchen",
+    "remove": "Entfernen",
+    "create": "Erstellen",
+    "submit": "Absenden",
+    "close": "Schließen",
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "search": "Suchen",
+    "optional": "optional",
+    "required": "*",
+    "changessaved": "Änderungen gespeichert.",
+    "error": "Fehler",
+    "or": "oder",
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "yes": "Ja",
+    "no": "Nein",
+    "add": "Hinzufügen",
+    "assign": "Zuweisen",
+    "unassign": "Zuweisung aufheben",
+    "pending": "Ausstehend",
+    "confirmed": "Bestätigt",
+    "declined": "Abgelehnt",
+    "all": "Alle",
+    "none": "Keine",
+    "finished": "Abgeschlossen",
+    "trial": "Testversion",
+    "new": "Neu"
+  },
+  "nav": {
+    "signOut": "Abmelden",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "myProfile": "Mein Profil",
+    "signIn": "Anmelden",
+    "getStarted": "Loslegen"
+  },
+  "auth": {
+    "login": {
+      "title": "Bei Ihrem Konto anmelden",
+      "signInWithGoogle": "Mit Google anmelden",
+      "signIn": "Anmelden",
+      "signingIn": "Anmeldung läuft...",
+      "noAccount": "Kein Konto?",
+      "signUp": "Registrieren",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "emailPlaceholder": "sie@beispiel.de",
+      "passwordPlaceholder": "••••••••"
+    },
+    "register": {
+      "title": "Konto erstellen",
+      "signUpWithGoogle": "Mit Google registrieren",
+      "createAccount": "Konto erstellen",
+      "creatingAccount": "Konto wird erstellt...",
+      "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+      "signIn": "Anmelden",
+      "nameLabel": "Name",
+      "emailLabel": "E-Mail",
+      "passwordLabel": "Passwort",
+      "namePlaceholder": "Ihr Name",
+      "emailPlaceholder": "sie@beispiel.de",
+      "passwordPlaceholder": "Mind. 8 Zeichen"
+    },
+    "logout": {
+      "title": "Abmelden",
+      "description": "Dadurch wird Ihre Sitzung beendet und Sie werden zur Anmeldung weitergeleitet.",
+      "signOut": "Abmelden"
+    }
+  },
+  "landing": {
+    "hero": {
+      "tagline": "Ihr Event, wunderschön festgehalten",
+      "subtitle": "Tischpläne, Fototeilen und ein Gästeverzeichnis — alles an einem Ort.",
+      "goToDashboard": "Zum Dashboard",
+      "myProfile": "Mein Profil",
+      "createEvent": "Event erstellen",
+      "signIn": "Anmelden"
+    },
+    "features": {
+      "heading": "Alles, was Ihr Event braucht",
+      "subheading": "Von der Gästeliste bis zum letzten Foto — SeatSnaps deckt jedes Detail ab, damit Sie sich auf das Feiern konzentrieren können.",
+      "seatingPlans": {
+        "title": "Tischpläne",
+        "description": "Drag-and-Drop-Tischlayouts, die Ihre Gäste auf ihren Handys abrufen können."
+      },
+      "photoSharing": {
+        "title": "Fototeilen",
+        "description": "Gäste fotografieren und teilen Momente in einer gemeinsamen Galerie."
+      },
+      "guestDirectory": {
+        "title": "Gästeverzeichnis",
+        "description": "Eine durchsuchbare Liste, damit Teilnehmer miteinander in Kontakt treten können."
+      },
+      "liveBroadcasts": {
+        "title": "Live-Broadcasts",
+        "description": "Senden Sie Echtzeit-Ankündigungen und Updates auf die Bildschirme aller Gäste."
+      }
+    },
+    "footer": "Alle Rechte vorbehalten."
+  },
+  "errors": {
+    "somethingWrong": "Etwas ist schiefgelaufen",
+    "unexpectedError": "Ein unerwarteter Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
+    "unexpectedErrorWithMsg": "Ein unerwarteter Fehler ist aufgetreten.",
+    "pageNotFound": "Seite nicht gefunden",
+    "pageNotFoundDesc": "Die gesuchte Seite existiert nicht.",
+    "backToDashboard": "Zurück zum Dashboard",
+    "couldNotLoad": "Events konnten nicht geladen werden",
+    "404": "404"
+  },
+  "dashboard": {
+    "myEvents": "Meine Events",
+    "myEventsSubtitle": "Events, die Sie besitzen oder mitorganisieren",
+    "noEvents": "Noch keine Events. Erstellen Sie Ihr erstes Event, um loszulegen.",
+    "signedInAs": "Angemeldet als",
+    "loading": "Lädt…"
+  },
+  "event": {
+    "types": {
+      "wedding": "Hochzeit",
+      "birthday": "Geburtstag",
+      "corporate": "Unternehmen",
+      "other": "Sonstiges",
+      "event": "Event"
+    },
+    "tabs": {
+      "overview": "Übersicht",
+      "team": "Team",
+      "attendees": "Teilnehmer",
+      "seating": "Sitzplan",
+      "photos": "Fotos",
+      "theme": "Thema",
+      "schedule": "Zeitplan",
+      "broadcasts": "Broadcasts"
+    },
+    "backToEvents": "Events",
+    "organizerView": "Veranstalteransicht",
+    "overview": {
+      "details": "Details",
+      "description": "Beschreibung",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "location": "Ort",
+      "timezone": "Zeitzone",
+      "seating": "Sitzplan",
+      "rsvp": "RSVP",
+      "ends": "Endet",
+      "assignedSeating": "Zugewiesene Plätze",
+      "noSeatingPlan": "Kein Sitzplan",
+      "pending": "{count} ausstehend",
+      "awaitingApproval": "wartet auf Genehmigung",
+      "markAsFinished": "Als abgeschlossen markieren",
+      "reopenEvent": "Event wieder öffnen",
+      "finished": "Abgeschlossen",
+      "editEvent": "Event bearbeiten",
+      "saveChanges": "Änderungen speichern",
+      "markEventFinished": "Event als abgeschlossen markieren?",
+      "markEventFinishedDesc": "Dies markiert das Event als abgeschlossen. Sie können es danach noch bearbeiten.",
+      "reopenEventTitle": "Dieses Event wieder öffnen?",
+      "reopenEventDesc": "Dies markiert das Event wieder als aktiv.",
+      "reopen": "Wieder öffnen",
+      "form": {
+        "title": "Titel",
+        "titleRequired": "Titel *",
+        "description": "Beschreibung",
+        "descriptionPlaceholder": "Eine kurze Beschreibung…",
+        "startDate": "Startdatum *",
+        "endDate": "Enddatum",
+        "location": "Ort",
+        "locationPlaceholder": "Name des Veranstaltungsorts oder Adresse",
+        "timezone": "Zeitzone",
+        "timezonePlaceholder": "Europe/Berlin",
+        "type": "Typ *",
+        "selectType": "Typ auswählen…",
+        "assignedSeating": "Zugewiesene Plätze",
+        "assignedSeatingDesc": "Teilnehmer werden bestimmten Tischen und Plätzen zugewiesen.",
+        "assignedSeatingWarning": "Warnung: Dieses Event hat bereits {count} Tisch. Das Deaktivieren des Sitzplans hinterlässt vorhandene Tischdaten.",
+        "assignedSeatingWarningPlural": "Warnung: Dieses Event hat bereits {count} Tische. Das Deaktivieren des Sitzplans hinterlässt vorhandene Tischdaten.",
+        "rsvpSelfReg": "RSVP / Selbstregistrierung",
+        "rsvpSelfRegDesc": "Gäste können sich selbst registrieren. Neue Anmeldungen erscheinen als ausstehend, bis sie genehmigt werden.",
+        "rsvpQrCode": "QR-Code"
+      }
+    },
+    "new": {
+      "pageTitle": "Neues Event",
+      "createEvent": "Event erstellen",
+      "creating": "Erstellt…",
+      "titlePlaceholder": "Hochzeitsempfang",
+      "rsvpSelfReg": "RSVP-Selbstregistrierung",
+      "rsvpSelfRegDesc": "Gäste können sich über einen öffentlichen RSVP-Link selbst registrieren."
+    },
+    "team": {
+      "members": "Mitglieder",
+      "inviteOrganiser": "Veranstalter einladen",
+      "inviteTitle": "Veranstalter einladen",
+      "inviteEmail": "E-Mail-Adresse",
+      "inviteExpiry": "Läuft ab in (Tagen)",
+      "sendInvite": "Einladung senden",
+      "sending": "Sendet…",
+      "copyLink": "Link kopieren",
+      "pendingInvites": "Ausstehende Einladungen",
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "status": "Status",
+        "expiresAt": "Läuft ab"
+      }
+    },
+    "attendees": {
+      "addAttendee": "Teilnehmer hinzufügen",
+      "importCsv": "CSV importieren",
+      "exportCsv": "CSV exportieren",
+      "addTitle": "Teilnehmer hinzufügen",
+      "editTitle": "Teilnehmer bearbeiten",
+      "deleteTitle": "Teilnehmer löschen?",
+      "deleteDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "fields": {
+        "name": "Name *",
+        "email": "E-Mail",
+        "groupLabel": "Gruppe / Bezeichnung",
+        "description": "Über",
+        "conversationStarters": "Gesprächsstarter"
+      },
+      "placeholders": {
+        "name": "Vollständiger Name",
+        "email": "email@beispiel.de",
+        "groupLabel": "z.B. Familie, Kollegen",
+        "description": "Kurze Bio oder Notiz",
+        "conversationStarters": "Einer pro Zeile, z.B.: Reisen\nKaffee\nMusik"
+      },
+      "status": {
+        "all": "Alle",
+        "pending": "Ausstehend",
+        "confirmed": "Bestätigt",
+        "declined": "Abgelehnt"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "E-Mail",
+        "table": "Tisch",
+        "seat": "Platz",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "noAttendees": "Noch keine Teilnehmer.",
+      "noAttendeesFiltered": "Keine Teilnehmer entsprechen dem aktuellen Filter.",
+      "unassigned": "Nicht zugewiesen",
+      "showQr": "QR anzeigen",
+      "confirmBulkApprove": "{count} ausstehende Teilnehmer genehmigen?",
+      "confirmBulkDecline": "Ausgewählte Teilnehmer ablehnen?",
+      "approve": "Genehmigen",
+      "approveAll": "Alle ausstehenden genehmigen",
+      "decline": "Ablehnen",
+      "bulkActions": "Massenaktionen",
+      "selected": "{count} ausgewählt",
+      "qrDialogTitle": "QR-Code des Teilnehmers",
+      "qrScanInstructions": "Scannen zum Event beitreten"
+    },
+    "seating": {
+      "layout": "Layout",
+      "list": "Liste",
+      "view": "Ansicht:",
+      "addTable": "Tisch hinzufügen",
+      "tableName": "Tischname",
+      "capacity": "Kapazität",
+      "createTable": "Tisch erstellen",
+      "deleteTable": "Diesen Tisch und alle Plätze löschen?",
+      "assignSeat": "Platz zuweisen",
+      "assignAttendee": "Teilnehmer zuweisen",
+      "selectAttendee": "Teilnehmer auswählen…",
+      "noUnassigned": "Alle Teilnehmer sind zugewiesen.",
+      "unassigned": "Nicht zugewiesen",
+      "seat": "Platz",
+      "qrPage": {
+        "title": "QR-Codes der Teilnehmer",
+        "download": "Alle QR-Codes herunterladen",
+        "description": "Jeder Teilnehmer hat einen eindeutigen QR-Code. Drucken oder teilen Sie diese Codes, damit Gäste einchecken können."
+      }
+    },
+    "schedule": {
+      "addItem": "Punkt hinzufügen",
+      "editItem": "Punkt bearbeiten",
+      "deleteTitle": "Zeitplanpunkt löschen?",
+      "deleteDesc": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "fields": {
+        "title": "Titel *",
+        "description": "Beschreibung",
+        "startTime": "Startzeit *",
+        "endTime": "Endzeit",
+        "location": "Ort"
+      },
+      "noItems": "Noch keine Zeitplanpunkte."
+    },
+    "broadcasts": {
+      "send": "Broadcast senden",
+      "title": "Titel",
+      "message": "Nachricht",
+      "sending": "Sendet…",
+      "noHistory": "Noch keine Broadcasts gesendet.",
+      "history": "Broadcast-Verlauf"
+    },
+    "photos": {
+      "title": "Fotos",
+      "approve": "Genehmigen",
+      "reject": "Ablehnen",
+      "noPhotos": "Noch keine Fotos.",
+      "pendingModeration": "Ausstehende Moderation",
+      "approved": "Genehmigt"
+    },
+    "theme": {
+      "title": "Event-Thema",
+      "primaryColor": "Primärfarbe",
+      "secondaryColor": "Sekundärfarbe",
+      "accentColor": "Akzentfarbe",
+      "textColor": "Textfarbe",
+      "fontFamily": "Schriftfamilie",
+      "buttonRadius": "Schaltflächen-Radius",
+      "headerStyle": "Kopfzeilenstil",
+      "customCss": "Benutzerdefiniertes CSS",
+      "logoUrl": "Logo-URL",
+      "backgroundUrl": "Hintergrund-URL",
+      "saveTheme": "Thema speichern",
+      "resetTheme": "Auf Standard zurücksetzen"
+    }
+  },
+  "attendeeApp": {
+    "nav": {
+      "home": "Start",
+      "schedule": "Zeitplan",
+      "guests": "Gäste",
+      "seating": "Sitzplan",
+      "photos": "Fotos",
+      "news": "News"
+    },
+    "home": {
+      "welcome": "Willkommen, {name}!",
+      "schedule": "Zeitplan",
+      "happeningNow": "Jetzt",
+      "upNext": "Als nächstes",
+      "mySeat": "Mein Platz",
+      "seat": "Platz {label}",
+      "alsoAtYourTable": "Auch an Ihrem Tisch",
+      "about": "Über"
+    },
+    "schedule": {
+      "title": "Zeitplan",
+      "noItems": "Noch kein Zeitplan.",
+      "allDay": "Ganztägig"
+    },
+    "guests": {
+      "title": "Gäste",
+      "search": "Gäste suchen…",
+      "noGuests": "Noch keine Gäste."
+    },
+    "seating": {
+      "title": "Sitzplan",
+      "yourTable": "Ihr Tisch",
+      "findSeat": "Ihren Platz finden",
+      "notAssigned": "Ihnen wurde noch kein Platz zugewiesen."
+    },
+    "photos": {
+      "title": "Fotos",
+      "upload": "Foto hochladen",
+      "takePhoto": "Foto aufnehmen",
+      "noPhotos": "Noch keine Fotos. Seien Sie der Erste, der einen Moment teilt!",
+      "uploading": "Lädt hoch…"
+    },
+    "announcements": {
+      "title": "Ankündigungen",
+      "noAnnouncements": "Noch keine Ankündigungen."
+    },
+    "profile": {
+      "title": "Mein Profil",
+      "conversationStarters": "Gesprächsstarter",
+      "about": "Über"
+    },
+    "pendingBanner": "Ihre Anmeldung wartet auf Genehmigung.",
+    "highlights": "Highlights"
+  },
+  "join": {
+    "invited": "Sie sind eingeladen",
+    "scanQr": "Scannen Sie Ihren persönlichen QR-Code zum Beitreten",
+    "notOnList": "Noch nicht auf der Liste?",
+    "registerAsNew": "Als neuer Teilnehmer registrieren →",
+    "rsvpTitle": "Für dieses Event registrieren",
+    "back": "← Zurück",
+    "fields": {
+      "name": "Name",
+      "email": "E-Mail",
+      "aboutYou": "Über Sie",
+      "conversationStarters": "Gesprächsstarter"
+    },
+    "placeholders": {
+      "name": "Ihr vollständiger Name",
+      "email": "sie@beispiel.de",
+      "aboutYou": "Erzählen Sie uns etwas über sich",
+      "starter": "z.B. Reisen"
+    },
+    "conversationStartersHint": "Worüber unterhalten Sie sich gerne?",
+    "addAnother": "Weiteren hinzufügen",
+    "registerButton": "Für Event registrieren →",
+    "registering": "Registriert…",
+    "successMessage": "Sie sind registriert! Der Veranstalter bestätigt Ihren Platz.",
+    "validation": {
+      "nameRequired": "Name ist erforderlich",
+      "emailRequired": "E-Mail ist erforderlich",
+      "emailInvalid": "Gültige E-Mail-Adresse eingeben",
+      "descriptionTooLong": "Maximal 200 Zeichen",
+      "registrationFailed": "Registrierung fehlgeschlagen. Bitte versuchen Sie es erneut."
+    },
+    "invalid": {
+      "title": "Ungültiger oder abgelaufener QR-Code",
+      "description": "Dieser QR-Code ist nicht mehr gültig. Bitten Sie einen Veranstalter, einen neuen Link oder QR-Code zu teilen.",
+      "goHome": "Zur Startseite"
+    }
+  },
+  "invite": {
+    "title": "Sie wurden eingeladen beizutreten",
+    "accept": "Einladung annehmen",
+    "accepting": "Wird angenommen…",
+    "expired": "Diese Einladung ist abgelaufen oder ungültig.",
+    "success": "Einladung angenommen! Weiterleitung…",
+    "invitedTitle": "Sie wurden eingeladen",
+    "invitedDesc": "Sie wurden eingeladen, als Veranstalter beizutreten.",
+    "createAccountDesc": "Erstellen Sie ein Konto, um als Veranstalter beizutreten.",
+    "createAccount": "Konto erstellen",
+    "createAndAccept": "Konto erstellen & Einladung annehmen",
+    "creating": "Konto wird erstellt…",
+    "alreadyHaveAccount": "Haben Sie bereits ein Konto?",
+    "signIn": "Anmelden",
+    "role": "Rolle",
+    "expires": "Einladung läuft ab",
+    "loading": "Einladung wird geladen…",
+    "invalid": "Ungültige oder abgelaufene Einladung",
+    "goToLogin": "Zur Anmeldung"
+  },
+  "organizer": {
+    "myEvents": "Meine Events",
+    "back": "Zurück"
+  },
+  "admin": {
+    "title": "Admin",
+    "users": "Benutzer",
+    "events": "Events",
+    "overview": "Übersicht",
+    "columns": {
+      "name": "Name",
+      "email": "E-Mail",
+      "role": "Rolle",
+      "createdAt": "Erstellt",
+      "status": "Status",
+      "type": "Typ",
+      "date": "Datum",
+      "owner": "Besitzer"
+    }
+  },
+  "credits": {
+    "balance": "{count} Guthaben",
+    "balance_plural": "{count} Guthaben",
+    "upgrade": "Upgraden",
+    "managePlan": "Plan verwalten",
+    "free": "Kostenlos",
+    "trialWelcome": {
+      "title": "Willkommen bei SeatSnaps!",
+      "description": "Sie haben ein kostenloses Test-Event, um alle Funktionen zu erkunden.",
+      "dismiss": "Verstanden"
+    },
+    "upgradeBanner": {
+      "title": "Kein Guthaben mehr",
+      "description": "Kaufen Sie Guthaben, um weitere Events zu erstellen.",
+      "cta": "Pläne anzeigen"
+    }
+  },
+  "selectPlan": {
+    "title": "Plan auswählen",
+    "subtitle": "Wählen Sie einen Plan, um Events zu erstellen",
+    "back": "Zurück zum Dashboard"
+  },
+  "checkout": {
+    "title": "Kasse",
+    "processing": "Verarbeitet…",
+    "back": "Zurück"
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Anzeigename",
+    "saveChanges": "Änderungen speichern",
+    "saving": "Speichert…",
+    "profileDetails": "Profildetails",
+    "changePassword": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "updatePassword": "Passwort aktualisieren",
+    "updating": "Aktualisiert…",
+    "updatedSuccessfully": "Profil erfolgreich aktualisiert.",
+    "passwordChanged": "Passwort erfolgreich geändert."
+  },
+  "languageSwitcher": {
+    "label": "Sprache",
+    "en": "English",
+    "sv": "Svenska",
+    "de": "Deutsch"
+  }
+}

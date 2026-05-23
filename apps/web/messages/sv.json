@@ -1,0 +1,517 @@
+{
+  "common": {
+    "save": "Spara",
+    "saving": "Sparar…",
+    "cancel": "Avbryt",
+    "confirm": "Bekräfta",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "back": "Tillbaka",
+    "loading": "Laddar…",
+    "tryAgain": "Försök igen",
+    "remove": "Ta bort",
+    "create": "Skapa",
+    "submit": "Skicka",
+    "close": "Stäng",
+    "name": "Namn",
+    "email": "E-post",
+    "password": "Lösenord",
+    "search": "Sök",
+    "optional": "valfritt",
+    "required": "*",
+    "changessaved": "Ändringar sparade.",
+    "error": "Fel",
+    "or": "eller",
+    "copied": "Kopierat",
+    "copy": "Kopiera",
+    "yes": "Ja",
+    "no": "Nej",
+    "add": "Lägg till",
+    "assign": "Tilldela",
+    "unassign": "Avtilldela",
+    "pending": "Väntande",
+    "confirmed": "Bekräftad",
+    "declined": "Avböjd",
+    "all": "Alla",
+    "none": "Ingen",
+    "finished": "Avslutad",
+    "trial": "Provperiod",
+    "new": "Ny"
+  },
+  "nav": {
+    "signOut": "Logga ut",
+    "admin": "Admin",
+    "dashboard": "Instrumentpanel",
+    "myProfile": "Min profil",
+    "signIn": "Logga in",
+    "getStarted": "Kom igång"
+  },
+  "auth": {
+    "login": {
+      "title": "Logga in på ditt konto",
+      "signInWithGoogle": "Logga in med Google",
+      "signIn": "Logga in",
+      "signingIn": "Loggar in...",
+      "noAccount": "Har du inget konto?",
+      "signUp": "Registrera dig",
+      "emailLabel": "E-post",
+      "passwordLabel": "Lösenord",
+      "emailPlaceholder": "du@exempel.se",
+      "passwordPlaceholder": "••••••••"
+    },
+    "register": {
+      "title": "Skapa ditt konto",
+      "signUpWithGoogle": "Registrera dig med Google",
+      "createAccount": "Skapa konto",
+      "creatingAccount": "Skapar konto...",
+      "alreadyHaveAccount": "Har du redan ett konto?",
+      "signIn": "Logga in",
+      "nameLabel": "Namn",
+      "emailLabel": "E-post",
+      "passwordLabel": "Lösenord",
+      "namePlaceholder": "Ditt namn",
+      "emailPlaceholder": "du@exempel.se",
+      "passwordPlaceholder": "Min. 8 tecken"
+    },
+    "logout": {
+      "title": "Logga ut",
+      "description": "Detta rensar din session och tar dig tillbaka till inloggning.",
+      "signOut": "Logga ut"
+    }
+  },
+  "landing": {
+    "hero": {
+      "tagline": "Ditt evenemang, vackert gestaltat",
+      "subtitle": "Bordsplaceringar, fotodeling och en gästkatalog — allt på ett ställe.",
+      "goToDashboard": "Gå till instrumentpanelen",
+      "myProfile": "Min profil",
+      "createEvent": "Skapa ditt evenemang",
+      "signIn": "Logga in"
+    },
+    "features": {
+      "heading": "Allt ditt evenemang behöver",
+      "subheading": "Från gästlistan till sista fotot — SeatSnaps täcker varje detalj så att du kan fokusera på firandet.",
+      "seatingPlans": {
+        "title": "Bordsplaceringar",
+        "description": "Dra-och-släpp-bordslayouter som dina gäster kan bläddra i på sina telefoner."
+      },
+      "photoSharing": {
+        "title": "Fotodelning",
+        "description": "Gäster tar och delar ögonblick i ett gemensamt evenemangsgalleri."
+      },
+      "guestDirectory": {
+        "title": "Gästkatalog",
+        "description": "En sökbar lista så att deltagarna kan kontakta varandra."
+      },
+      "liveBroadcasts": {
+        "title": "Live-sändningar",
+        "description": "Skicka realtidsmeddelanden och uppdateringar till varje gästs skärm."
+      }
+    },
+    "footer": "Alla rättigheter förbehållna."
+  },
+  "errors": {
+    "somethingWrong": "Något gick fel",
+    "unexpectedError": "Ett oväntat fel inträffade. Försök igen.",
+    "unexpectedErrorWithMsg": "Ett oväntat fel inträffade.",
+    "pageNotFound": "Sidan hittades inte",
+    "pageNotFoundDesc": "Sidan du letar efter finns inte.",
+    "backToDashboard": "Tillbaka till instrumentpanelen",
+    "couldNotLoad": "Kunde inte ladda evenemang",
+    "404": "404"
+  },
+  "dashboard": {
+    "myEvents": "Mina evenemang",
+    "myEventsSubtitle": "Evenemang du äger eller hjälper till att organisera",
+    "noEvents": "Inga evenemang ännu. Skapa ditt första evenemang för att komma igång.",
+    "signedInAs": "Inloggad som",
+    "loading": "Laddar…"
+  },
+  "event": {
+    "types": {
+      "wedding": "Bröllop",
+      "birthday": "Födelsedag",
+      "corporate": "Företag",
+      "other": "Övrigt",
+      "event": "Evenemang"
+    },
+    "tabs": {
+      "overview": "Översikt",
+      "team": "Team",
+      "attendees": "Deltagare",
+      "seating": "Bordsplacering",
+      "photos": "Foton",
+      "theme": "Tema",
+      "schedule": "Schema",
+      "broadcasts": "Sändningar"
+    },
+    "backToEvents": "Evenemang",
+    "organizerView": "Arrangörsvy",
+    "overview": {
+      "details": "Detaljer",
+      "description": "Beskrivning",
+      "date": "Datum",
+      "time": "Tid",
+      "location": "Plats",
+      "timezone": "Tidszon",
+      "seating": "Bordsplacering",
+      "rsvp": "RSVP",
+      "ends": "Slutar",
+      "assignedSeating": "Tilldelad bordsplacering",
+      "noSeatingPlan": "Ingen bordsplacering",
+      "pending": "{count} väntande",
+      "awaitingApproval": "väntar på godkännande",
+      "markAsFinished": "Markera som avslutad",
+      "reopenEvent": "Öppna evenemang igen",
+      "finished": "Avslutad",
+      "editEvent": "Redigera evenemang",
+      "saveChanges": "Spara ändringar",
+      "markEventFinished": "Markera evenemanget som avslutat?",
+      "markEventFinishedDesc": "Detta markerar evenemanget som slutfört. Du kan fortfarande redigera det efteråt.",
+      "reopenEventTitle": "Öppna detta evenemang igen?",
+      "reopenEventDesc": "Detta markerar evenemanget som aktivt igen.",
+      "reopen": "Öppna igen",
+      "form": {
+        "title": "Titel",
+        "titleRequired": "Titel *",
+        "description": "Beskrivning",
+        "descriptionPlaceholder": "En kort beskrivning…",
+        "startDate": "Startdatum *",
+        "endDate": "Slutdatum",
+        "location": "Plats",
+        "locationPlaceholder": "Namn på lokal eller adress",
+        "timezone": "Tidszon",
+        "timezonePlaceholder": "Europe/Stockholm",
+        "type": "Typ *",
+        "selectType": "Välj typ…",
+        "assignedSeating": "Tilldelad bordsplacering",
+        "assignedSeatingDesc": "Deltagarna tilldelas specifika bord och platser.",
+        "assignedSeatingWarning": "Varning: detta evenemang har redan {count} bord. Om du inaktiverar bordsplacering lämnas befintlig bordsdata kvar.",
+        "assignedSeatingWarningPlural": "Varning: detta evenemang har redan {count} bord. Om du inaktiverar bordsplacering lämnas befintlig bordsdata kvar.",
+        "rsvpSelfReg": "RSVP / Självregistrering",
+        "rsvpSelfRegDesc": "Låt gäster registrera sig själva. Nya anmälningar visas som väntande tills de godkänns.",
+        "rsvpQrCode": "QR-kod"
+      }
+    },
+    "new": {
+      "pageTitle": "Nytt evenemang",
+      "createEvent": "Skapa evenemang",
+      "creating": "Skapar…",
+      "titlePlaceholder": "Bröllopsmottagning",
+      "rsvpSelfReg": "RSVP-självregistrering",
+      "rsvpSelfRegDesc": "Gäster kan registrera sig via en offentlig RSVP-länk."
+    },
+    "team": {
+      "members": "Medlemmar",
+      "inviteOrganiser": "Bjud in arrangör",
+      "inviteTitle": "Bjud in arrangör",
+      "inviteEmail": "E-postadress",
+      "inviteExpiry": "Upphör om (dagar)",
+      "sendInvite": "Skicka inbjudan",
+      "sending": "Skickar…",
+      "copyLink": "Kopiera länk",
+      "pendingInvites": "Väntande inbjudningar",
+      "columns": {
+        "name": "Namn",
+        "email": "E-post",
+        "role": "Roll",
+        "status": "Status",
+        "expiresAt": "Upphör"
+      }
+    },
+    "attendees": {
+      "addAttendee": "Lägg till deltagare",
+      "importCsv": "Importera CSV",
+      "exportCsv": "Exportera CSV",
+      "addTitle": "Lägg till deltagare",
+      "editTitle": "Redigera deltagare",
+      "deleteTitle": "Ta bort deltagare?",
+      "deleteDesc": "Denna åtgärd kan inte ångras.",
+      "fields": {
+        "name": "Namn *",
+        "email": "E-post",
+        "groupLabel": "Grupp / Etikett",
+        "description": "Om",
+        "conversationStarters": "Samtalsstartare"
+      },
+      "placeholders": {
+        "name": "Fullständigt namn",
+        "email": "email@example.com",
+        "groupLabel": "t.ex. Familj, Kollegor",
+        "description": "Kort bio eller anteckning",
+        "conversationStarters": "En per rad, t.ex.: Resor\nKaffe\nMusik"
+      },
+      "status": {
+        "all": "Alla",
+        "pending": "Väntande",
+        "confirmed": "Bekräftad",
+        "declined": "Avböjd"
+      },
+      "columns": {
+        "name": "Namn",
+        "email": "E-post",
+        "table": "Bord",
+        "seat": "Plats",
+        "status": "Status",
+        "actions": "Åtgärder"
+      },
+      "noAttendees": "Inga deltagare ännu.",
+      "noAttendeesFiltered": "Inga deltagare matchar det aktuella filtret.",
+      "unassigned": "Otilldelad",
+      "showQr": "Visa QR",
+      "confirmBulkApprove": "Godkänn {count} väntande deltagare?",
+      "confirmBulkDecline": "Avböj valda deltagare?",
+      "approve": "Godkänn",
+      "approveAll": "Godkänn alla väntande",
+      "decline": "Avböj",
+      "bulkActions": "Massåtgärder",
+      "selected": "{count} valda",
+      "qrDialogTitle": "Deltagarens QR-kod",
+      "qrScanInstructions": "Skanna för att gå med i evenemanget"
+    },
+    "seating": {
+      "layout": "Layout",
+      "list": "Lista",
+      "view": "Vy:",
+      "addTable": "Lägg till bord",
+      "tableName": "Bordsnamn",
+      "capacity": "Kapacitet",
+      "createTable": "Skapa bord",
+      "deleteTable": "Ta bort detta bord och alla dess platser?",
+      "assignSeat": "Tilldela plats",
+      "assignAttendee": "Tilldela deltagare",
+      "selectAttendee": "Välj deltagare…",
+      "noUnassigned": "Alla deltagare är tilldelade.",
+      "unassigned": "Otilldelad",
+      "seat": "Plats",
+      "qrPage": {
+        "title": "Deltagarnas QR-koder",
+        "download": "Ladda ner alla QR-koder",
+        "description": "Varje deltagare har en unik QR-kod. Skriv ut eller dela dessa koder så att gäster kan checka in."
+      }
+    },
+    "schedule": {
+      "addItem": "Lägg till punkt",
+      "editItem": "Redigera punkt",
+      "deleteTitle": "Ta bort schemapunkt?",
+      "deleteDesc": "Denna åtgärd kan inte ångras.",
+      "fields": {
+        "title": "Titel *",
+        "description": "Beskrivning",
+        "startTime": "Starttid *",
+        "endTime": "Sluttid",
+        "location": "Plats"
+      },
+      "noItems": "Inga schemapunkter ännu."
+    },
+    "broadcasts": {
+      "send": "Skicka sändning",
+      "title": "Titel",
+      "message": "Meddelande",
+      "sending": "Skickar…",
+      "noHistory": "Inga sändningar skickade ännu.",
+      "history": "Sändningshistorik"
+    },
+    "photos": {
+      "title": "Foton",
+      "approve": "Godkänn",
+      "reject": "Avvisa",
+      "noPhotos": "Inga foton ännu.",
+      "pendingModeration": "Väntar på granskning",
+      "approved": "Godkänd"
+    },
+    "theme": {
+      "title": "Evenemangets tema",
+      "primaryColor": "Primärfärg",
+      "secondaryColor": "Sekundärfärg",
+      "accentColor": "Accentfärg",
+      "textColor": "Textfärg",
+      "fontFamily": "Teckensnittsfamilj",
+      "buttonRadius": "Knappradie",
+      "headerStyle": "Rubrikstil",
+      "customCss": "Anpassad CSS",
+      "logoUrl": "Logo-URL",
+      "backgroundUrl": "Bakgrunds-URL",
+      "saveTheme": "Spara tema",
+      "resetTheme": "Återställ till standard"
+    }
+  },
+  "attendeeApp": {
+    "nav": {
+      "home": "Hem",
+      "schedule": "Schema",
+      "guests": "Gäster",
+      "seating": "Bordsplacering",
+      "photos": "Foton",
+      "news": "Nyheter"
+    },
+    "home": {
+      "welcome": "Välkommen, {name}!",
+      "schedule": "Schema",
+      "happeningNow": "Pågår nu",
+      "upNext": "Härnäst",
+      "mySeat": "Min plats",
+      "seat": "Plats {label}",
+      "alsoAtYourTable": "Också vid ditt bord",
+      "about": "Om"
+    },
+    "schedule": {
+      "title": "Schema",
+      "noItems": "Inget schema ännu.",
+      "allDay": "Hela dagen"
+    },
+    "guests": {
+      "title": "Gäster",
+      "search": "Sök gäster…",
+      "noGuests": "Inga gäster ännu."
+    },
+    "seating": {
+      "title": "Bordsplacering",
+      "yourTable": "Ditt bord",
+      "findSeat": "Hitta din plats",
+      "notAssigned": "Du har inte tilldelats en plats ännu."
+    },
+    "photos": {
+      "title": "Foton",
+      "upload": "Ladda upp foto",
+      "takePhoto": "Ta foto",
+      "noPhotos": "Inga foton ännu. Var den första att dela ett ögonblick!",
+      "uploading": "Laddar upp…"
+    },
+    "announcements": {
+      "title": "Meddelanden",
+      "noAnnouncements": "Inga meddelanden ännu."
+    },
+    "profile": {
+      "title": "Min profil",
+      "conversationStarters": "Samtalsstartare",
+      "about": "Om"
+    },
+    "pendingBanner": "Din registrering väntar på godkännande.",
+    "highlights": "Höjdpunkter"
+  },
+  "join": {
+    "invited": "Du är inbjuden",
+    "scanQr": "Skanna din personliga QR-kod för att gå med",
+    "notOnList": "Inte på listan ännu?",
+    "registerAsNew": "Registrera dig som ny deltagare →",
+    "rsvpTitle": "Registrera dig för detta evenemang",
+    "back": "← Tillbaka",
+    "fields": {
+      "name": "Namn",
+      "email": "E-post",
+      "aboutYou": "Om dig",
+      "conversationStarters": "Samtalsstartare"
+    },
+    "placeholders": {
+      "name": "Ditt fullständiga namn",
+      "email": "du@exempel.se",
+      "aboutYou": "Berätta lite om dig själv",
+      "starter": "t.ex. Resor"
+    },
+    "conversationStartersHint": "Vad pratar du gärna om?",
+    "addAnother": "Lägg till fler",
+    "registerButton": "Registrera dig för evenemanget →",
+    "registering": "Registrerar…",
+    "successMessage": "Du är registrerad! Arrangören bekräftar din plats.",
+    "validation": {
+      "nameRequired": "Namn krävs",
+      "emailRequired": "E-post krävs",
+      "emailInvalid": "Ange en giltig e-postadress",
+      "descriptionTooLong": "Max 200 tecken",
+      "registrationFailed": "Registreringen misslyckades. Försök igen."
+    },
+    "invalid": {
+      "title": "Ogiltig eller utgången QR-kod",
+      "description": "Denna QR-kod är inte längre giltig. Be en arrangör dela en ny länk eller QR-kod.",
+      "goHome": "Gå hem"
+    }
+  },
+  "invite": {
+    "title": "Du är inbjuden att gå med",
+    "accept": "Acceptera inbjudan",
+    "accepting": "Accepterar…",
+    "expired": "Denna inbjudan har upphört eller är ogiltig.",
+    "success": "Inbjudan accepterad! Omdirigerar…",
+    "invitedTitle": "Du är inbjuden",
+    "invitedDesc": "Du har blivit inbjuden att gå med som arrangör.",
+    "createAccountDesc": "Skapa ett konto för att gå med som arrangör.",
+    "createAccount": "Skapa ditt konto",
+    "createAndAccept": "Skapa konto och acceptera inbjudan",
+    "creating": "Skapar konto…",
+    "alreadyHaveAccount": "Har du redan ett konto?",
+    "signIn": "Logga in",
+    "role": "Roll",
+    "expires": "Inbjudan går ut",
+    "loading": "Laddar inbjudan…",
+    "invalid": "Ogiltig eller utgången inbjudan",
+    "goToLogin": "Gå till inloggning"
+  },
+  "organizer": {
+    "myEvents": "Mina evenemang",
+    "back": "Tillbaka"
+  },
+  "admin": {
+    "title": "Admin",
+    "users": "Användare",
+    "events": "Evenemang",
+    "overview": "Översikt",
+    "columns": {
+      "name": "Namn",
+      "email": "E-post",
+      "role": "Roll",
+      "createdAt": "Skapad",
+      "status": "Status",
+      "type": "Typ",
+      "date": "Datum",
+      "owner": "Ägare"
+    }
+  },
+  "credits": {
+    "balance": "{count} kredit",
+    "balance_plural": "{count} krediter",
+    "upgrade": "Uppgradera",
+    "managePlan": "Hantera plan",
+    "free": "Gratis",
+    "trialWelcome": {
+      "title": "Välkommen till SeatSnaps!",
+      "description": "Du har ett gratis provevenemang för att utforska alla funktioner.",
+      "dismiss": "Förstått"
+    },
+    "upgradeBanner": {
+      "title": "Du har slut på krediter",
+      "description": "Köp krediter för att skapa fler evenemang.",
+      "cta": "Visa planer"
+    }
+  },
+  "selectPlan": {
+    "title": "Välj en plan",
+    "subtitle": "Välj en plan för att skapa evenemang",
+    "back": "Tillbaka till instrumentpanelen"
+  },
+  "checkout": {
+    "title": "Kassa",
+    "processing": "Behandlar…",
+    "back": "Tillbaka"
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Visningsnamn",
+    "saveChanges": "Spara ändringar",
+    "saving": "Sparar…",
+    "profileDetails": "Profildetaljer",
+    "changePassword": "Ändra lösenord",
+    "currentPassword": "Nuvarande lösenord",
+    "newPassword": "Nytt lösenord",
+    "updatePassword": "Uppdatera lösenord",
+    "updating": "Uppdaterar…",
+    "updatedSuccessfully": "Profilen har uppdaterats.",
+    "passwordChanged": "Lösenordet har ändrats."
+  },
+  "languageSwitcher": {
+    "label": "Språk",
+    "en": "English",
+    "sv": "Svenska",
+    "de": "Deutsch"
+  }
+}

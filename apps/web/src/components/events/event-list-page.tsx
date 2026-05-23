@@ -4,6 +4,7 @@ import type { EventResponse } from "@seat-snaps/shared";
 import { NewEventDialog } from "@/components/events/new-event-dialog";
 import { EventCard } from "@/components/events/event-card";
 import { UpgradeBanner } from "@/components/credits/upgrade-banner";
+import { getTranslations } from "next-intl/server";
 
 interface EventListPageProps {
   variant: "desktop" | "mobile";
@@ -21,7 +22,8 @@ async function fetchEvents(): Promise<{ events: EventResponse[]; error: string |
   }
 }
 
-function DesktopHeader() {
+async function DesktopHeader() {
+  const t = await getTranslations("dashboard");
   return (
     <div className="flex items-start justify-between gap-4">
       <div>
@@ -29,10 +31,10 @@ function DesktopHeader() {
           className="text-3xl font-semibold tracking-tight"
           style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 20%)" }}
         >
-          My Events
+          {t("myEvents")}
         </h1>
         <p className="mt-1 text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-          Events you own or help organise
+          {t("myEventsSubtitle")}
         </p>
       </div>
       <NewEventDialog />
@@ -40,14 +42,15 @@ function DesktopHeader() {
   );
 }
 
-function MobileHeader() {
+async function MobileHeader() {
+  const t = await getTranslations("dashboard");
   return (
     <div className="mb-6 flex items-center justify-between">
       <h1
         className="text-2xl font-semibold"
         style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 20%)" }}
       >
-        My Events
+        {t("myEvents")}
       </h1>
       <NewEventDialog
         iconOnly
@@ -58,7 +61,8 @@ function MobileHeader() {
   );
 }
 
-function EmptyState({ variant }: { variant: "desktop" | "mobile" }) {
+async function EmptyState({ variant }: { variant: "desktop" | "mobile" }) {
+  const t = await getTranslations("dashboard");
   return (
     <div className="dashboard-glass rounded-2xl px-6 py-16 text-center">
       {variant === "mobile" && (
@@ -68,7 +72,7 @@ function EmptyState({ variant }: { variant: "desktop" | "mobile" }) {
         className={variant === "desktop" ? "mb-4 text-base" : "mb-4 text-sm"}
         style={{ color: "hsl(28 8% 50%)" }}
       >
-        No events yet. Create your first event to get started.
+        {t("noEvents")}
       </p>
       {variant === "desktop" ? (
         <NewEventDialog />
@@ -82,21 +86,25 @@ function EmptyState({ variant }: { variant: "desktop" | "mobile" }) {
   );
 }
 
-function ErrorState({ message, variant }: { message: string; variant: "desktop" | "mobile" }) {
+async function ErrorState({ message, variant }: { message: string; variant: "desktop" | "mobile" }) {
+  const t = await getTranslations("errors");
+  const tCommon = await getTranslations("common");
   return (
     <div className="dashboard-glass rounded-2xl px-6 py-12 text-center">
       <AlertTriangle className="mx-auto mb-4 h-10 w-10 text-destructive" />
-      <h2 className={variant === "desktop" ? "mb-2 text-lg font-semibold" : "mb-2 text-base font-semibold"}>
-        Could not load events
+      <h2
+        className={
+          variant === "desktop" ? "mb-2 text-lg font-semibold" : "mb-2 text-base font-semibold"
+        }
+      >
+        {t("couldNotLoad")}
       </h2>
-      <p className="mx-auto mb-5 max-w-md text-sm text-muted-foreground">
-        {message}
-      </p>
+      <p className="mx-auto mb-5 max-w-md text-sm text-muted-foreground">{message}</p>
       <a
         href={variant === "desktop" ? "/dashboard" : "/organizer"}
         className="inline-flex items-center justify-center rounded-md border border-input px-4 py-2 text-sm font-medium hover:bg-accent"
       >
-        Try again
+        {tCommon("tryAgain")}
       </a>
     </div>
   );
@@ -113,9 +121,7 @@ function EventGrid({
 }) {
   const cardVariant = variant === "desktop" ? "grid" : "list";
   const wrapperClass =
-    variant === "desktop"
-      ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
-      : "space-y-3";
+    variant === "desktop" ? "grid gap-5 sm:grid-cols-2 lg:grid-cols-3" : "space-y-3";
 
   return (
     <div className={wrapperClass}>
