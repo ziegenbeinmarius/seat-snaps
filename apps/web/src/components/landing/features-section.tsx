@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+const cardDelays = ["delay-100", "delay-200", "delay-300", "delay-500"] as const;
+
 const features = [
   {
     title: "Seating Plans",
@@ -58,7 +60,7 @@ export function FeaturesSection() {
   return (
     <section className="relative mx-auto max-w-4xl px-6 py-20">
       <div className="mb-12 flex flex-col items-center gap-6 text-center sm:flex-row sm:gap-10 sm:text-left">
-        <div data-animate="fade-up" className="landing-animate flex-shrink-0">
+        <div data-animate="fade-up" className="landing-animate flex-shrink-0 delay-100">
           <Image
             src="/images/koala-presenting.png"
             alt="SeatSnaps Koala mascot presenting with a thumbs up"
@@ -66,7 +68,7 @@ export function FeaturesSection() {
             height={302}
           />
         </div>
-        <div data-animate="fade-up" className="landing-animate landing-delay-1">
+        <div data-animate="fade-up" className="landing-animate delay-200">
           <h2
             className="text-3xl font-semibold tracking-tight sm:text-4xl"
             style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 18%)" }}
@@ -84,7 +86,7 @@ export function FeaturesSection() {
           <div
             key={f.title}
             data-animate="fade-up"
-            className={`landing-animate landing-delay-${i + 1} dashboard-glass rounded-2xl p-6 transition-shadow duration-300 hover:shadow-lg`}
+            className={`landing-animate ${cardDelays[i]} dashboard-glass rounded-2xl p-6 transition-shadow duration-300 hover:shadow-lg`}
           >
             <div
               className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl transition-transform duration-300 hover:scale-110"
