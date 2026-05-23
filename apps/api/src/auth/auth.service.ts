@@ -30,9 +30,29 @@ export class AuthService implements IAuthService {
   async validateCredentials(email: string, password: string): Promise<SessionUser | null> {
     const user = await this.userRepository.findByEmail(email.toLowerCase().trim());
     if (!user) return null;
+    if (!user.passwordHash) return null;
 
     const valid = await bcrypt.compare(password, user.passwordHash);
     if (!valid) return null;
+
+    return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
+  }
+
+  async findOrCreateOAuthUser(data: { email: string; name: string; avatarUrl?: string }): Promise<SessionUser> {
+    const email = data.email.toLowerCase().trim();
+    const existing = await this.userRepository.findByEmail(email);
+    if (existing) {
+      if (data.avatarUrl && !existing.avatarUrl) {
+        await this.userRepository.update(existing.id, { avatarUrl: data.avatarUrl });
+      }
+      return { id: existing.id, email: existing.email, name: existing.name, role: null, isAdmin: existing.isAdmin, tokenVersion: existing.tokenVersion };
+    }
+
+    const user = await this.userRepository.create({
+      email,
+      name: data.name,
+      avatarUrl: data.avatarUrl ?? null,
+    });
 
     return { id: user.id, email: user.email, name: user.name, role: null, isAdmin: user.isAdmin, tokenVersion: user.tokenVersion };
   }
@@ -45,6 +65,7 @@ export class AuthService implements IAuthService {
   async changePassword(userId: string, currentPassword: string, newPassword: string): Promise<void> {
     const user = await this.userRepository.findById(userId);
     if (!user) throw new UnauthorizedException("User not found");
+    if (!user.passwordHash) throw new UnauthorizedException("Account uses social login — password cannot be changed");
 
     const valid = await bcrypt.compare(currentPassword, user.passwordHash);
     if (!valid) throw new UnauthorizedException("Current password is incorrect");

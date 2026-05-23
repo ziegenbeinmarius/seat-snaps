@@ -8,10 +8,11 @@ const PROTECTED = ["/dashboard", "/organizer", "/select-plan"];
 const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
   const { nextUrl } = req;
   const session = req.auth as { user?: { id?: string } } | null;
+  const hasValidSession = session?.user?.id;
 
   const isProtected = PROTECTED.some((p) => nextUrl.pathname.startsWith(p));
 
-  if (isProtected && !session) {
+  if (isProtected && !hasValidSession) {
     const loginUrl = new URL("/login", nextUrl);
     const callback = nextUrl.pathname;
     if (callback.startsWith("/") && !callback.startsWith("//")) {
