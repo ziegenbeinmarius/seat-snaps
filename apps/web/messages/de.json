@@ -108,7 +108,24 @@
         "description": "Senden Sie Echtzeit-Ankündigungen und Updates auf die Bildschirme aller Gäste."
       }
     },
-    "footer": "Alle Rechte vorbehalten."
+    "footer": "Alle Rechte vorbehalten.",
+    "scene": {
+      "badge": "Ein Blick hinein",
+      "caption": "Die ganze Truppe auf einem Foto",
+      "heading": "Jeder Moment, jeder Gast",
+      "body": "Vom ersten Schnappschuss bis zum letzten Tanz – SeatSnaps bringt Ihr Event zusammen: Sitzpläne, die Ihre Gäste lieben, eine gemeinsame Foto-Galerie und ein Verzeichnis, um langfristig in Kontakt zu bleiben."
+    },
+    "profileCard": {
+      "plan": "Plan",
+      "credits": "Guthaben",
+      "creditsLeft": "{count} übrig",
+      "goToDashboard": "Zum Dashboard",
+      "editProfile": "Profil bearbeiten",
+      "loading": "Lädt…",
+      "freeTrial": "Testversion",
+      "paidPlan": "Bezahlter Plan",
+      "noActivePlan": "Kein aktiver Plan"
+    }
   },
   "errors": {
     "somethingWrong": "Etwas ist schiefgelaufen",
@@ -125,7 +142,8 @@
     "myEventsSubtitle": "Events, die Sie besitzen oder mitorganisieren",
     "noEvents": "Noch keine Events. Erstellen Sie Ihr erstes Event, um loszulegen.",
     "signedInAs": "Angemeldet als",
-    "loading": "Lädt…"
+    "loading": "Lädt…",
+    "newEvent": "Neues Event"
   },
   "event": {
     "types": {
@@ -199,7 +217,8 @@
       "creating": "Erstellt…",
       "titlePlaceholder": "Hochzeitsempfang",
       "rsvpSelfReg": "RSVP-Selbstregistrierung",
-      "rsvpSelfRegDesc": "Gäste können sich über einen öffentlichen RSVP-Link selbst registrieren."
+      "rsvpSelfRegDesc": "Gäste können sich über einen öffentlichen RSVP-Link selbst registrieren.",
+      "subtitle": "Füllen Sie die Details für Ihr neues Event aus"
     },
     "team": {
       "members": "Mitglieder",
@@ -217,6 +236,16 @@
         "role": "Rolle",
         "status": "Status",
         "expiresAt": "Läuft ab"
+      },
+      "roles": {
+        "owner": "Besitzer",
+        "organizer": "Veranstalter"
+      },
+      "statuses": {
+        "accepted": "Akzeptiert",
+        "active": "Aktiv",
+        "pending": "Ausstehend",
+        "expired": "Abgelaufen"
       }
     },
     "attendees": {
@@ -363,13 +392,19 @@
     "guests": {
       "title": "Gäste",
       "search": "Gäste suchen…",
-      "noGuests": "Noch keine Gäste."
+      "noGuests": "Noch keine Gäste.",
+      "seated": "Platziert",
+      "conversationStarters": "Gesprächsstarter"
     },
     "seating": {
       "title": "Sitzplan",
       "yourTable": "Ihr Tisch",
       "findSeat": "Ihren Platz finden",
-      "notAssigned": "Ihnen wurde noch kein Platz zugewiesen."
+      "notAssigned": "Ihnen wurde noch kein Platz zugewiesen.",
+      "youAreAt": "Sie sitzen an",
+      "you": "Sie",
+      "empty": "Leer",
+      "noSeats": "Keine Plätze zugewiesen"
     },
     "photos": {
       "title": "Fotos",
@@ -506,12 +541,23 @@
     "updatePassword": "Passwort aktualisieren",
     "updating": "Aktualisiert…",
     "updatedSuccessfully": "Profil erfolgreich aktualisiert.",
-    "passwordChanged": "Passwort erfolgreich geändert."
+    "passwordChanged": "Passwort erfolgreich geändert.",
+    "backToDashboard": "← Zurück zum Dashboard",
+    "subtitle": "Verwalten Sie Ihre Kontodaten und Ihr Passwort",
+    "passwordMinLength": "Mind. 8 Zeichen"
   },
   "languageSwitcher": {
     "label": "Sprache",
     "en": "English",
     "sv": "Svenska",
     "de": "Deutsch"
+  },
+  "attend": {
+    "scanTitle": "Einladungs-QR scannen",
+    "cameraUnavailable": "Kamera ist auf diesem Gerät/Browser nicht verfügbar.",
+    "cameraBlocked": "Kamerazugriff wurde verweigert. Erlauben Sie den Kamerazugriff, um Ihren Einladungs-QR-Code zu scannen.",
+    "tryAgain": "Erneut versuchen",
+    "opening": "Ihr Event wird geöffnet…",
+    "sessionHint": "Falls die App ohne Ihre Sitzung geöffnet wurde, scannen Sie hier Ihren Einladungs-QR-Code."
   }
 }

@@ -5,10 +5,19 @@ import { requireAuth } from "@/lib/require-auth";
 import { apiRequest } from "@/lib/api";
 import type { UserProfileResponse } from "@seat-snaps/shared";
 import { ProfileForm } from "./profile-form";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 
 export const metadata: Metadata = { title: "My Profile — SeatSnaps" };
 
-export default async function ProfilePage() {
+export default async function ProfilePage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations("profile");
+
   const session = await requireAuth();
 
   let profile: UserProfileResponse | null = null;
@@ -30,7 +39,7 @@ export default async function ProfilePage() {
           style={{ color: "hsl(28 65% 44%)" }}
         >
           <ChevronLeft className="h-4 w-4" />
-          Back to Dashboard
+          {t("backToDashboard")}
         </Link>
       </div>
 
@@ -39,10 +48,10 @@ export default async function ProfilePage() {
           className="text-3xl font-semibold tracking-tight"
           style={{ fontFamily: "var(--font-cormorant, Georgia, serif)", color: "hsl(24 12% 20%)" }}
         >
-          My Profile
+          {t("title")}
         </h1>
         <p className="mt-1 text-sm" style={{ color: "hsl(28 8% 50%)" }}>
-          Manage your account details and password
+          {t("subtitle")}
         </p>
       </div>
 

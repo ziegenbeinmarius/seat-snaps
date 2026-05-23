@@ -108,7 +108,24 @@
         "description": "Skicka realtidsmeddelanden och uppdateringar till varje gästs skärm."
       }
     },
-    "footer": "Alla rättigheter förbehållna."
+    "footer": "Alla rättigheter förbehållna.",
+    "scene": {
+      "badge": "En titt inuti",
+      "caption": "Hela gänget, i ett enda foto",
+      "heading": "Varje ögonblick, varje gäst",
+      "body": "Från det första fotot till sista dansen samlar SeatSnaps ditt evenemang – bordsplaceringar dina gäster älskar, ett gemensamt fotogalleri och en katalog för att hålla kontakten."
+    },
+    "profileCard": {
+      "plan": "Plan",
+      "credits": "Krediter",
+      "creditsLeft": "{count} kvar",
+      "goToDashboard": "Gå till instrumentpanelen",
+      "editProfile": "Redigera profil",
+      "loading": "Laddar…",
+      "freeTrial": "Testversion",
+      "paidPlan": "Betald plan",
+      "noActivePlan": "Ingen aktiv plan"
+    }
   },
   "errors": {
     "somethingWrong": "Något gick fel",
@@ -125,7 +142,8 @@
     "myEventsSubtitle": "Evenemang du äger eller hjälper till att organisera",
     "noEvents": "Inga evenemang ännu. Skapa ditt första evenemang för att komma igång.",
     "signedInAs": "Inloggad som",
-    "loading": "Laddar…"
+    "loading": "Laddar…",
+    "newEvent": "Nytt evenemang"
   },
   "event": {
     "types": {
@@ -199,7 +217,8 @@
       "creating": "Skapar…",
       "titlePlaceholder": "Bröllopsmottagning",
       "rsvpSelfReg": "RSVP-självregistrering",
-      "rsvpSelfRegDesc": "Gäster kan registrera sig via en offentlig RSVP-länk."
+      "rsvpSelfRegDesc": "Gäster kan registrera sig via en offentlig RSVP-länk.",
+      "subtitle": "Fyll i detaljerna för ditt nya evenemang"
     },
     "team": {
       "members": "Medlemmar",
@@ -217,6 +236,16 @@
         "role": "Roll",
         "status": "Status",
         "expiresAt": "Upphör"
+      },
+      "roles": {
+        "owner": "Ägare",
+        "organizer": "Arrangör"
+      },
+      "statuses": {
+        "accepted": "Accepterad",
+        "active": "Aktiv",
+        "pending": "Väntande",
+        "expired": "Utgången"
       }
     },
     "attendees": {
@@ -363,13 +392,19 @@
     "guests": {
       "title": "Gäster",
       "search": "Sök gäster…",
-      "noGuests": "Inga gäster ännu."
+      "noGuests": "Inga gäster ännu.",
+      "seated": "Placerad",
+      "conversationStarters": "Samtalsämnen"
     },
     "seating": {
       "title": "Bordsplacering",
       "yourTable": "Ditt bord",
       "findSeat": "Hitta din plats",
-      "notAssigned": "Du har inte tilldelats en plats ännu."
+      "notAssigned": "Du har inte tilldelats en plats ännu.",
+      "youAreAt": "Du sitter vid",
+      "you": "Du",
+      "empty": "Tom",
+      "noSeats": "Inga platser tilldelade"
     },
     "photos": {
       "title": "Foton",
@@ -506,12 +541,23 @@
     "updatePassword": "Uppdatera lösenord",
     "updating": "Uppdaterar…",
     "updatedSuccessfully": "Profilen har uppdaterats.",
-    "passwordChanged": "Lösenordet har ändrats."
+    "passwordChanged": "Lösenordet har ändrats.",
+    "backToDashboard": "← Tillbaka till instrumentpanelen",
+    "subtitle": "Hantera dina kontouppgifter och lösenord",
+    "passwordMinLength": "Min. 8 tecken"
   },
   "languageSwitcher": {
     "label": "Språk",
     "en": "English",
     "sv": "Svenska",
     "de": "Deutsch"
+  },
+  "attend": {
+    "scanTitle": "Skanna inbjudnings-QR",
+    "cameraUnavailable": "Kameran är inte tillgänglig på den här enheten/webbläsaren.",
+    "cameraBlocked": "Kameraåtkomst nekades. Tillåt kameraåtkomst för att skanna din inbjudnings-QR-kod.",
+    "tryAgain": "Försök igen",
+    "opening": "Öppnar ditt evenemang…",
+    "sessionHint": "Om appen öppnades utan din session, skanna din inbjudnings-QR-kod här för att fortsätta."
   }
 }

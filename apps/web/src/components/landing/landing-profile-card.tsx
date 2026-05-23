@@ -1,7 +1,10 @@
+"use client";
+
 import { Link } from "@/i18n/navigation";
 import { LayoutDashboard, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { CreditBalanceResponse } from "@seat-snaps/shared";
+import { useTranslations } from "next-intl";
 
 interface LandingProfileCardProps {
   name: string;
@@ -9,16 +12,18 @@ interface LandingProfileCardProps {
   credits: CreditBalanceResponse | null;
 }
 
-function getPlanLabel(credits: CreditBalanceResponse | null): string {
-  if (!credits) return "Loading…";
-  if (!credits.freeTrialUsed) return "Free Trial";
-  if (credits.totalCredits > 0) return "Paid Plan";
-  return "No Active Plan";
-}
-
 export function LandingProfileCard({ name, email, credits }: LandingProfileCardProps) {
+  const t = useTranslations("landing.profileCard");
+
+  function getPlanLabel(): string {
+    if (!credits) return t("loading");
+    if (!credits.freeTrialUsed) return t("freeTrial");
+    if (credits.totalCredits > 0) return t("paidPlan");
+    return t("noActivePlan");
+  }
+
   const available = credits?.availableCredits ?? 0;
-  const planLabel = getPlanLabel(credits);
+  const planLabel = getPlanLabel();
   const isLow = credits ? available === 0 : false;
 
   return (
@@ -54,7 +59,7 @@ export function LandingProfileCard({ name, email, credits }: LandingProfileCardP
           style={{ background: "hsl(33 18% 94%)" }}
         >
           <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "hsl(28 8% 50%)" }}>
-            Plan
+            {t("plan")}
           </p>
           <p className="mt-0.5 text-sm font-semibold" style={{ color: "hsl(24 12% 20%)" }}>
             {planLabel}
@@ -67,13 +72,13 @@ export function LandingProfileCard({ name, email, credits }: LandingProfileCardP
           }}
         >
           <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "hsl(28 8% 50%)" }}>
-            Credits
+            {t("credits")}
           </p>
           <p
             className="mt-0.5 text-sm font-semibold"
             style={{ color: isLow ? "hsl(0 65% 44%)" : "hsl(24 12% 20%)" }}
           >
-            {credits !== null ? `${available} left` : "—"}
+            {credits !== null ? t("creditsLeft", { count: available }) : "—"}
           </p>
         </div>
       </div>
@@ -83,13 +88,13 @@ export function LandingProfileCard({ name, email, credits }: LandingProfileCardP
         <Button size="sm" className="w-full justify-center gap-2" asChild>
           <Link href="/dashboard">
             <LayoutDashboard className="h-4 w-4" />
-            Go to Dashboard
+            {t("goToDashboard")}
           </Link>
         </Button>
         <Button size="sm" variant="outline" className="w-full justify-center gap-2" asChild>
           <Link href="/dashboard/profile">
             <User className="h-4 w-4" />
-            Edit Profile
+            {t("editProfile")}
           </Link>
         </Button>
       </div>

@@ -44,6 +44,17 @@ export function TeamPanel({ eventId, initialMembers }: TeamPanelProps) {
     defaultValues: { role: "organizer", expiresInDays: 7 },
   });
 
+  const roleLabel: Record<string, string> = {
+    owner: t("roles.owner"),
+    organizer: t("roles.organizer"),
+  };
+  const statusLabel: Record<string, string> = {
+    accepted: t("statuses.accepted"),
+    active: t("statuses.active"),
+    pending: t("statuses.pending"),
+    expired: t("statuses.expired"),
+  };
+
   async function onInviteSubmit(data: InviteFormValues) {
     await createInvite.mutateAsync({ ...data, expiresInDays: data.expiresInDays ?? 7 });
     reset();
@@ -83,12 +94,12 @@ export function TeamPanel({ eventId, initialMembers }: TeamPanelProps) {
                   <TableCell className="font-medium">{m.user?.name ?? "—"}</TableCell>
                   <TableCell className="text-muted-foreground">{m.user?.email ?? "—"}</TableCell>
                   <TableCell>
-                    <Badge variant={m.role === "owner" ? "default" : "secondary"} className="capitalize">
-                      {m.role}
+                    <Badge variant={m.role === "owner" ? "default" : "secondary"}>
+                      {roleLabel[m.role] ?? m.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="capitalize">{m.status}</Badge>
+                    <Badge variant="outline">{statusLabel[m.status] ?? m.status}</Badge>
                   </TableCell>
                   <TableCell>
                     {m.role !== "owner" && (
@@ -129,13 +140,12 @@ export function TeamPanel({ eventId, initialMembers }: TeamPanelProps) {
                 {invites.map((inv) => (
                   <TableRow key={inv.id}>
                     <TableCell>{inv.email}</TableCell>
-                    <TableCell className="capitalize">{inv.role}</TableCell>
+                    <TableCell>{roleLabel[inv.role] ?? inv.role}</TableCell>
                     <TableCell>
                       <Badge
                         variant={inv.status === "accepted" ? "default" : inv.status === "expired" ? "destructive" : "secondary"}
-                        className="capitalize"
                       >
-                        {inv.status}
+                        {statusLabel[inv.status] ?? inv.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">

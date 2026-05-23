@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { TableResponse, TableShape } from "@seat-snaps/shared";
+import { useTranslations } from "next-intl";
 
 const CANVAS_W = 1000;
 const CANVAS_H = 680;
@@ -21,6 +22,7 @@ interface Props {
 }
 
 export function RoomLayout({ tables, attendeesMap, myAttendeeId: _myAttendeeId, myTableId, mySeatId }: Props) {
+  const t = useTranslations("attendeeApp.seating");
   const [activeTable, setActiveTable] = useState<TableResponse | null>(null);
 
   // Auto-zoom: compute bounding box of all tables so content fills the view
@@ -193,7 +195,7 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId: _myAttendeeId, 
             return (
               <>
                 <p className="event-heading text-sm font-semibold event-card-title mb-1">
-                  You are at{" "}
+                  {t("youAreAt")}{" "}
                   <span style={{ color: "var(--event-primary)" }}>{myTable.name}</span>
                   {mySeat ? ` · ${mySeat.label ?? `Seat ${mySeat.position}`}` : ""}
                 </p>
@@ -238,7 +240,7 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId: _myAttendeeId, 
                                   : "var(--event-card-muted)",
                             }}
                           >
-                            {isMySeat ? "You" : name ?? "Empty"}
+                            {isMySeat ? t("you") : name ?? t("empty")}
                           </div>
                         </div>
                       );
@@ -283,14 +285,14 @@ export function RoomLayout({ tables, attendeesMap, myAttendeeId: _myAttendeeId, 
                       className="event-heading font-medium"
                       style={{ color: seat.attendeeId ? "var(--event-card-text)" : "var(--event-card-muted)" }}
                     >
-                      {name ?? "Empty"}
+                      {name ?? t("empty")}
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <p className="text-xs event-card-muted-text">No seats assigned</p>
+            <p className="text-xs event-card-muted-text">{t("noSeats")}</p>
           )}
         </div>
       )}

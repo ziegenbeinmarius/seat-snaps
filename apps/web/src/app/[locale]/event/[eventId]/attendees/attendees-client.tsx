@@ -72,7 +72,7 @@ export function AttendeesClient({ attendees }: Props) {
                       color: "var(--event-primary)",
                     }}
                   >
-                    Seated
+                    {t("seated")}
                   </span>
                 )}
               </div>
@@ -82,7 +82,7 @@ export function AttendeesClient({ attendees }: Props) {
                   style={{ borderColor: "var(--event-card-divider)" }}
                 >
                   <div className="event-body mb-1.5 text-xs event-card-muted-text">
-                    {t("title")}
+                    {t("conversationStarters")}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {a.conversationStarters.map((s, i) => (

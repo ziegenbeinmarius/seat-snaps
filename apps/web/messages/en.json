@@ -108,7 +108,24 @@
         "description": "Send real-time announcements and updates to every guest's screen."
       }
     },
-    "footer": "All rights reserved."
+    "footer": "All rights reserved.",
+    "scene": {
+      "badge": "A peek inside",
+      "caption": "The whole gang, all in one shot",
+      "heading": "Every moment, every guest",
+      "body": "From the first snap to the last dance, SeatSnaps brings your event together — seating charts your guests love, a shared photo gallery everyone contributes to, and a directory to stay connected long after."
+    },
+    "profileCard": {
+      "plan": "Plan",
+      "credits": "Credits",
+      "creditsLeft": "{count} left",
+      "goToDashboard": "Go to Dashboard",
+      "editProfile": "Edit Profile",
+      "loading": "Loading…",
+      "freeTrial": "Free Trial",
+      "paidPlan": "Paid Plan",
+      "noActivePlan": "No Active Plan"
+    }
   },
   "errors": {
     "somethingWrong": "Something went wrong",
@@ -125,7 +142,8 @@
     "myEventsSubtitle": "Events you own or help organise",
     "noEvents": "No events yet. Create your first event to get started.",
     "signedInAs": "Signed in as",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "newEvent": "New Event"
   },
   "event": {
     "types": {
@@ -199,7 +217,8 @@
       "creating": "Creating…",
       "titlePlaceholder": "Wedding Reception",
       "rsvpSelfReg": "RSVP self-registration",
-      "rsvpSelfRegDesc": "Guests can register themselves via a public RSVP link."
+      "rsvpSelfRegDesc": "Guests can register themselves via a public RSVP link.",
+      "subtitle": "Fill in the details for your new event"
     },
     "team": {
       "members": "Members",
@@ -217,6 +236,16 @@
         "role": "Role",
         "status": "Status",
         "expiresAt": "Expires"
+      },
+      "roles": {
+        "owner": "Owner",
+        "organizer": "Organizer"
+      },
+      "statuses": {
+        "accepted": "Accepted",
+        "active": "Active",
+        "pending": "Pending",
+        "expired": "Expired"
       }
     },
     "attendees": {
@@ -363,13 +392,19 @@
     "guests": {
       "title": "Guests",
       "search": "Search guests…",
-      "noGuests": "No guests yet."
+      "noGuests": "No guests yet.",
+      "seated": "Seated",
+      "conversationStarters": "Conversation Starters"
     },
     "seating": {
       "title": "Seating",
       "yourTable": "Your table",
       "findSeat": "Find your seat",
-      "notAssigned": "You haven't been assigned a seat yet."
+      "notAssigned": "You haven't been assigned a seat yet.",
+      "youAreAt": "You are at",
+      "you": "You",
+      "empty": "Empty",
+      "noSeats": "No seats assigned"
     },
     "photos": {
       "title": "Photos",
@@ -486,7 +521,10 @@
     "updatePassword": "Update Password",
     "updating": "Updating…",
     "updatedSuccessfully": "Profile updated successfully.",
-    "passwordChanged": "Password changed successfully."
+    "passwordChanged": "Password changed successfully.",
+    "backToDashboard": "← Back to Dashboard",
+    "subtitle": "Manage your account details and password",
+    "passwordMinLength": "Min. 8 characters"
   },
   "invite": {
     "title": "You're invited",
@@ -513,5 +551,13 @@
     "en": "English",
     "sv": "Svenska",
     "de": "Deutsch"
+  },
+  "attend": {
+    "scanTitle": "Scan Invitation QR",
+    "cameraUnavailable": "Camera is not available on this device/browser.",
+    "cameraBlocked": "Camera access was denied. Allow camera access to scan your invitation QR code.",
+    "tryAgain": "Try again",
+    "opening": "Opening your event…",
+    "sessionHint": "If the app opened without your session, scan your invitation QR code here to continue."
   }
 }

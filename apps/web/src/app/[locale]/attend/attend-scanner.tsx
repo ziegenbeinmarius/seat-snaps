@@ -3,8 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 import { Loader2, QrCode, RefreshCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 type ScannerState = "idle" | "starting" | "scanning" | "found" | "error";
+type ErrorKey = "cameraUnavailable" | "cameraBlocked";
 
 function extractJoinToken(text: string): string | null {
   try {
@@ -22,6 +24,7 @@ function extractJoinToken(text: string): string | null {
 }
 
 export function AttendScanner() {
+  const t = useTranslations("attend");
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -29,7 +32,7 @@ export function AttendScanner() {
   const navigatingRef = useRef(false);
 
   const [state, setState] = useState<ScannerState>("idle");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorKey, setErrorKey] = useState<ErrorKey | null>(null);
   const [retryKey, setRetryKey] = useState(0);
 
   const stopCamera = useCallback(() => {
@@ -79,12 +82,12 @@ export function AttendScanner() {
 
     async function start() {
       if (!navigator.mediaDevices?.getUserMedia) {
-        setErrorMessage("Camera is not available on this device/browser.");
+        setErrorKey("cameraUnavailable");
         setState("error");
         return;
       }
 
-      setErrorMessage(null);
+      setErrorKey(null);
       setState("starting");
 
       try {
@@ -108,7 +111,7 @@ export function AttendScanner() {
         setState("scanning");
         rafRef.current = requestAnimationFrame(scanLoop);
       } catch {
-        setErrorMessage("Camera access was denied. Allow camera access to scan your invitation QR code.");
+        setErrorKey("cameraBlocked");
         setState("error");
       }
     }
@@ -126,19 +129,19 @@ export function AttendScanner() {
       <div className="mb-3 flex items-center gap-2">
         <QrCode className="h-4 w-4" style={{ color: "#a07850" }} />
         <p className="text-sm font-medium" style={{ color: "hsl(24 12% 20%)" }}>
-          Scan Invitation QR
+          {t("scanTitle")}
         </p>
       </div>
 
       {state === "error" ? (
         <div className="rounded-xl border border-red-200 bg-red-50/80 p-3 text-left">
-          <p className="text-xs leading-relaxed text-red-700">{errorMessage}</p>
+          <p className="text-xs leading-relaxed text-red-700">{errorKey ? t(errorKey) : ""}</p>
           <button
             onClick={() => setRetryKey((value) => value + 1)}
             className="mt-2 inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-2.5 py-1.5 text-xs font-medium text-red-700"
           >
             <RefreshCcw className="h-3.5 w-3.5" />
-            Try again
+            {t("tryAgain")}
           </button>
         </div>
       ) : (
@@ -161,7 +164,7 @@ export function AttendScanner() {
               {state === "starting" ? (
                 <Loader2 className="h-8 w-8 animate-spin text-white" />
               ) : (
-                <p className="text-sm font-medium text-white">Opening your event…</p>
+                <p className="text-sm font-medium text-white">{t("opening")}</p>
               )}
             </div>
           )}
@@ -169,7 +172,7 @@ export function AttendScanner() {
       )}
 
       <p className="mt-3 text-xs leading-relaxed" style={{ color: "hsl(28 8% 45%)" }}>
-        If the app opened without your session, scan your invitation QR code here to continue.
+        {t("sessionHint")}
       </p>
     </div>
   );
