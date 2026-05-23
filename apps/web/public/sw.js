@@ -1,4 +1,4 @@
-const CACHE_NAME = "seat-snaps-v4";
+const CACHE_NAME = "seat-snaps-v5";
 const STATIC_ASSETS = [
   "/manifest.json",
   "/manifest-attendee.json",

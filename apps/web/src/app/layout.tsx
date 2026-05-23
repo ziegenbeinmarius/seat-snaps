@@ -35,7 +35,6 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "SeatSnaps",
-    startupImage: "/icons/apple-touch-icon.png",
   },
 };
 

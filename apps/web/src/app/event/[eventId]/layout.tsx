@@ -27,7 +27,6 @@ export async function generateMetadata({
       capable: true,
       statusBarStyle: "default",
       title: "SeatSnaps",
-      startupImage: "/icons/apple-touch-icon.png",
     },
   };
 }
