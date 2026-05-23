@@ -1,11 +1,14 @@
-import type { NextConfig } from "next";
-import { loadEnvConfig } from "@next/env";
-import { resolve } from "node:path";
+import nextEnv from "@next/env";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import createNextIntlPlugin from "next-intl/plugin";
 
+const { loadEnvConfig } = nextEnv;
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 loadEnvConfig(resolve(__dirname, "../.."));
 
-function toOrigin(value?: string): string | null {
+function toOrigin(value) {
   if (!value) return null;
   try {
     return new URL(value).origin;
@@ -14,13 +17,14 @@ function toOrigin(value?: string): string | null {
   }
 }
 
-function toWsOrigin(origin: string): string {
+function toWsOrigin(origin) {
   if (origin.startsWith("https://")) return origin.replace("https://", "wss://");
   if (origin.startsWith("http://")) return origin.replace("http://", "ws://");
   return origin;
 }
 
-const nextConfig: NextConfig = {
+/** @type {import("next").NextConfig} */
+const nextConfig = {
   output: "standalone",
   transpilePackages: ["@seat-snaps/shared"],
   typedRoutes: true,
@@ -39,18 +43,9 @@ const nextConfig: NextConfig = {
       {
         source: "/(.*)",
         headers: [
-          {
-            key: "X-Frame-Options",
-            value: "DENY",
-          },
-          {
-            key: "X-Content-Type-Options",
-            value: "nosniff",
-          },
-          {
-            key: "Referrer-Policy",
-            value: "strict-origin-when-cross-origin",
-          },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           {
             key: "Strict-Transport-Security",
             value: "max-age=63072000; includeSubDomains; preload",
@@ -65,7 +60,7 @@ const nextConfig: NextConfig = {
               (() => {
                 const apiOrigin = toOrigin(process.env.NEXT_PUBLIC_API_URL);
                 const wsOrigin = toOrigin(process.env.NEXT_PUBLIC_WS_URL);
-                const connectSources = new Set<string>([
+                const connectSources = new Set([
                   "'self'",
                   "https://t3.storageapi.dev",
                   "ws:",
