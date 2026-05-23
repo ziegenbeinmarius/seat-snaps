@@ -49,12 +49,7 @@ export class CreditsService implements ICreditsService {
 
   async grantFreeTrialIfEligible(userId: string): Promise<boolean> {
     await this.ensureCreditsExist(userId);
-    const credit = (await this.creditRepository.findByUserId(userId))!;
-    if (credit.freeTrialUsed) return false;
-
-    await this.creditRepository.incrementCredits(userId, 1);
-    await this.creditRepository.markFreeTrialUsed(userId);
-    return true;
+    return this.creditRepository.grantTrialAtomically(userId);
   }
 
   async grantCredits(userId: string, amount: number): Promise<void> {
