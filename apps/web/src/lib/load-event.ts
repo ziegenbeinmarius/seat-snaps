@@ -1,5 +1,6 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { Route } from "next";
+import { redirect } from "@/i18n/navigation";
 import { apiRequest } from "@/lib/api";
 import type { EventResponse } from "@seat-snaps/shared";
 

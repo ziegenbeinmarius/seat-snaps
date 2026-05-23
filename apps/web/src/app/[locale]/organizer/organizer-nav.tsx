@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { CalendarDays, Camera, LogOut, Users, Calendar, Home, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Route } from "next";
+import { Link, usePathname } from "@/i18n/navigation";
 
 export function OrganizerNav() {
+  // usePathname from @/i18n/navigation returns the locale-stripped pathname,
+  // so active-state matching works for all locales.
   const pathname = usePathname();
 
   const eventMatch = pathname.match(/^\/organizer\/events\/([^/]+)/);

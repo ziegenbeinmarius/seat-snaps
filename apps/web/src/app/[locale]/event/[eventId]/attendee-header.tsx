@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { UserRound } from "lucide-react";
 import type { Route } from "next";
 

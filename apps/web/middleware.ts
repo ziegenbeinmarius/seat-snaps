@@ -23,13 +23,19 @@ const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
     return NextResponse.redirect(new URL("/en", nextUrl));
   }
 
-  // Remove locale prefix (e.g. /sv/dashboard → /dashboard)
-  const pathnameWithoutLocale = pathname.replace(/^\/(sv|de)/, "") || "/";
+  // Detect locale prefix — with localePrefix:"as-needed" English has no prefix
+  const localeMatch = pathname.match(/^\/(sv|de|en)(\/|$)/);
+  const activeLocale = localeMatch ? localeMatch[1] : "en";
+  const localeSegment = activeLocale !== "en" ? `/${activeLocale}` : "";
+
+  // Strip locale prefix to test if the bare path is protected
+  const pathnameWithoutLocale = pathname.replace(/^\/(sv|de|en)/, "") || "/";
 
   const isProtected = PROTECTED.some((p) => pathnameWithoutLocale.startsWith(p));
 
   if (isProtected && !hasValidSession) {
-    const loginUrl = new URL("/login", nextUrl);
+    // Redirect to /login (or /sv/login, /de/login) to preserve the user's language
+    const loginUrl = new URL(`${localeSegment}/login`, nextUrl);
     const callback = pathnameWithoutLocale;
     if (callback.startsWith("/") && !callback.startsWith("//")) {
       loginUrl.searchParams.set("callbackUrl", callback);

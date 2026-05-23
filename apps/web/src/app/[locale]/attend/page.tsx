@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getCurrentAttendee } from "@/lib/attendee-session";
 import { QrCode } from "lucide-react";
 import { AttendScanner } from "./attend-scanner";

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import { X, Plus } from "lucide-react";
 import { useRsvpRegister } from "@/lib/api/attendees";
 import { toast } from "sonner";

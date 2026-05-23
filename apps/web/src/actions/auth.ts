@@ -5,7 +5,7 @@ import { RegisterSchema, ChangePasswordSchema, UpdateProfileSchema } from "@seat
 import { AuthError } from "next-auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { apiRequest } from "@/lib/api";
 
 export type ActionResult = { error: string } | { success: true };

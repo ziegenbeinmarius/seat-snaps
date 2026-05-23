@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useForm, useWatch, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CheckCircle2, Copy, Check } from "lucide-react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { UpdateEventSchema, type UpdateEventInput } from "@seat-snaps/shared";
 import { useEvent, useUpdateEvent } from "@/lib/api/events";
 import { useAttendees } from "@/lib/api/attendees";

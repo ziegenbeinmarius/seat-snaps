@@ -1,7 +1,6 @@
 import React from "react";
-import Link from "next/link";
-import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/require-auth";
+import { Link, redirect } from "@/i18n/navigation";
 import { apiRequest } from "@/lib/api";
 import { APP_BACKGROUND } from "@/lib/event-helpers";
 import { CreditBalanceBadge } from "@/components/credits/credit-balance-badge";

@@ -1,16 +1,18 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowLeft, LogOut } from "lucide-react";
 import { EventHeroStrip } from "@/components/events/event-hero-strip";
 import { loadEvent } from "@/lib/load-event";
+import { setRequestLocale } from "next-intl/server";
 
 interface Props {
   children: ReactNode;
-  params: Promise<{ id: string }>;
+  params: Promise<{ id: string; locale: string }>;
 }
 
 export default async function OrganizerEventLayout({ children, params }: Props) {
-  const { id } = await params;
+  const { id, locale } = await params;
+  setRequestLocale(locale);
   const event = await loadEvent(id, "/organizer");
 
   return (

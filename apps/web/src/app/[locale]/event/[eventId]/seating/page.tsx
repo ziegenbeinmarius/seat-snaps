@@ -1,4 +1,4 @@
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { SeatingLive } from "./seating-live";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { getCurrentAttendee, getAttendeeSessionToken } from "@/lib/attendee-session";
 import { AttendeeNav } from "./attendee-nav";
 import { AttendeeHeader } from "./attendee-header";

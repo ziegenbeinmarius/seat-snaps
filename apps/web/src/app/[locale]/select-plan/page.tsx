@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { redirect } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { requireAuth } from "@/lib/require-auth";
 import { apiRequest } from "@/lib/api";
 import type { CreditBalanceResponse, PricingTierResponse } from "@seat-snaps/shared";

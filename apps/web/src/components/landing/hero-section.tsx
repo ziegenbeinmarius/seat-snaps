@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { KoalaMascot } from "@/components/landing/koala-mascot";
 import { useTranslations } from "next-intl";

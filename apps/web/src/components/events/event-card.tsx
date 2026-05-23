@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { Route } from "next";
 import { CalendarDays, CheckCircle2, MapPin, Sparkles } from "lucide-react";
 import type { EventResponse } from "@seat-snaps/shared";

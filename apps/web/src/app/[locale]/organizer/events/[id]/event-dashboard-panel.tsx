@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { useAttendees } from "@/lib/api/attendees";
 import { useEvent } from "@/lib/api/events";
 import { useOrganizerPhotos } from "@/lib/api/photos";

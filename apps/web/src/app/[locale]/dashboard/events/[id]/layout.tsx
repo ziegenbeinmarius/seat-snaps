@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Route } from "next";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EventHeroStrip } from "@/components/events/event-hero-strip";

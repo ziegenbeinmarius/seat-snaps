@@ -1,4 +1,5 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
+import { redirect } from "@/i18n/navigation";
 import { apiRequest } from "@/lib/api";
 import type { AttendeeResponse } from "@seat-snaps/shared";
 import { OrganizerAttendeesPanel } from "./organizer-attendees-panel";

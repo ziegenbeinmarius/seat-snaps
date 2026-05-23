@@ -1,8 +1,8 @@
 "use client";
 
 import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
+import { usePathname, useRouter } from "@/i18n/navigation";
 import { routing } from "@/i18n/routing";
 
 export function LanguageSwitcher() {
@@ -13,21 +13,10 @@ export function LanguageSwitcher() {
   const [isPending, startTransition] = useTransition();
 
   function handleChange(newLocale: string) {
-    // Strip the current locale prefix from pathname if present
-    const locales = routing.locales as readonly string[];
-    let strippedPath = pathname;
-    for (const loc of locales) {
-      if (pathname.startsWith(`/${loc}/`) || pathname === `/${loc}`) {
-        strippedPath = pathname.slice(loc.length + 1) || "/";
-        break;
-      }
-    }
-
-    // Build new URL
-    const newPath = newLocale === routing.defaultLocale ? strippedPath : `/${newLocale}${strippedPath}`;
-
+    // next-intl's locale-aware router.replace handles prefix injection/removal
+    // automatically — no manual string manipulation needed.
     startTransition(() => {
-      router.replace(newPath);
+      router.replace(pathname, { locale: newLocale });
     });
   }
 
