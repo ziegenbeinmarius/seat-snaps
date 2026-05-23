@@ -3,6 +3,7 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/require-auth";
 import { APP_BACKGROUND } from "@/lib/event-helpers";
 import { CreditBalanceBadge } from "@/components/credits/credit-balance-badge";
+import { TrialWelcomeDialog } from "@/components/credits/trial-welcome-dialog";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await requireAuth();
@@ -54,6 +55,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <TrialWelcomeDialog />
     </div>
   );
 }
