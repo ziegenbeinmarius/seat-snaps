@@ -532,6 +532,7 @@
       "notYet": "Not yet"
     },
     "mobilePhotos": {
+      "title": "Photos",
       "pending": "Pending",
       "approved": "Approved",
       "all": "All",

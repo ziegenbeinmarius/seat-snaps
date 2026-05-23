@@ -552,6 +552,7 @@
       "notYet": "Noch nicht"
     },
     "mobilePhotos": {
+      "title": "Fotos",
       "pending": "Ausstehend",
       "approved": "Genehmigt",
       "all": "Alle",
