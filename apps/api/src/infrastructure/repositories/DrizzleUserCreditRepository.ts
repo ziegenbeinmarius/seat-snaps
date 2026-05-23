@@ -46,6 +46,20 @@ export class DrizzleUserCreditRepository implements IUserCreditRepository {
     return result[0];
   }
 
+  async consumeCreditAtomically(userId: string): Promise<boolean> {
+    const result = await this.db
+      .update(userCredits)
+      .set({
+        usedCredits: sql`${userCredits.usedCredits} + 1`,
+        updatedAt: new Date(),
+      })
+      .where(
+        sql`${userCredits.userId} = ${userId} AND ${userCredits.totalCredits} > ${userCredits.usedCredits}`,
+      )
+      .returning();
+    return result.length > 0;
+  }
+
   async markFreeTrialUsed(userId: string): Promise<UserCredit> {
     const result = await this.db
       .update(userCredits)
