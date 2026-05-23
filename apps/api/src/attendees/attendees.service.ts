@@ -103,24 +103,36 @@ export class AttendeesService implements IAttendeeService {
       throw new BadRequestException(`CSV import limited to ${MAX_IMPORT_ROWS} rows, got ${rows.length}`);
     }
 
-    const created: Attendee[] = [];
-    for (const row of rows) {
-      if (!row.name) continue;
-      if (row.email) {
-        const existing = await this.attendeeRepository.findByEventAndEmail(eventId, row.email);
-        if (existing) continue;
-      }
-      const attendee = await this.attendeeRepository.create({
+    const existingAttendees = await this.attendeeRepository.findByEventId(eventId);
+    const existingEmails = new Set(
+      existingAttendees.filter((a) => a.email).map((a) => a.email!.toLowerCase()),
+    );
+
+    const toCreate = rows
+      .filter((row) => {
+        if (!row.name) return false;
+        if (row.email && existingEmails.has(row.email.toLowerCase())) return false;
+        return true;
+      })
+      .map((row) => ({
         eventId,
-        name: row.name,
+        name: row.name!,
         email: row.email ?? null,
         groupLabel: row.group ?? null,
         description: null,
         conversationStarters: null,
         photoLimit: 10,
         qrToken: randomUUID(),
-      });
-      created.push(attendee);
+      }));
+
+    if (toCreate.length === 0) return [];
+
+    const created: Attendee[] = [];
+    const BATCH_SIZE = 500;
+    for (let i = 0; i < toCreate.length; i += BATCH_SIZE) {
+      const batch = toCreate.slice(i, i + BATCH_SIZE);
+      const result = await this.attendeeRepository.bulkCreate(batch);
+      created.push(...result);
     }
     return created;
   }
@@ -183,19 +195,21 @@ export class AttendeesService implements IAttendeeService {
 
   async bulkUpdateStatus(attendeeIds: string[], eventId: string, status: "confirmed" | "declined", userId: string): Promise<{ updated: Attendee[] }> {
     await this.requireMember(eventId, userId);
-    const attendees = await Promise.all(attendeeIds.map((id) => this.attendeeRepository.findById(id)));
-    const mismatched = attendees.filter((a) => !a || a.eventId !== eventId);
+    const attendees = await this.attendeeRepository.findByIds(attendeeIds);
+    const mismatched = attendeeIds.filter((id) => !attendees.find((a) => a.id === id && a.eventId === eventId));
     if (mismatched.length > 0) throw new BadRequestException("One or more attendees not found in this event");
-    const nonPending = attendees.filter((a) => a!.status !== "pending");
+    const nonPending = attendees.filter((a) => a.status !== "pending");
     if (nonPending.length > 0) throw new BadRequestException("One or more attendees are not in pending status");
     const updated = await this.attendeeRepository.bulkUpdateStatus(attendeeIds, status);
     return { updated };
   }
 
   private async requireMember(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
   }
 

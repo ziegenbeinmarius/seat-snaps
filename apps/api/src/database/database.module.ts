@@ -17,6 +17,8 @@ import {
   DrizzleUserCreditRepository,
   DrizzlePaymentRepository,
   DrizzlePricingTierRepository,
+  CachingEventRepository,
+  CachingEventMembershipRepository,
 } from "../infrastructure/repositories";
 import {
   USER_REPOSITORY,
@@ -57,12 +59,14 @@ export const DB_PROVIDER = Symbol("DATABASE");
     },
     {
       provide: EVENT_REPOSITORY,
-      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventRepository(db),
+      useFactory: (db: ReturnType<typeof createDb>) =>
+        new CachingEventRepository(new DrizzleEventRepository(db)),
       inject: [DB_PROVIDER],
     },
     {
       provide: EVENT_MEMBERSHIP_REPOSITORY,
-      useFactory: (db: ReturnType<typeof createDb>) => new DrizzleEventMembershipRepository(db),
+      useFactory: (db: ReturnType<typeof createDb>) =>
+        new CachingEventMembershipRepository(new DrizzleEventMembershipRepository(db)),
       inject: [DB_PROVIDER],
     },
     {

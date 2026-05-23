@@ -34,9 +34,14 @@ export class CreditsService implements ICreditsService {
   }
 
   async hasAvailableCredits(userId: string): Promise<boolean> {
-    await this.ensureCreditsExist(userId);
-    const credit = (await this.creditRepository.findByUserId(userId))!;
+    const credit = await this.getOrCreateCredits(userId);
     return credit.totalCredits - credit.usedCredits > 0;
+  }
+
+  private async getOrCreateCredits(userId: string) {
+    const existing = await this.creditRepository.findByUserId(userId);
+    if (existing) return existing;
+    return this.creditRepository.create({ userId });
   }
 
   async consumeCredit(userId: string): Promise<void> {

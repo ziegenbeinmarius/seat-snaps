@@ -27,8 +27,7 @@ export class EventsService implements IEventService {
   ) {}
 
   async listForUser(userId: string): Promise<Event[]> {
-    const events = await this.eventRepository.findByMemberId(userId);
-    return events.filter((e) => !e.deletedAt);
+    return this.eventRepository.findByMemberId(userId);
   }
 
   async getPublicInfo(id: string): Promise<PublicEventInfo> {
@@ -49,10 +48,11 @@ export class EventsService implements IEventService {
   }
 
   async getById(id: string, userId: string): Promise<Event> {
-    const event = await this.eventRepository.findById(id);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(id),
+      this.membershipRepository.findByUserAndEvent(userId, id),
+    ]);
     if (!event || event.deletedAt) throw new NotFoundException("Event not found");
-
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, id);
     if (!membership) throw new ForbiddenException("Access denied");
 
     return event;
@@ -143,10 +143,11 @@ export class EventsService implements IEventService {
   }
 
   private async requireOwner(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event || event.deletedAt) throw new NotFoundException("Event not found");
-
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership || membership.role !== "owner") {
       throw new ForbiddenException("Only the event owner can perform this action");
     }

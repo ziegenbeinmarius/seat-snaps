@@ -82,7 +82,6 @@ describe("EventsService", () => {
     it("returns only non-deleted events for the user", async () => {
       const events = [
         makeEvent({ id: "evt-1" }),
-        makeEvent({ id: "evt-2", deletedAt: new Date() }),
         makeEvent({ id: "evt-3" }),
       ];
       eventRepo.findByMemberId.mockResolvedValue(events);

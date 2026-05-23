@@ -206,25 +206,30 @@ export class PhotosService implements IPhotoService {
     const photo = await this.photoRepository.findById(photoId);
     if (!photo || photo.eventId !== eventId) throw new NotFoundException("Photo not found");
 
-    await this.s3.deleteObject(photo.s3Key).catch(() => undefined);
+    const deletes = [this.s3.deleteObject(photo.s3Key).catch(() => undefined)];
     if (photo.thumbnailKey) {
-      await this.s3.deleteObject(photo.thumbnailKey).catch(() => undefined);
+      deletes.push(this.s3.deleteObject(photo.thumbnailKey).catch(() => undefined));
     }
+    await Promise.all(deletes);
     await this.photoRepository.delete(photoId);
   }
 
   private async requireOrganizer(eventId: string, userId: string): Promise<void> {
-    const event = await this.eventRepository.findById(eventId);
+    const [event, membership] = await Promise.all([
+      this.eventRepository.findById(eventId),
+      this.membershipRepository.findByUserAndEvent(userId, eventId),
+    ]);
     if (!event) throw new NotFoundException("Event not found");
-    const membership = await this.membershipRepository.findByUserAndEvent(userId, eventId);
     if (!membership) throw new ForbiddenException("Access denied");
   }
 
   private async attachUrls(photo: Photo, attendeeName: string): Promise<PhotoWithUrl> {
-    const url = await this.s3.getSignedDownloadUrl(photo.s3Key);
-    const thumbnailUrl = photo.thumbnailKey
-      ? await this.s3.getSignedDownloadUrl(photo.thumbnailKey)
-      : undefined;
+    const [url, thumbnailUrl] = await Promise.all([
+      this.s3.getSignedDownloadUrl(photo.s3Key),
+      photo.thumbnailKey
+        ? this.s3.getSignedDownloadUrl(photo.thumbnailKey)
+        : Promise.resolve(undefined),
+    ]);
     return { ...photo, url, thumbnailUrl, attendeeName };
   }
 
