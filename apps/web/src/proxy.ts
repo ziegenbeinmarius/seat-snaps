@@ -1,14 +1,14 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
-import type { NextMiddleware, NextRequest } from "next/server";
+import type { NextProxy, NextRequest } from "next/server";
 import createIntlMiddleware from "next-intl/middleware";
 import { routing } from "@/i18n/routing";
 
 const PROTECTED = ["/dashboard", "/organizer", "/select-plan"];
 
-const intlMiddleware = createIntlMiddleware(routing);
+const intlProxy = createIntlMiddleware(routing);
 
-const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
+const proxy = auth(async (req: NextRequest & { auth: unknown }) => {
   const { nextUrl } = req;
   const session = req.auth as { user?: { id?: string } } | null;
   const hasValidSession = session?.user?.id;
@@ -38,10 +38,10 @@ const middleware = auth(async (req: NextRequest & { auth: unknown }) => {
     return NextResponse.redirect(loginUrl);
   }
 
-  return intlMiddleware(req);
+  return intlProxy(req);
 });
 
-export default middleware as unknown as NextMiddleware;
+export default proxy as unknown as NextProxy;
 
 export const config = {
   matcher: ["/((?!api|_next|.*\\..*).*)"],

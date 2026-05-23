@@ -25,7 +25,7 @@ Next.js 15 (App Router) frontend serving two user experiences: an organizer dash
   - `utils.ts` — `cn()` helper (clsx + tailwind-merge)
 - `src/actions/` — Server actions (auth, invites)
 - `src/auth.ts` — Auth.js v5 config (credentials provider, JWT strategy)
-- `middleware.ts` — Protects `/dashboard`, redirects authed users from `/login`
+- `src/proxy.ts` — Protects `/dashboard`, applies next-intl locale rewrites (Next.js 16 `proxy` convention, formerly `middleware`)
 
 ## Patterns & Conventions
 
