@@ -58,6 +58,11 @@ export class CreditsService implements ICreditsService {
   }
 
   async grantCredits(userId: string, amount: number): Promise<void> {
+    if (!Number.isInteger(amount) || amount <= 0) {
+      throw new BadRequestException(
+        `Invalid credit amount: ${amount}. Must be a positive integer.`,
+      );
+    }
     await this.ensureCreditsExist(userId);
     await this.creditRepository.incrementCredits(userId, amount);
   }
