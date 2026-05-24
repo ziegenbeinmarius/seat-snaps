@@ -4,7 +4,6 @@ import Image from "next/image";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { ChevronDown, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
 import {
   DropdownMenu,
@@ -82,7 +81,6 @@ export function LandingHeader({ isLoggedIn, user }: LandingHeaderProps) {
         </Link>
 
         <div className={actionClassName}>
-          <LanguageSwitcher />
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

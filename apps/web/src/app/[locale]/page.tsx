@@ -6,6 +6,7 @@ import { SceneSection } from "@/components/landing/scene-section";
 import { FeaturesSection } from "@/components/landing/features-section";
 import { SectionDivider } from "@/components/landing/section-divider";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 export default async function HomePage({
   params,
@@ -38,7 +39,10 @@ export default async function HomePage({
         <SectionDivider variant="leaf" />
 
         <footer className="border-t px-6 py-8 text-center text-sm" style={{ borderColor: "hsl(33 18% 86%)", color: "hsl(28 8% 52%)" }}>
-          &copy; {new Date().getFullYear()} SeatSnaps. {t("footer")}
+          <p>&copy; {new Date().getFullYear()} SeatSnaps. {t("footer")}</p>
+          <div className="mt-3 flex justify-center">
+            <LanguageSwitcher />
+          </div>
         </footer>
       </LandingShell>
     </main>
